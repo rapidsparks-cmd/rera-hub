@@ -1,0 +1,22 @@
+{
+  "stateId": "br",
+  "authority": "Bihar RERA",
+  "portal": "https://rera.bihar.gov.in/",
+  "currency": "INR",
+  "mclrBasisDefault": "sbi_highest",
+  "rules": [
+    {
+      "id": "br-2017-05-01",
+      "spreadPct": 2,
+      "method": "simple",
+      "mclrBasis": "sbi_highest",
+      "applicableFrom": "2017-05-01",
+      "applicableTo": null,
+      "source": "Bihar RERA Rules — statutory delay interest commonly at SBI MCLR + 2%.",
+      "sourceUrl": "https://rera.bihar.gov.in/",
+      "legalBasis": "Real Estate (Regulation and Development) Act, 2016 — Section 18 / state rules",
+      "verifiedOn": "2026-07-26",
+      "notes": "Curated config. Update this file when the state notifies a revised interest formula."
+    }
+  ]
+}

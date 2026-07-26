@@ -1,0 +1,22 @@
+{
+  "stateId": "as",
+  "authority": "Assam RERA",
+  "portal": "https://rera.assam.gov.in",
+  "currency": "INR",
+  "mclrBasisDefault": "sbi_highest",
+  "rules": [
+    {
+      "id": "as-2017-05-01",
+      "spreadPct": 2,
+      "method": "simple",
+      "mclrBasis": "sbi_highest",
+      "applicableFrom": "2017-05-01",
+      "applicableTo": null,
+      "source": "Assam RERA Rules — SBI MCLR + 2%.",
+      "sourceUrl": "https://rera.assam.gov.in",
+      "legalBasis": "Real Estate (Regulation and Development) Act, 2016 — Section 18 / state rules",
+      "verifiedOn": "2026-07-26",
+      "notes": "Curated config. Update this file when the state notifies a revised interest formula."
+    }
+  ]
+}

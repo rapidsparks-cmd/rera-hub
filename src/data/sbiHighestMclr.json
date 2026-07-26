@@ -1,0 +1,739 @@
+{
+  "source": "https://sbi.bank.in/web/interest-rates/interest-rates/mclr-historical-data",
+  "tenorUsed": "highest published SBI MCLR tenor (typically 3Y)",
+  "updatedAt": "2026-07-26",
+  "series": [
+    {
+      "effectiveFrom": "2016-04-01",
+      "highest": 9.35,
+      "oneYear": 9.2,
+      "threeYear": 9.35
+    },
+    {
+      "effectiveFrom": "2016-05-01",
+      "highest": 9.3,
+      "oneYear": 9.15,
+      "threeYear": 9.3
+    },
+    {
+      "effectiveFrom": "2016-06-01",
+      "highest": 9.3,
+      "oneYear": 9.15,
+      "threeYear": 9.3
+    },
+    {
+      "effectiveFrom": "2016-07-01",
+      "highest": 9.3,
+      "oneYear": 9.15,
+      "threeYear": 9.3
+    },
+    {
+      "effectiveFrom": "2016-08-01",
+      "highest": 9.25,
+      "oneYear": 9.1,
+      "threeYear": 9.25
+    },
+    {
+      "effectiveFrom": "2016-09-01",
+      "highest": 9.25,
+      "oneYear": 9.1,
+      "threeYear": 9.25
+    },
+    {
+      "effectiveFrom": "2016-10-01",
+      "highest": 9.2,
+      "oneYear": 9.05,
+      "threeYear": 9.2
+    },
+    {
+      "effectiveFrom": "2016-11-01",
+      "highest": 9.05,
+      "oneYear": 8.9,
+      "threeYear": 9.05
+    },
+    {
+      "effectiveFrom": "2016-12-01",
+      "highest": 9.05,
+      "oneYear": 8.9,
+      "threeYear": 9.05
+    },
+    {
+      "effectiveFrom": "2017-01-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-02-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-03-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-04-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-05-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-06-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-07-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-08-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-09-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-10-01",
+      "highest": 8.15,
+      "oneYear": 8.0,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2017-11-01",
+      "highest": 8.1,
+      "oneYear": 7.95,
+      "threeYear": 8.1
+    },
+    {
+      "effectiveFrom": "2017-12-01",
+      "highest": 8.1,
+      "oneYear": 7.95,
+      "threeYear": 8.1
+    },
+    {
+      "effectiveFrom": "2018-01-01",
+      "highest": 8.1,
+      "oneYear": 7.95,
+      "threeYear": 8.1
+    },
+    {
+      "effectiveFrom": "2018-02-01",
+      "highest": 8.1,
+      "oneYear": 7.95,
+      "threeYear": 8.1
+    },
+    {
+      "effectiveFrom": "2018-03-01",
+      "highest": 8.35,
+      "oneYear": 8.15,
+      "threeYear": 8.35
+    },
+    {
+      "effectiveFrom": "2018-04-01",
+      "highest": 8.35,
+      "oneYear": 8.15,
+      "threeYear": 8.35
+    },
+    {
+      "effectiveFrom": "2018-05-01",
+      "highest": 8.35,
+      "oneYear": 8.15,
+      "threeYear": 8.35
+    },
+    {
+      "effectiveFrom": "2018-06-01",
+      "highest": 8.45,
+      "oneYear": 8.25,
+      "threeYear": 8.45
+    },
+    {
+      "effectiveFrom": "2018-07-01",
+      "highest": 8.45,
+      "oneYear": 8.25,
+      "threeYear": 8.45
+    },
+    {
+      "effectiveFrom": "2018-08-01",
+      "highest": 8.45,
+      "oneYear": 8.25,
+      "threeYear": 8.45
+    },
+    {
+      "effectiveFrom": "2018-09-01",
+      "highest": 8.65,
+      "oneYear": 8.45,
+      "threeYear": 8.65
+    },
+    {
+      "effectiveFrom": "2018-10-01",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2018-11-01",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2018-12-10",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2019-01-10",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2019-02-10",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2019-03-10",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2019-04-10",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2019-05-10",
+      "highest": 8.65,
+      "oneYear": 8.45,
+      "threeYear": 8.65
+    },
+    {
+      "effectiveFrom": "2019-06-10",
+      "highest": 8.65,
+      "oneYear": 8.45,
+      "threeYear": 8.65
+    },
+    {
+      "effectiveFrom": "2019-07-10",
+      "highest": 8.6,
+      "oneYear": 8.4,
+      "threeYear": 8.6
+    },
+    {
+      "effectiveFrom": "2019-08-10",
+      "highest": 8.45,
+      "oneYear": 8.25,
+      "threeYear": 8.45
+    },
+    {
+      "effectiveFrom": "2019-09-10",
+      "highest": 8.35,
+      "oneYear": 8.15,
+      "threeYear": 8.35
+    },
+    {
+      "effectiveFrom": "2019-10-10",
+      "highest": 8.25,
+      "oneYear": 8.05,
+      "threeYear": 8.25
+    },
+    {
+      "effectiveFrom": "2019-11-10",
+      "highest": 8.2,
+      "oneYear": 8.0,
+      "threeYear": 8.2
+    },
+    {
+      "effectiveFrom": "2019-12-10",
+      "highest": 8.2,
+      "oneYear": 7.9,
+      "threeYear": 8.2
+    },
+    {
+      "effectiveFrom": "2020-01-10",
+      "highest": 8.2,
+      "oneYear": 7.9,
+      "threeYear": 8.2
+    },
+    {
+      "effectiveFrom": "2020-02-10",
+      "highest": 8.15,
+      "oneYear": 7.85,
+      "threeYear": 8.15
+    },
+    {
+      "effectiveFrom": "2020-03-10",
+      "highest": 8.05,
+      "oneYear": 7.75,
+      "threeYear": 8.05
+    },
+    {
+      "effectiveFrom": "2020-04-10",
+      "highest": 7.7,
+      "oneYear": 7.4,
+      "threeYear": 7.7
+    },
+    {
+      "effectiveFrom": "2020-05-10",
+      "highest": 7.55,
+      "oneYear": 7.25,
+      "threeYear": 7.55
+    },
+    {
+      "effectiveFrom": "2020-06-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2020-07-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2020-08-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2020-09-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2020-10-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2020-11-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2020-12-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-01-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-02-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-03-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-04-10",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-04-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-05-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-06-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-07-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-08-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-09-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-10-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-11-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2021-12-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2022-01-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2022-03-15",
+      "highest": 7.3,
+      "oneYear": 7.0,
+      "threeYear": 7.3
+    },
+    {
+      "effectiveFrom": "2022-04-15",
+      "highest": 7.4,
+      "oneYear": 7.1,
+      "threeYear": 7.4
+    },
+    {
+      "effectiveFrom": "2022-05-15",
+      "highest": 7.5,
+      "oneYear": 7.2,
+      "threeYear": 7.5
+    },
+    {
+      "effectiveFrom": "2022-06-15",
+      "highest": 7.7,
+      "oneYear": 7.4,
+      "threeYear": 7.7
+    },
+    {
+      "effectiveFrom": "2022-07-15",
+      "highest": 7.8,
+      "oneYear": 7.5,
+      "threeYear": 7.8
+    },
+    {
+      "effectiveFrom": "2022-08-15",
+      "highest": 8.0,
+      "oneYear": 7.7,
+      "threeYear": 8.0
+    },
+    {
+      "effectiveFrom": "2022-09-15",
+      "highest": 8.0,
+      "oneYear": 7.7,
+      "threeYear": 8.0
+    },
+    {
+      "effectiveFrom": "2022-10-15",
+      "highest": 8.25,
+      "oneYear": 7.95,
+      "threeYear": 8.25
+    },
+    {
+      "effectiveFrom": "2022-11-15",
+      "highest": 8.35,
+      "oneYear": 8.05,
+      "threeYear": 8.35
+    },
+    {
+      "effectiveFrom": "2022-12-15",
+      "highest": 8.6,
+      "oneYear": 8.3,
+      "threeYear": 8.6
+    },
+    {
+      "effectiveFrom": "2023-01-15",
+      "highest": 8.6,
+      "oneYear": 8.4,
+      "threeYear": 8.6
+    },
+    {
+      "effectiveFrom": "2023-02-15",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2023-03-15",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2023-04-15",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2023-05-15",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2023-06-15",
+      "highest": 8.7,
+      "oneYear": 8.5,
+      "threeYear": 8.7
+    },
+    {
+      "effectiveFrom": "2023-07-15",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2023-08-15",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2023-09-15",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2023-10-15",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2023-11-15",
+      "highest": 8.75,
+      "oneYear": 8.55,
+      "threeYear": 8.75
+    },
+    {
+      "effectiveFrom": "2023-12-15",
+      "highest": 8.85,
+      "oneYear": 8.65,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2024-01-15",
+      "highest": 8.85,
+      "oneYear": 8.65,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2024-02-15",
+      "highest": 8.85,
+      "oneYear": 8.65,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2024-03-15",
+      "highest": 8.85,
+      "oneYear": 8.65,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2024-04-15",
+      "highest": 8.85,
+      "oneYear": 8.65,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2024-05-15",
+      "highest": 8.85,
+      "oneYear": 8.65,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2024-06-15",
+      "highest": 8.95,
+      "oneYear": 8.75,
+      "threeYear": 8.95
+    },
+    {
+      "effectiveFrom": "2024-07-15",
+      "highest": 9.0,
+      "oneYear": 8.85,
+      "threeYear": 9.0
+    },
+    {
+      "effectiveFrom": "2024-08-15",
+      "highest": 9.1,
+      "oneYear": 8.95,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2024-09-15",
+      "highest": 9.1,
+      "oneYear": 8.95,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2024-10-15",
+      "highest": 9.1,
+      "oneYear": 8.95,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2024-11-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2024-12-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-01-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-02-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-03-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-04-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-05-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-06-15",
+      "highest": 9.1,
+      "oneYear": 9.0,
+      "threeYear": 9.1
+    },
+    {
+      "effectiveFrom": "2025-07-15",
+      "highest": 8.9,
+      "oneYear": 8.8,
+      "threeYear": 8.9
+    },
+    {
+      "effectiveFrom": "2025-08-15",
+      "highest": 8.85,
+      "oneYear": 8.75,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2025-09-15",
+      "highest": 8.85,
+      "oneYear": 8.75,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2025-10-15",
+      "highest": 8.85,
+      "oneYear": 8.75,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2025-11-15",
+      "highest": 8.85,
+      "oneYear": 8.75,
+      "threeYear": 8.85
+    },
+    {
+      "effectiveFrom": "2025-12-15",
+      "highest": 8.8,
+      "oneYear": 8.7,
+      "threeYear": 8.8
+    },
+    {
+      "effectiveFrom": "2026-01-15",
+      "highest": 8.8,
+      "oneYear": 8.7,
+      "threeYear": 8.8
+    },
+    {
+      "effectiveFrom": "2026-02-15",
+      "highest": 8.8,
+      "oneYear": 8.7,
+      "threeYear": 8.8
+    },
+    {
+      "effectiveFrom": "2026-03-15",
+      "highest": 8.8,
+      "oneYear": 8.7,
+      "threeYear": 8.8
+    },
+    {
+      "effectiveFrom": "2026-04-15",
+      "highest": 8.8,
+      "oneYear": 8.7,
+      "threeYear": 8.8
+    },
+    {
+      "effectiveFrom": "2026-05-15",
+      "highest": 8.8,
+      "oneYear": 8.7,
+      "threeYear": 8.8
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "stateId": "ka",
+  "authority": "K-RERA",
+  "portal": "https://rera.karnataka.gov.in",
+  "currency": "INR",
+  "mclrBasisDefault": "sbi_highest",
+  "rules": [
+    {
+      "id": "ka-2017-05-01",
+      "spreadPct": 2,
+      "method": "compound_monthly",
+      "mclrBasis": "sbi_highest",
+      "applicableFrom": "2017-05-01",
+      "applicableTo": null,
+      "source": "Karnataka RERA Rules — SBI MCLR + 2% compounded monthly (common practice).",
+      "sourceUrl": "https://rera.karnataka.gov.in",
+      "legalBasis": "Real Estate (Regulation and Development) Act, 2016 — Section 18 / state rules",
+      "verifiedOn": "2026-07-26",
+      "notes": "Curated config. Update this file when the state notifies a revised interest formula."
+    }
+  ]
+}

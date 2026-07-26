@@ -1,0 +1,22 @@
+{
+  "stateId": "jk",
+  "authority": "J&K RERA",
+  "portal": "https://rera.jk.gov.in",
+  "currency": "INR",
+  "mclrBasisDefault": "sbi_highest",
+  "rules": [
+    {
+      "id": "jk-2017-05-01",
+      "spreadPct": 2,
+      "method": "simple",
+      "mclrBasis": "sbi_highest",
+      "applicableFrom": "2017-05-01",
+      "applicableTo": null,
+      "source": "J&K RERA Rules — SBI MCLR + 2%.",
+      "sourceUrl": "https://rera.jk.gov.in",
+      "legalBasis": "Real Estate (Regulation and Development) Act, 2016 — Section 18 / state rules",
+      "verifiedOn": "2026-07-26",
+      "notes": "Curated config. Update this file when the state notifies a revised interest formula."
+    }
+  ]
+}

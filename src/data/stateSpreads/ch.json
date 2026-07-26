@@ -1,0 +1,22 @@
+{
+  "stateId": "ch",
+  "authority": "Chandigarh RERA",
+  "portal": "https://www.rera.delhi.gov.in/",
+  "currency": "INR",
+  "mclrBasisDefault": "sbi_highest",
+  "rules": [
+    {
+      "id": "ch-2017-05-01",
+      "spreadPct": 2,
+      "method": "simple",
+      "mclrBasis": "sbi_highest",
+      "applicableFrom": "2017-05-01",
+      "applicableTo": null,
+      "source": "Chandigarh — MoHUA lists Delhi RERA portal; SBI MCLR + 2% typical.",
+      "sourceUrl": "https://www.rera.delhi.gov.in/",
+      "legalBasis": "Real Estate (Regulation and Development) Act, 2016 — Section 18 / state rules",
+      "verifiedOn": "2026-07-26",
+      "notes": "Curated config. Update this file when the state notifies a revised interest formula."
+    }
+  ]
+}
