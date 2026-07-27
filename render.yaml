@@ -3,7 +3,10 @@ services:
     name: rera-hub
     runtime: static
     buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
     routes:
       - type: rewrite
         source: /*
