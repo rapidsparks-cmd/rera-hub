@@ -1,6 +1,9 @@
 # rera-hub
 
+[![Deploy to Render](https://render.com/images/deploy-to-render.svg)](https://render.com/deploy?repo=https://github.com/rapidsparks-cmd/rera-hub)
+
 RERA compensation calculator inspired by [BuilderDelay](https://builderdelay.in/rera-penalty-calculator/#calculator) — state-calibrated Section 18 interest, lump-sum or installment schedules, analytics report, and FAQ.
+
 
 ## Setup
 
