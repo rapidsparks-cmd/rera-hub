@@ -9,5 +9,8 @@ services:
         value: "20"
     routes:
       - type: rewrite
+        source: /Robots.txt
+        destination: /robots.txt
+      - type: rewrite
         source: /*
         destination: /index.html
