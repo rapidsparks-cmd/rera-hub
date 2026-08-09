@@ -1128,32 +1128,15 @@ export default function ReraDesk({ language = "en", stateId }) {
       {/* Guidance Prompt Modal */}
       {guidancePromptOpen && result && (
         <div className="modal-backdrop" onClick={() => setGuidancePromptOpen(false)}>
-          <div className="modal-card legal-guidance-prompt-card" onClick={(e) => e.stopPropagation()} style={{
-            background: 'var(--bg-card)',
-            maxWidth: '560px',
-            width: '95%',
-            borderRadius: '12px',
-            padding: '28px',
-            border: '1px solid var(--border-color)',
-            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.15)',
-            position: 'relative'
-          }}>
-            <button className="modal-close" onClick={() => setGuidancePromptOpen(false)} aria-label="Close" style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-muted)',
-              cursor: 'pointer'
-            }}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setGuidancePromptOpen(false)} aria-label="Close">
               <X size={18} />
             </button>
 
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <span style={{
                 background: 'rgba(13, 148, 136, 0.1)',
-                color: '#0d9488',
+                color: 'var(--brand, #0f766e)',
                 fontSize: '0.75rem',
                 fontWeight: 'bold',
                 padding: '4px 8px',
@@ -1161,24 +1144,24 @@ export default function ReraDesk({ language = "en", stateId }) {
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>⚖️ E2E Case Recovery</span>
-              <h2 style={{ fontSize: '1.5rem', margin: '8px 0 4px 0', color: 'var(--text-color)' }}>Maximize Your RERA Claim</h2>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>
+              <h2 style={{ fontSize: '1.4rem', margin: '8px 0 4px 0', color: 'var(--ink)' }}>Maximize Your RERA Claim</h2>
+              <p style={{ fontSize: '0.875rem', color: 'var(--muted)', margin: 0 }}>
                 Recover statutory delay compensation under Section 18
               </p>
             </div>
 
-            <div style={{ textAlign: 'center', background: 'var(--bg-app)', padding: '16px 20px', borderRadius: '8px', margin: '16px 0 24px 0', border: '1px solid var(--border-color)' }}>
-              <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Estimated Interest Due from Builder</p>
-              <strong style={{ fontSize: '2rem', display: 'block', color: '#0d9488' }}>{formatINR(result.interest)}</strong>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>For {formatNumber(result.delayDays)} days of possession delay</span>
+            <div style={{ textAlign: 'center', background: 'var(--paper-deep)', padding: '16px 20px', borderRadius: 'var(--radius-md)', margin: '16px 0 24px 0', border: '1px solid var(--line)' }}>
+              <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: 'var(--muted)' }}>Estimated Interest Due from Builder</p>
+              <strong style={{ fontSize: '2rem', display: 'block', color: 'var(--brand, #0f766e)' }}>{formatINR(result.interest)}</strong>
+              <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>For {formatNumber(result.delayDays)} days of possession delay</span>
             </div>
 
             <div style={{ display: 'grid', gap: '16px' }}>
               {/* Option 1: Expert Advice */}
               <div style={{
-                border: '2px solid #0d9488',
+                border: '2px solid var(--brand, #0f766e)',
                 background: 'rgba(13, 148, 136, 0.02)',
-                borderRadius: '10px',
+                borderRadius: 'var(--radius-md)',
                 padding: '16px',
                 cursor: 'pointer',
                 position: 'relative'
@@ -1195,37 +1178,37 @@ export default function ReraDesk({ language = "en", stateId }) {
                   position: 'absolute',
                   top: '-10px',
                   right: '16px',
-                  background: '#0d9488',
+                  background: 'var(--brand, #0f766e)',
                   color: '#fff',
                   fontSize: '0.65rem',
                   fontWeight: 'bold',
                   padding: '2px 8px',
                   borderRadius: '10px'
                 }}>RECOMMENDED</div>
-                <h3 style={{ fontSize: '1.05rem', margin: '0 0 4px 0', color: 'var(--text-color)', display: 'flex', alignItems: 'center', gap: '6px' }}>Connect with RERA Advocate <Crown size={14} style={{ color: '#d97706', fill: '#d97706' }} /></h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                <h3 style={{ fontSize: '1.05rem', margin: '0 0 4px 0', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '6px' }}>Connect with RERA Advocate <Crown size={14} style={{ color: '#d97706', fill: '#d97706' }} /></h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '0 0 12px 0' }}>
                   Get professional case consultation & E2E guidance by Advocate Jaydeep Thakur for ₹299.
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: '#0d9488' }}>₹299</span>
-                  <span style={{ fontSize: '0.8rem', color: '#0d9488', fontWeight: 'bold' }}>Get Expert Advice &rarr;</span>
+                  <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--brand, #0f766e)' }}>₹299</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--brand, #0f766e)', fontWeight: 'bold' }}>Get Expert Advice &rarr;</span>
                 </div>
               </div>
 
               {/* Option 2: Self Continue */}
               <div style={{
-                border: '1px solid var(--border-color)',
-                borderRadius: '10px',
+                border: '1px solid var(--line)',
+                borderRadius: 'var(--radius-md)',
                 padding: '16px',
                 cursor: 'pointer'
               }} onClick={() => setGuidancePromptOpen(false)}>
-                <h3 style={{ fontSize: '1.05rem', margin: '0 0 4px 0', color: 'var(--text-color)' }}>Self-Continue</h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                <h3 style={{ fontSize: '1.05rem', margin: '0 0 4px 0', color: 'var(--ink)' }}>Self-Continue</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '0 0 12px 0' }}>
                   Continue reading report details and drafting Form M templates on your own.
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Free (Limited)</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>Continue &rarr;</span>
+                  <span style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Free (Limited)</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: '500' }}>Continue &rarr;</span>
                 </div>
               </div>
             </div>
