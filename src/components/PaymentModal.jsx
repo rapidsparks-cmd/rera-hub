@@ -98,12 +98,34 @@ export default function PaymentModal({
         }),
       });
 
+      const text = await res.text().catch(() => '');
+
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Server error ${res.status}`);
+        let errorMsg = `Server error ${res.status}`;
+        try {
+          if (text) {
+            const body = JSON.parse(text);
+            errorMsg = body.error || errorMsg;
+          }
+        } catch (_) {
+          if (text && text.trim().startsWith('<!DOCTYPE html>')) {
+            errorMsg = `Server returned an HTML page (404/502). Please verify your VITE_RENDER_API_URL environment variable points to the backend server.`;
+          } else if (text && text.length < 200) {
+            errorMsg = text;
+          }
+        }
+        throw new Error(errorMsg);
       }
 
-      const data = await res.json();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        if (text && text.trim().startsWith('<!DOCTYPE html>')) {
+          throw new Error('Server returned an HTML page instead of JSON. Please verify your VITE_RENDER_API_URL environment variable points to the backend server.');
+        }
+        throw new Error(`Invalid server response format: ${text ? text.slice(0, 150) : 'empty'}`);
+      }
 
       if (data.alreadyUnlocked) {
         await refreshEntitlements();
