@@ -124,6 +124,9 @@ export default function PaymentModal({
         if (text && text.trim().startsWith('<!DOCTYPE html>')) {
           throw new Error('Server returned an HTML page instead of JSON. Please verify your VITE_RENDER_API_URL environment variable points to the backend server.');
         }
+        if (!text) {
+          throw new Error('Server returned an empty response. This usually happens if VITE_RENDER_API_URL is pointing to your frontend static site domain instead of your backend API domain.');
+        }
         throw new Error(`Invalid server response format: ${text ? text.slice(0, 150) : 'empty'}`);
       }
 
