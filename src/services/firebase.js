@@ -1,5 +1,10 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  inMemoryPersistence,
+} from 'firebase/auth';
 
 const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
@@ -25,6 +30,11 @@ if (isFirebaseConfigured) {
     };
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     authInstance = getAuth(app);
+
+    // Set persistence to browserLocalPersistence (localStorage) to prevent Chrome IndexedDB closure bugs
+    setPersistence(authInstance, browserLocalPersistence).catch(() => {
+      setPersistence(authInstance, inMemoryPersistence).catch(() => {});
+    });
   } catch (err) {
     console.warn('[firebase.js] Failed to initialize Firebase Auth:', err.message);
   }

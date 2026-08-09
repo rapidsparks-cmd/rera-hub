@@ -164,9 +164,20 @@ export function AuthProvider({ children }) {
     }
 
     const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    await checkEntitlements(result.user);
-    return result.user;
+    try {
+      const result = await signInWithPopup(auth, provider);
+      await checkEntitlements(result.user);
+      return result.user;
+    } catch (err) {
+      if (err?.message?.includes('Database is closing') || err?.message?.includes('IndexedDB')) {
+        const { setPersistence, inMemoryPersistence } = await import('firebase/auth');
+        await setPersistence(auth, inMemoryPersistence).catch(() => {});
+        const result = await signInWithPopup(auth, provider);
+        await checkEntitlements(result.user);
+        return result.user;
+      }
+      throw err;
+    }
   };
 
   const loginWithEmail = async (email, password) => {
@@ -182,18 +193,40 @@ export function AuthProvider({ children }) {
       return demoUser;
     }
 
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    await checkEntitlements(result.user);
-    return result.user;
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await checkEntitlements(result.user);
+      return result.user;
+    } catch (err) {
+      if (err?.message?.includes('Database is closing') || err?.message?.includes('IndexedDB')) {
+        const { setPersistence, inMemoryPersistence } = await import('firebase/auth');
+        await setPersistence(auth, inMemoryPersistence).catch(() => {});
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        await checkEntitlements(result.user);
+        return result.user;
+      }
+      throw err;
+    }
   };
 
   const registerWithEmail = async (email, password) => {
-    if (!isFirebaseConfigured) {
+    if (!isFirebaseConfigured || !auth) {
       return loginWithEmail(email, password);
     }
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    await checkEntitlements(result.user);
-    return result.user;
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await checkEntitlements(result.user);
+      return result.user;
+    } catch (err) {
+      if (err?.message?.includes('Database is closing') || err?.message?.includes('IndexedDB')) {
+        const { setPersistence, inMemoryPersistence } = await import('firebase/auth');
+        await setPersistence(auth, inMemoryPersistence).catch(() => {});
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        await checkEntitlements(result.user);
+        return result.user;
+      }
+      throw err;
+    }
   };
 
   const logout = async () => {
