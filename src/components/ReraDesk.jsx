@@ -27,13 +27,11 @@ import {
 } from "../services/mclrService";
 import { getCurrentSpreadRule } from "../services/stateSpreadService";
 import { geminiService } from "../services/geminiService";
-import ProjectFetchPanel from "./ProjectFetchPanel";
 import InterestTrendChart from "./InterestTrendChart";
 import ReportBreakdown from "./ReportBreakdown";
 import { getFormMTemplate } from "../utils/formMTemplates";
 import { downloadAsPDF, downloadAsWord } from "../utils/downloadHelpers";
 
-const ENABLE_RERA_PROJECT_FETCH = import.meta.env.VITE_ENABLE_RERA_PROJECT_FETCH !== "false";
 const ENABLE_RERA_FORM_M_DRAFT = import.meta.env.VITE_ENABLE_RERA_FORM_M_DRAFT !== "false";
 const ENABLE_INSTALLMENTS_SCHEDULE =
   import.meta.env.VITE_ENABLE_INSTALLMENTS_SCHEDULE !== "false";
@@ -55,12 +53,11 @@ export default function ReraDesk({ language = "en", stateId }) {
   const [promisedDate, setPromisedDate] = useState("");
   const [endDate, setEndDate] = useState(todayISO());
   const [draftFormM, setDraftFormM] = useState(false);
-  const [projectDetails, setProjectDetails] = useState(null);
-
   // Form M details inputs
   const [complainantName, setComplainantName] = useState("");
   const [complainantAddress, setComplainantAddress] = useState("");
   const [complainantContact, setComplainantContact] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [promoterName, setPromoterName] = useState("");
   const [promoterAddress, setPromoterAddress] = useState("");
   const [reraRegNo, setReraRegNo] = useState("");
@@ -111,10 +108,10 @@ export default function ReraDesk({ language = "en", stateId }) {
         complainantName,
         complainantAddress,
         complainantContact,
-        promoterName: promoterName || projectDetails?.promoter || "",
+        promoterName,
         promoterAddress,
-        projectName: projectDetails?.projectName || "",
-        reraRegNo: reraRegNo || projectDetails?.regNo || "",
+        projectName,
+        reraRegNo,
         bookingDate,
         agreementDate,
         amountPaid: formatINR(result.principal),
@@ -136,10 +133,10 @@ export default function ReraDesk({ language = "en", stateId }) {
     complainantContact,
     promoterName,
     promoterAddress,
+    projectName,
     reraRegNo,
     bookingDate,
     agreementDate,
-    projectDetails,
     promisedDate,
     endDate
   ]);
@@ -226,10 +223,10 @@ export default function ReraDesk({ language = "en", stateId }) {
         complainantName,
         complainantAddress,
         complainantContact,
-        promoterName: promoterName || projectDetails?.promoter || "",
+        promoterName,
         promoterAddress,
-        projectName: projectDetails?.projectName || "",
-        reraRegNo: reraRegNo || projectDetails?.regNo || "",
+        projectName,
+        reraRegNo,
         bookingDate,
         agreementDate,
         amountPaid: formatINR(report.principal),
@@ -291,14 +288,7 @@ export default function ReraDesk({ language = "en", stateId }) {
 
   const handlePrint = () => window.print();
 
-  const onProjectLoaded = (details) => {
-    setProjectDetails(details);
-    if (details?.completionDate?.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      setPromisedDate(details.completionDate);
-    }
-    if (details?.promoter) setPromoterName(details.promoter);
-    if (details?.regNo) setReraRegNo(details.regNo);
-  };
+
 
   return (
     <div className="rera-page">
@@ -325,13 +315,7 @@ export default function ReraDesk({ language = "en", stateId }) {
         </div>
       </section>
 
-      {ENABLE_RERA_PROJECT_FETCH && (
-        <section className="section">
-          <div className="section-inner">
-            <ProjectFetchPanel onProjectLoaded={onProjectLoaded} />
-          </div>
-        </section>
-      )}
+
 
       {/* Calculator */}
       <section className="section calculator-section" id="calculator" ref={calcRef}>
@@ -648,6 +632,15 @@ export default function ReraDesk({ language = "en", stateId }) {
                             value={complainantContact}
                             onChange={(e) => setComplainantContact(e.target.value)}
                             placeholder="e.g. amit@gmail.com / 9876543210"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Project Name</span>
+                          <input
+                            type="text"
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            placeholder="e.g. Prestige Lakeside Habitat"
                           />
                         </label>
                         <label className="field">
