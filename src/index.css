@@ -1820,7 +1820,10 @@ tfoot td {
 /* ─────────────────────────────────────────────────────────────────────────────
    PAYMENT MODAL
 ──────────────────────────────────────────────────────────────────────────────*/
-.payment-modal { max-width: 400px; }
+.payment-modal {
+  max-width: 480px;
+  padding: 24px;
+}
 
 .premium-features-list {
   display: flex;
