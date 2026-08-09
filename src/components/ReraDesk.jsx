@@ -30,11 +30,13 @@ import { geminiService } from "../services/geminiService";
 import ProjectFetchPanel from "./ProjectFetchPanel";
 import InterestTrendChart from "./InterestTrendChart";
 import ReportBreakdown from "./ReportBreakdown";
+import { getFormMTemplate } from "../utils/formMTemplates";
+import { downloadAsPDF, downloadAsWord } from "../utils/downloadHelpers";
 
-const ENABLE_RERA_PROJECT_FETCH = import.meta.env.VITE_ENABLE_RERA_PROJECT_FETCH === "true";
-const ENABLE_RERA_FORM_M_DRAFT = import.meta.env.VITE_ENABLE_RERA_FORM_M_DRAFT === "true";
+const ENABLE_RERA_PROJECT_FETCH = import.meta.env.VITE_ENABLE_RERA_PROJECT_FETCH !== "false";
+const ENABLE_RERA_FORM_M_DRAFT = import.meta.env.VITE_ENABLE_RERA_FORM_M_DRAFT !== "false";
 const ENABLE_INSTALLMENTS_SCHEDULE =
-  import.meta.env.VITE_ENABLE_INSTALLMENTS_SCHEDULE === "true";
+  import.meta.env.VITE_ENABLE_INSTALLMENTS_SCHEDULE !== "false";
 
 const CALC_TYPE = "builder_delay";
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -54,6 +56,23 @@ export default function ReraDesk({ language = "en", stateId }) {
   const [endDate, setEndDate] = useState(todayISO());
   const [draftFormM, setDraftFormM] = useState(false);
   const [projectDetails, setProjectDetails] = useState(null);
+
+  // Form M details inputs
+  const [complainantName, setComplainantName] = useState("");
+  const [complainantAddress, setComplainantAddress] = useState("");
+  const [complainantContact, setComplainantContact] = useState("");
+  const [promoterName, setPromoterName] = useState("");
+  const [promoterAddress, setPromoterAddress] = useState("");
+  const [reraRegNo, setReraRegNo] = useState("");
+  const [bookingDate, setBookingDate] = useState("");
+  const [agreementDate, setAgreementDate] = useState("");
+
+  // Editor, AI & key states
+  const [customApiKey, setCustomApiKey] = useState(() => localStorage.getItem("VITE_GEMINI_API_KEY") || "");
+  const [editorText, setEditorText] = useState("");
+  const [draftMode, setDraftMode] = useState("template");
+  const [customInstruction, setCustomInstruction] = useState("");
+  const [rephraseLoading, setRephraseLoading] = useState(false);
 
   const effectiveInputMode = ENABLE_INSTALLMENTS_SCHEDULE ? inputMode : "amount";
 
@@ -88,6 +107,47 @@ export default function ReraDesk({ language = "en", stateId }) {
   useEffect(() => {
     setResult(null);
   }, [stateId]);
+
+  // Auto-regenerate template draft if inputs or result change (and we are in template mode)
+  useEffect(() => {
+    if (result && draftMode === "template") {
+      const templateData = {
+        complainantName,
+        complainantAddress,
+        complainantContact,
+        promoterName: promoterName || projectDetails?.promoter || "",
+        promoterAddress,
+        projectName: projectDetails?.projectName || "",
+        reraRegNo: reraRegNo || projectDetails?.regNo || "",
+        bookingDate,
+        agreementDate,
+        amountPaid: formatINR(result.principal),
+        promisedDate,
+        endDate,
+        delayDays: formatNumber(result.delayDays),
+        interestAmount: formatINR(result.interest),
+        interestRate: result.annualRatePct.toFixed(2),
+        totalClaim: formatINR(result.total)
+      };
+      const text = getFormMTemplate(stateId, templateData);
+      setEditorText(text);
+    }
+  }, [
+    result,
+    draftMode,
+    stateId,
+    complainantName,
+    complainantAddress,
+    complainantContact,
+    promoterName,
+    promoterAddress,
+    reraRegNo,
+    bookingDate,
+    agreementDate,
+    projectDetails,
+    promisedDate,
+    endDate
+  ]);
 
   const stateRuleText = useMemo(
     () => (state ? ruleSummary(state, latestMclr, spreadRule) : ""),
@@ -167,27 +227,65 @@ export default function ReraDesk({ language = "en", stateId }) {
         payments: validPayments,
       });
 
-      let formMText = null;
-      if (ENABLE_RERA_FORM_M_DRAFT && draftFormM) {
-        const apiLanguage = { en: "English", hi: "Hindi", mr: "Marathi" }[language] || "English";
-        const prompt = `You are an expert RERA advocate in India.
-Draft a formal Form M Complaint for delay in possession under Section 18 of the RERA Act, 2016.
+      const templateData = {
+        complainantName,
+        complainantAddress,
+        complainantContact,
+        promoterName: promoterName || projectDetails?.promoter || "",
+        promoterAddress,
+        projectName: projectDetails?.projectName || "",
+        reraRegNo: reraRegNo || projectDetails?.regNo || "",
+        bookingDate,
+        agreementDate,
+        amountPaid: formatINR(report.principal),
+        promisedDate,
+        endDate,
+        delayDays: formatNumber(report.delayDays),
+        interestAmount: formatINR(report.interest),
+        interestRate: report.annualRatePct.toFixed(2),
+        totalClaim: formatINR(report.total)
+      };
+
+      const standardText = getFormMTemplate(stateId, templateData);
+      setEditorText(standardText);
+      setDraftMode("template");
+
+      let formMText = standardText;
+      
+      // If draftFormM is checked and a key exists, pre-run the AI draft
+      if (ENABLE_RERA_FORM_M_DRAFT && draftFormM && geminiService.hasApiKey(customApiKey)) {
+        try {
+          const apiLanguage = { en: "English", hi: "Hindi", mr: "Marathi" }[language] || "English";
+          const prompt = `You are an expert RERA advocate in India.
+Draft a formal complaint petition under the proper form for ${state.name} (e.g. Form M or standard complaint) for delay in possession under Section 18 of the RERA Act, 2016.
 
 Metadata:
 - Authority: ${state.name}
-- Promoter: ${projectDetails?.promoter || "[Promoter Name]"}
+- Complainant: ${complainantName || "[Complainant Name]"}
+- Complainant Address: ${complainantAddress || "[Complainant Address]"}
+- Complainant Contact: ${complainantContact || "[Complainant Contact]"}
+- Promoter: ${promoterName || projectDetails?.promoter || "[Promoter Name]"}
+- Promoter Address: ${promoterAddress || "[Promoter Address]"}
 - Project: ${projectDetails?.projectName || "[Project Name]"}
+- RERA Reg No: ${reraRegNo || projectDetails?.regNo || "[RERA Registration Number]"}
 - Principal paid: ${formatINR(report.principal)}
+- Booking Date: ${bookingDate || "[Booking Date]"}
+- Agreement Date: ${agreementDate || "[Agreement Date]"}
 - Promised possession: ${promisedDate}
 - End date: ${endDate}
 - Delay: ${report.delayDays} days
 - Interest: SBI highest MCLR over the delay + state spread from config (${methodLabel(interestMethod)}); weighted avg ≈ ${report.annualRatePct.toFixed(2)}%
-- Spread source: ${spreadRule.source}
 - Interest accrued: ${formatINR(report.interest)}
 - Total claim: ${formatINR(report.total)}
 
-Write the entire complaint in ${apiLanguage}. Return ONLY the Form M text.`;
-        formMText = await geminiService.generateLegalDraft(prompt, apiLanguage);
+Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted text. Do not add markdown code fences or conversational text.`;
+          
+          formMText = await geminiService.generateLegalDraft(prompt, apiLanguage, customApiKey);
+          setEditorText(formMText);
+          setDraftMode("ai");
+        } catch (err) {
+          console.warn("RERA Hub: Automatic AI drafting failed, falling back to template:", err);
+        }
       }
 
       setResult({ ...report, stateName: state.name, formMText });
@@ -201,9 +299,115 @@ Write the entire complaint in ${apiLanguage}. Return ONLY the Form M text.`;
     }
   };
 
-  const handleCopyFormM = async () => {
-    if (!result?.formMText) return;
-    await navigator.clipboard.writeText(result.formMText);
+  const handleSaveApiKey = () => {
+    if (customApiKey.trim() !== "") {
+      localStorage.setItem("VITE_GEMINI_API_KEY", customApiKey.trim());
+      alert("API Key saved locally. AI drafting is now enabled!");
+    }
+  };
+
+  const handleAIRephrase = async (instruction) => {
+    if (!editorText) return;
+    setRephraseLoading(true);
+    try {
+      const stateObj = getStateById(stateId);
+      const rephrased = await geminiService.rephraseFormM(
+        editorText,
+        instruction,
+        stateObj?.name || "RERA Authority",
+        language === "hi" ? "Hindi" : language === "mr" ? "Marathi" : "English",
+        customApiKey
+      );
+      setEditorText(rephrased);
+      setDraftMode("ai");
+      setCustomInstruction("");
+    } catch (err) {
+      alert("Rephrase failed: " + err.message);
+    } finally {
+      setRephraseLoading(false);
+    }
+  };
+
+  const handleSwitchDraftMode = async (mode) => {
+    if (!result) return;
+    setDraftMode(mode);
+    if (mode === "ai") {
+      setRephraseLoading(true);
+      try {
+        const stateObj = getStateById(stateId);
+        const apiLanguage = { en: "English", hi: "Hindi", mr: "Marathi" }[language] || "English";
+        const prompt = `You are an expert RERA advocate in India.
+Draft a formal complaint petition under the proper form for ${stateObj.name} (e.g. Form M or standard complaint) for delay in possession under Section 18 of the RERA Act, 2016.
+
+Metadata:
+- Authority: ${stateObj.name}
+- Complainant: ${complainantName || "[Complainant Name]"}
+- Complainant Address: ${complainantAddress || "[Complainant Address]"}
+- Complainant Contact: ${complainantContact || "[Complainant Contact]"}
+- Promoter: ${promoterName || projectDetails?.promoter || "[Promoter Name]"}
+- Promoter Address: ${promoterAddress || "[Promoter Address]"}
+- Project: ${projectDetails?.projectName || "[Project Name]"}
+- RERA Reg No: ${reraRegNo || projectDetails?.regNo || "[RERA Registration Number]"}
+- Principal paid: ${formatINR(result.principal)}
+- Booking Date: ${bookingDate || "[Booking Date]"}
+- Agreement Date: ${agreementDate || "[Agreement Date]"}
+- Promised possession: ${promisedDate}
+- End date: ${endDate}
+- Delay: ${result.delayDays} days
+- Interest: SBI highest MCLR over the delay + state spread from config (${methodLabel(interestMethod)}); weighted avg ≈ ${result.annualRatePct.toFixed(2)}%
+- Interest accrued: ${formatINR(result.interest)}
+- Total claim: ${formatINR(result.total)}
+
+Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted text. Do not add markdown code fences or conversational text.`;
+        
+        const aiDraft = await geminiService.generateLegalDraft(prompt, apiLanguage, customApiKey);
+        setEditorText(aiDraft);
+      } catch (err) {
+        alert("AI Draft generation failed: " + err.message);
+        setDraftMode("template");
+      } finally {
+        setRephraseLoading(false);
+      }
+    } else {
+      // Re-generate standard template text
+      const templateData = {
+        complainantName,
+        complainantAddress,
+        complainantContact,
+        promoterName: promoterName || projectDetails?.promoter || "",
+        promoterAddress,
+        projectName: projectDetails?.projectName || "",
+        reraRegNo: reraRegNo || projectDetails?.regNo || "",
+        bookingDate,
+        agreementDate,
+        amountPaid: formatINR(result.principal),
+        promisedDate,
+        endDate,
+        delayDays: formatNumber(result.delayDays),
+        interestAmount: formatINR(result.interest),
+        interestRate: result.annualRatePct.toFixed(2),
+        totalClaim: formatINR(result.total)
+      };
+      const text = getFormMTemplate(stateId, templateData);
+      setEditorText(text);
+    }
+  };
+
+  const handleDownloadWord = () => {
+    if (!editorText) return;
+    const cleanState = (state?.short || "rera").toLowerCase().replace(/[^a-z0-9]/g, "_");
+    downloadAsWord(`${cleanState}_form_m_complaint.doc`, editorText);
+  };
+
+  const handleDownloadPDF = () => {
+    if (!editorText) return;
+    const cleanState = (state?.short || "rera").toLowerCase().replace(/[^a-z0-9]/g, "_");
+    downloadAsPDF(`${cleanState}_form_m_complaint.pdf`, editorText);
+  };
+
+  const handleCopyEditorText = async () => {
+    if (!editorText) return;
+    await navigator.clipboard.writeText(editorText);
     setCopying(true);
     setTimeout(() => setCopying(false), 2000);
   };
@@ -230,6 +434,8 @@ Write the entire complaint in ${apiLanguage}. Return ONLY the Form M text.`;
     if (details?.completionDate?.match(/^\d{4}-\d{2}-\d{2}$/)) {
       setPromisedDate(details.completionDate);
     }
+    if (details?.promoter) setPromoterName(details.promoter);
+    if (details?.regNo) setReraRegNo(details.regNo);
   };
 
   return (
@@ -454,16 +660,7 @@ Write the entire complaint in ${apiLanguage}. Return ONLY the Form M text.`;
               </span>
             </div>
 
-            {ENABLE_RERA_FORM_M_DRAFT && (
-              <label className="check-row">
-                <input
-                  type="checkbox"
-                  checked={draftFormM}
-                  onChange={(e) => setDraftFormM(e.target.checked)}
-                />
-                Also draft Form M complaint (AI)
-              </label>
-            )}
+
 
             {error && <p className="form-error">{error}</p>}
 
@@ -550,16 +747,219 @@ Write the entire complaint in ${apiLanguage}. Return ONLY the Form M text.`;
 
                 <ReportBreakdown result={result} />
 
-                {result.formMText && (
-                  <div className="formm-block">
-                    <div className="breakdown-head">
-                      <h3>Form M draft</h3>
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={handleCopyFormM}>
-                        {copying ? <Check size={14} /> : <Copy size={14} />}
-                        {copying ? "Copied" : "Copy Form M"}
-                      </button>
+                {ENABLE_RERA_FORM_M_DRAFT && (
+                  <div className="formm-workspace">
+                    <div className="workspace-head">
+                      <p className="eyebrow">Interactive Legal Assistant</p>
+                      <h2>Prepare RERA Complaint (Form M)</h2>
+                      <p className="muted">
+                        Pre-fill your official state complaint petition below, edit details, and rephrase using Gemini AI.
+                      </p>
                     </div>
-                    <pre>{result.formMText}</pre>
+
+                    {/* Form fields for pre-filling */}
+                    <div className="formm-details-card">
+                      <h3>1. Edit Petition Details</h3>
+                      <div className="formm-details-grid">
+                        <label className="field">
+                          <span className="field-label">Complainant Name</span>
+                          <input
+                            type="text"
+                            value={complainantName}
+                            onChange={(e) => setComplainantName(e.target.value)}
+                            placeholder="e.g. Amit Thakur"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Complainant Address</span>
+                          <input
+                            type="text"
+                            value={complainantAddress}
+                            onChange={(e) => setComplainantAddress(e.target.value)}
+                            placeholder="e.g. Flat 302, Green Glen Layout, Bengaluru"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Complainant Contact (Email / Phone)</span>
+                          <input
+                            type="text"
+                            value={complainantContact}
+                            onChange={(e) => setComplainantContact(e.target.value)}
+                            placeholder="e.g. amit@gmail.com / 9876543210"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Promoter / Developer Name</span>
+                          <input
+                            type="text"
+                            value={promoterName}
+                            onChange={(e) => setPromoterName(e.target.value)}
+                            placeholder="e.g. Prestige Developers Ltd"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Promoter Address</span>
+                          <input
+                            type="text"
+                            value={promoterAddress}
+                            onChange={(e) => setPromoterAddress(e.target.value)}
+                            placeholder="e.g. MG Road, Bengaluru"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">RERA Registration No.</span>
+                          <input
+                            type="text"
+                            value={reraRegNo}
+                            onChange={(e) => setReraRegNo(e.target.value)}
+                            placeholder="e.g. PRM/KA/RERA/1251/..."
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Booking Date</span>
+                          <input
+                            type="date"
+                            value={bookingDate}
+                            onChange={(e) => setBookingDate(e.target.value)}
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="field-label">Agreement for Sale Date</span>
+                          <input
+                            type="date"
+                            value={agreementDate}
+                            onChange={(e) => setAgreementDate(e.target.value)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* AI API key entry block if not set in env */}
+                    {!geminiService.hasApiKey(customApiKey) && (
+                      <div className="api-key-panel">
+                        <div className="api-key-header">
+                          <h4>Enable AI Legal Drafting &amp; Rephrasing</h4>
+                          <p>
+                            A Gemini API key is required to use AI rephrasing and translations. Keys are saved securely in your local browser storage.
+                          </p>
+                        </div>
+                        <div className="api-key-input-row">
+                          <input
+                            type="password"
+                            value={customApiKey}
+                            onChange={(e) => setCustomApiKey(e.target.value)}
+                            placeholder="Enter your Gemini API Key..."
+                          />
+                          <button type="button" className="btn btn-accent btn-sm" onClick={handleSaveApiKey}>
+                            Save API Key
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Document Workspace Panel */}
+                    <div className="editor-panel">
+                      <div className="editor-head">
+                        <h3>2. Complaint Draft Workspace</h3>
+                        <div className="editor-tabs">
+                          <button
+                            type="button"
+                            className={draftMode === "template" ? "active" : ""}
+                            onClick={() => handleSwitchDraftMode("template")}
+                          >
+                            Statutory Template
+                          </button>
+                          <button
+                            type="button"
+                            className={draftMode === "ai" ? "active" : ""}
+                            onClick={() => handleSwitchDraftMode("ai")}
+                            disabled={!geminiService.hasApiKey(customApiKey)}
+                            title={!geminiService.hasApiKey(customApiKey) ? "Configure Gemini API Key to enable" : ""}
+                          >
+                            AI Legal Petition
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="editor-container">
+                        <textarea
+                          className="document-textarea"
+                          value={editorText}
+                          onChange={(e) => setEditorText(e.target.value)}
+                          rows={18}
+                          placeholder="Draft content will appear here..."
+                        />
+                      </div>
+
+                      {/* AI Rephraser Console */}
+                      {geminiService.hasApiKey(customApiKey) && (
+                        <div className="ai-console">
+                          <h4>3. AI Copilot (Rephrase &amp; Enhance)</h4>
+                          <div className="ai-console-row">
+                            <input
+                              type="text"
+                              value={customInstruction}
+                              onChange={(e) => setCustomInstruction(e.target.value)}
+                              placeholder="Instructions (e.g. 'translate to Hindi', 'add claims for parking charges', 'make assertive')..."
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-accent btn-sm"
+                              onClick={() => handleAIRephrase(customInstruction)}
+                              disabled={rephraseLoading || !customInstruction}
+                            >
+                              {rephraseLoading ? "Processing..." : "Rephrase with AI"}
+                            </button>
+                          </div>
+                          {/* Presets */}
+                          <div className="ai-presets">
+                            <span>Presets:</span>
+                            <button
+                              type="button"
+                              disabled={rephraseLoading}
+                              onClick={() => handleAIRephrase("Make the tone highly assertive and formal for court filing")}
+                            >
+                              Assertive Tone
+                            </button>
+                            <button
+                              type="button"
+                              disabled={rephraseLoading}
+                              onClick={() => handleAIRephrase("Condense the facts section to make it highly concise")}
+                            >
+                              Make Concise
+                            </button>
+                            <button
+                              type="button"
+                              disabled={rephraseLoading}
+                              onClick={() => handleAIRephrase("Translate this entire complaint into Hindi while maintaining legal terminology")}
+                            >
+                              Translate to Hindi
+                            </button>
+                            <button
+                              type="button"
+                              disabled={rephraseLoading}
+                              onClick={() => handleAIRephrase("Translate this entire complaint into Marathi while maintaining legal terminology")}
+                            >
+                              Translate to Marathi
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Export Section */}
+                      <div className="editor-actions">
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadWord}>
+                          Download Word (.doc)
+                        </button>
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadPDF}>
+                          Download PDF (.pdf)
+                        </button>
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={handleCopyEditorText}>
+                          {copying ? <Check size={14} /> : <Copy size={14} />}
+                          {copying ? "Copied" : "Copy to Clipboard"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
 

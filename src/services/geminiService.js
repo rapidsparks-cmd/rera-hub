@@ -1,9 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-const hasApiKey = !!apiKey && apiKey !== "YOUR_API_KEY_HERE";
-const genAI = hasApiKey ? new GoogleGenerativeAI(apiKey) : null;
+// Get AI client dynamically using local storage, custom key, or env key
+function getAIClient(customKey) {
+  const key = customKey || localStorage.getItem("VITE_GEMINI_API_KEY") || import.meta.env.VITE_GEMINI_API_KEY;
+  if (key && key !== "YOUR_API_KEY_HERE" && key.trim() !== "") {
+    return new GoogleGenerativeAI(key.trim());
+  }
+  return null;
+}
 
 function cleanJSONString(str) {
   let cleaned = str.trim();
@@ -19,8 +23,9 @@ function cleanJSONString(str) {
   return cleaned.trim();
 }
 
-async function generateContentWithFallback(prompt, generationConfig = {}, isJsonMode = false) {
-  if (!genAI) throw new Error("GoogleGenerativeAI is not initialized.");
+async function generateContentWithFallback(prompt, generationConfig = {}, isJsonMode = false, customKey = null) {
+  const client = getAIClient(customKey);
+  if (!client) throw new Error("GoogleGenerativeAI is not initialized. Please configure an API Key.");
 
   const modelList = isJsonMode
     ? ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.5-pro"]
@@ -36,7 +41,7 @@ async function generateContentWithFallback(prompt, generationConfig = {}, isJson
         config.generationConfig = generationConfig;
       }
 
-      const model = genAI.getGenerativeModel(config);
+      const model = client.getGenerativeModel(config);
       const result = await model.generateContent(prompt);
       return result.response.text();
     } catch (err) {
@@ -49,12 +54,20 @@ async function generateContentWithFallback(prompt, generationConfig = {}, isJson
 
 export const geminiService = {
   /**
+   * Check if any API key is configured.
+   */
+  hasApiKey(customKey = null) {
+    return !!getAIClient(customKey);
+  },
+
+  /**
    * Generates a legal document draft based on user prompt.
    * @param {string} promptText - User instructions (e.g. Form M complaint).
    * @param {string} language - Target language (English, Hindi, Marathi).
+   * @param {string} customKey - User-supplied API key from UI.
    */
-  async generateLegalDraft(promptText, language = "English") {
-    if (!genAI) {
+  async generateLegalDraft(promptText, language = "English", customKey = null) {
+    if (!this.hasApiKey(customKey)) {
       return `[Mock Legal Draft] Draft generated for "${promptText}" in ${language}.\n\nThis is a mock draft. Configure a valid API key to run live drafting.`;
     }
 
@@ -64,13 +77,44 @@ Draft a professional, standard legal document based on this request: "${promptTe
 Ensure the draft is structured formally, utilizes standard Indian court and contractual vocabulary (including proper sections/clauses where applicable), and fits Indian legal practice.
 
 Write the draft document content in the selected language: ${language}.
-Format the output in clean, professional text. Return ONLY the drafted legal document text. Do not add conversational intro or outro text.
+Format the output in clean, professional text. Return ONLY the drafted legal document text. Do not add any conversational intro or outro text.
 
 Draft Request: ${promptText}`;
 
-      return await generateContentWithFallback(prompt, {}, false);
+      return await generateContentWithFallback(prompt, {}, false, customKey);
     } catch (error) {
       console.error("Gemini API Error in generateLegalDraft:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Rephrases and edits the complaint content based on instructions.
+   */
+  async rephraseFormM(currentText, instruction, stateName = "RERA Authority", language = "English", customKey = null) {
+    if (!this.hasApiKey(customKey)) {
+      // Mock rephrasing logic for demo
+      return `${currentText}\n\n[AI Amendment (Mock)]: Incorporating user request: "${instruction}".\n(To execute live, please configure your Gemini API Key)`;
+    }
+
+    try {
+      const prompt = `You are LexSuite, an expert Indian legal draftsman.
+Rephrase, refine, or update the following RERA complaint document according to these specific user instructions: "${instruction}".
+
+State Jurisdiction: ${stateName}
+Selected Language: ${language}
+
+Maintain the formal structure, legal headers, and RERA Section 18 references. Correct any grammatical issues and style the text as a highly professional complaint petition.
+Return ONLY the revised document text. Do NOT wrap it in markdown code blocks (\`\`\`) and do not add any conversational intro or outro text.
+
+Current Document Text:
+"""
+${currentText}
+"""`;
+
+      return await generateContentWithFallback(prompt, {}, false, customKey);
+    } catch (error) {
+      console.error("Gemini API Error in rephraseFormM:", error);
       throw error;
     }
   },
@@ -79,9 +123,10 @@ Draft Request: ${promptText}`;
    * Fetches RERA project details dynamically from Gemini's knowledge graph.
    * @param {string} regNo - The RERA Registration Number.
    * @param {string} stateName - The jurisdiction state name.
+   * @param {string} customKey - User-supplied API key from UI.
    */
-  async fetchReraDetails(regNo, stateName = "Maharashtra") {
-    if (!genAI) {
+  async fetchReraDetails(regNo, stateName = "Maharashtra", customKey = null) {
+    if (!this.hasApiKey(customKey)) {
       return {
         projectName: "Prestige Habitat Phase 2 (Mock)",
         promoter: "Prestige Group (Mock)",
@@ -110,7 +155,7 @@ If you do not find the exact registration number in your training database, gene
 
 Return ONLY the raw JSON object. Do not wrap it in markdown code fences or add conversational text.`;
 
-      const responseText = await generateContentWithFallback(prompt, {}, true);
+      const responseText = await generateContentWithFallback(prompt, {}, true, customKey);
       try {
         return JSON.parse(cleanJSONString(responseText));
       } catch (jsonErr) {
@@ -135,9 +180,10 @@ Return ONLY the raw JSON object. Do not wrap it in markdown code fences or add c
   /**
    * Parses raw copied text from an official RERA website project sheet.
    * @param {string} rawText - The pasted text.
+   * @param {string} customKey - User-supplied API key from UI.
    */
-  async parseReraSheetText(rawText) {
-    if (!genAI) {
+  async parseReraSheetText(rawText, customKey = null) {
+    if (!this.hasApiKey(customKey)) {
       return {
         projectName: "Prestige Habitat Phase 2 (Pasted)",
         promoter: "Prestige Group (Pasted)",
@@ -169,7 +215,7 @@ You must analyze this text and return a valid JSON object containing these keys:
 
 Return ONLY the raw JSON object. Do not wrap it in markdown code fences or add conversational text.`;
 
-      const responseText = await generateContentWithFallback(prompt, {}, true);
+      const responseText = await generateContentWithFallback(prompt, {}, true, customKey);
       try {
         return JSON.parse(cleanJSONString(responseText));
       } catch (jsonErr) {
