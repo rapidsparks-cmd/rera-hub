@@ -1,4 +1,5 @@
 services:
+  # ─── Frontend (static site) ─────────────────────────────────────────────────
   - type: web
     name: rera-hub
     runtime: static
@@ -7,6 +8,25 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
+      # Firebase Web SDK config (public-safe)
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+      # Razorpay public key (not secret)
+      - key: VITE_RAZORPAY_KEY_ID
+        sync: false
+      # Backend API URL (your rera-hub-api service URL from below)
+      - key: VITE_RENDER_API_URL
+        sync: false
     routes:
       - type: rewrite
         source: /Robots.txt
@@ -14,3 +34,29 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+  # ─── Backend (Node.js API) ───────────────────────────────────────────────────
+  - type: web
+    name: rera-hub-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: PORT
+        value: "8080"
+      # Razorpay secrets — set manually in Render Dashboard
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      # Firebase Admin service account JSON (single-line minified JSON)
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      # Allowed origins (comma-separated frontend URLs)
+      - key: ALLOWED_ORIGINS
+        sync: false

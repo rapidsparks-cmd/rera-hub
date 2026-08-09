@@ -6,11 +6,17 @@ import {
   Check,
   ChevronDown,
   Copy,
+  Crown,
+  Lock,
+  LogIn,
   Plus,
   Printer,
   Share2,
   Trash2,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import AuthModal from "./AuthModal";
+import PaymentModal from "./PaymentModal";
 import {
   APPLICABLE_RERA_STATES,
   SBI_MCLR_SOURCE_URL,
@@ -41,6 +47,9 @@ const CALC_TYPE = "builder_delay";
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export default function ReraDesk({ language = "en", stateId }) {
+  const { user, isPremium } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const navigate = useNavigate();
   const calcRef = useRef(null);
   const reportRef = useRef(null);
@@ -256,12 +265,16 @@ export default function ReraDesk({ language = "en", stateId }) {
 
   const handleDownloadWord = () => {
     if (!editorText) return;
+    if (!user) { setAuthModalOpen(true); return; }
+    if (!isPremium) { setPaymentModalOpen(true); return; }
     const cleanState = (state?.short || "rera").toLowerCase().replace(/[^a-z0-9]/g, "_");
     downloadAsWord(`${cleanState}_form_m_complaint.doc`, editorText);
   };
 
   const handleDownloadPDF = () => {
     if (!editorText) return;
+    if (!user) { setAuthModalOpen(true); return; }
+    if (!isPremium) { setPaymentModalOpen(true); return; }
     const cleanState = (state?.short || "rera").toLowerCase().replace(/[^a-z0-9]/g, "_");
     downloadAsPDF(`${cleanState}_form_m_complaint.pdf`, editorText);
   };
@@ -705,17 +718,85 @@ export default function ReraDesk({ language = "en", stateId }) {
 
                       {/* Export Section */}
                       <div className="editor-actions">
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadWord}>
-                          {translate("btn_download_word", language)}
-                        </button>
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadPDF}>
-                          {translate("btn_download_pdf", language)}
-                        </button>
+                        {/* Word download — gated behind login + premium */}
+                        {!user ? (
+                          <button
+                            type="button"
+                            className="btn btn-paywall btn-sm"
+                            onClick={() => setAuthModalOpen(true)}
+                            title="Sign in to download"
+                          >
+                            <LogIn size={14} />
+                            {translate("btn_download_word", language)}
+                          </button>
+                        ) : !isPremium ? (
+                          <button
+                            type="button"
+                            className="btn btn-paywall btn-sm"
+                            onClick={() => setPaymentModalOpen(true)}
+                            title="Unlock Premium to download"
+                          >
+                            <Lock size={14} />
+                            {translate("btn_download_word", language)}
+                          </button>
+                        ) : (
+                          <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadWord}>
+                            {translate("btn_download_word", language)}
+                          </button>
+                        )}
+
+                        {/* PDF download — gated behind login + premium */}
+                        {!user ? (
+                          <button
+                            type="button"
+                            className="btn btn-paywall btn-sm"
+                            onClick={() => setAuthModalOpen(true)}
+                            title="Sign in to download"
+                          >
+                            <LogIn size={14} />
+                            {translate("btn_download_pdf", language)}
+                          </button>
+                        ) : !isPremium ? (
+                          <button
+                            type="button"
+                            className="btn btn-paywall btn-sm"
+                            onClick={() => setPaymentModalOpen(true)}
+                            title="Unlock Premium to download"
+                          >
+                            <Lock size={14} />
+                            {translate("btn_download_pdf", language)}
+                          </button>
+                        ) : (
+                          <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadPDF}>
+                            {translate("btn_download_pdf", language)}
+                          </button>
+                        )}
+
+                        {/* Copy is always free */}
                         <button type="button" className="btn btn-secondary btn-sm" onClick={handleCopyEditorText}>
                           {copying ? <Check size={14} /> : <Copy size={14} />}
                           {copying ? translate("btn_copied", language) : translate("btn_copy", language)}
                         </button>
                       </div>
+
+                      {/* Premium upsell banner — shown when not premium */}
+                      {!isPremium && (
+                        <div className="paywall-banner">
+                          <Crown size={15} className="paywall-banner-icon" />
+                          <p>
+                            {!user
+                              ? 'Sign in to download Form M as PDF or Word.'
+                              : 'Unlock Premium (₹499 one-time) to download Form M as PDF or Word.'}
+                          </p>
+                          <button
+                            type="button"
+                            className="btn btn-accent btn-sm"
+                            onClick={() => user ? setPaymentModalOpen(true) : setAuthModalOpen(true)}
+                          >
+                            {user ? <><Crown size={13} /> Unlock ₹499</> : <><LogIn size={13} /> Sign in</>}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -816,6 +897,22 @@ export default function ReraDesk({ language = "en", stateId }) {
           </p>
         </div>
       </footer>
+
+      {/* Auth & Payment modals — mounted at ReraDesk level for paywall flow */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onSuccess={() => {
+          setAuthModalOpen(false);
+          // After login, open payment modal if they tried to download
+          setPaymentModalOpen(true);
+        }}
+      />
+      <PaymentModal
+        isOpen={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onSuccess={() => setPaymentModalOpen(false)}
+      />
     </div>
   );
 }

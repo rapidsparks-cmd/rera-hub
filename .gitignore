@@ -4,3 +4,6 @@ dist
 .env.local
 .DS_Store
 *.log
+# Backend secrets — never commit
+server/.env
+server/firebase-service-account.json

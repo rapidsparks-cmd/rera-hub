@@ -1,0 +1,20 @@
+{
+  "name": "rera-hub-api",
+  "version": "1.0.0",
+  "description": "RERA Hub backend: Razorpay order creation, webhook verification, Firestore payment tracking",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.3.0",
+    "razorpay": "^2.9.4"
+  }
+}
