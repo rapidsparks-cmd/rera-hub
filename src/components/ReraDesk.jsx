@@ -12,6 +12,7 @@ import {
   Plus,
   Printer,
   Share2,
+  Sparkles,
   Trash2,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -32,7 +33,6 @@ import {
   refreshMclrFromSbi,
 } from "../services/mclrService";
 import { getCurrentSpreadRule } from "../services/stateSpreadService";
-import { geminiService } from "../services/geminiService";
 import InterestTrendChart from "./InterestTrendChart";
 import ReportBreakdown from "./ReportBreakdown";
 import { getFormMTemplate } from "../utils/formMTemplates";
@@ -47,9 +47,11 @@ const CALC_TYPE = "builder_delay";
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export default function ReraDesk({ language = "en", stateId }) {
-  const { user, isPremium } = useAuth();
+  const { user, hasBreakdownAccess, hasFormMAccess } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [targetPaymentPlan, setTargetPaymentPlan] = useState("form_m");
+
   const navigate = useNavigate();
   const calcRef = useRef(null);
   const reportRef = useRef(null);
@@ -62,7 +64,7 @@ export default function ReraDesk({ language = "en", stateId }) {
   const [installments, setInstallments] = useState([{ id: 1, amount: "", date: "" }]);
   const [promisedDate, setPromisedDate] = useState("");
   const [endDate, setEndDate] = useState(todayISO());
-  const [draftFormM, setDraftFormM] = useState(false);
+
   // Form M details inputs
   const [complainantName, setComplainantName] = useState("");
   const [complainantAddress, setComplainantAddress] = useState("");
@@ -94,6 +96,11 @@ export default function ReraDesk({ language = "en", stateId }) {
   const interestMethod = spreadRule?.method || "simple";
   const latestMclr = mclrMeta.latestHighest ?? getCurrentHighestMclr();
   const illustrativeRate = Number(latestMclr) + effectiveSpread;
+
+  // Normalized current RERA ID scope
+  const currentReraId = (reraRegNo?.trim() || stateId || "DEFAULT").toUpperCase();
+  const isBreakdownUnlocked = hasBreakdownAccess(currentReraId);
+  const isFormMUnlocked = hasFormMAccess(currentReraId);
 
   useEffect(() => {
     let cancelled = false;
@@ -181,7 +188,6 @@ export default function ReraDesk({ language = "en", stateId }) {
 
   const paymentsForCalc = () => {
     if (effectiveInputMode === "amount") {
-      // Builder delay: treat lump sum as outstanding from promised date.
       return [{ amount: amountPaid, date: promisedDate || todayISO() }];
     }
     return installments.map((r) => ({ amount: r.amount, date: r.date }));
@@ -263,18 +269,45 @@ export default function ReraDesk({ language = "en", stateId }) {
     }
   };
 
+  const handlePrintReport = () => {
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+    if (!isBreakdownUnlocked) {
+      setTargetPaymentPlan("breakdown");
+      setPaymentModalOpen(true);
+      return;
+    }
+    window.print();
+  };
+
   const handleDownloadWord = () => {
     if (!editorText) return;
-    if (!user) { setAuthModalOpen(true); return; }
-    if (!isPremium) { setPaymentModalOpen(true); return; }
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+    if (!isFormMUnlocked) {
+      setTargetPaymentPlan("form_m");
+      setPaymentModalOpen(true);
+      return;
+    }
     const cleanState = (state?.short || "rera").toLowerCase().replace(/[^a-z0-9]/g, "_");
     downloadAsWord(`${cleanState}_form_m_complaint.doc`, editorText);
   };
 
   const handleDownloadPDF = () => {
     if (!editorText) return;
-    if (!user) { setAuthModalOpen(true); return; }
-    if (!isPremium) { setPaymentModalOpen(true); return; }
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+    if (!isFormMUnlocked) {
+      setTargetPaymentPlan("form_m");
+      setPaymentModalOpen(true);
+      return;
+    }
     const cleanState = (state?.short || "rera").toLowerCase().replace(/[^a-z0-9]/g, "_");
     downloadAsPDF(`${cleanState}_form_m_complaint.pdf`, editorText);
   };
@@ -300,10 +333,6 @@ export default function ReraDesk({ language = "en", stateId }) {
     await navigator.clipboard.writeText(text);
     alert("Report summary copied to clipboard.");
   };
-
-  const handlePrint = () => window.print();
-
-
 
   return (
     <div className="rera-page">
@@ -517,8 +546,6 @@ export default function ReraDesk({ language = "en", stateId }) {
               </span>
             </div>
 
-
-
             {error && <p className="form-error">{error}</p>}
 
             <button type="submit" className="btn btn-accent btn-lg" disabled={calcLoading}>
@@ -544,9 +571,31 @@ export default function ReraDesk({ language = "en", stateId }) {
                   <button type="button" className="btn btn-secondary btn-sm" onClick={handleShare}>
                     <Share2 size={14} /> {translate("btn_share", language)}
                   </button>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={handlePrint}>
-                    <Printer size={14} /> {translate("btn_print", language)}
-                  </button>
+                  {/* Print / Download Report button gated behind ₹29 access */}
+                  {!user ? (
+                    <button
+                      type="button"
+                      className="btn btn-paywall btn-sm"
+                      onClick={() => setAuthModalOpen(true)}
+                    >
+                      <LogIn size={14} /> Print Report (₹29)
+                    </button>
+                  ) : !isBreakdownUnlocked ? (
+                    <button
+                      type="button"
+                      className="btn btn-paywall btn-sm"
+                      onClick={() => {
+                        setTargetPaymentPlan("breakdown");
+                        setPaymentModalOpen(true);
+                      }}
+                    >
+                      <Lock size={14} /> Unlock Report (₹29)
+                    </button>
+                  ) : (
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={handlePrintReport}>
+                      <Printer size={14} /> {translate("btn_print", language)}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -613,6 +662,16 @@ export default function ReraDesk({ language = "en", stateId }) {
                         {translate("workspace_lead", language)}
                       </p>
                     </div>
+
+                    {/* Unlocked banner if user has access */}
+                    {(isFormMUnlocked || isBreakdownUnlocked) && (
+                      <div className="unlocked-banner">
+                        <Sparkles size={16} />
+                        <span>
+                          Unlimited edits & downloads unlocked for RERA ID: <strong>{currentReraId}</strong>
+                        </span>
+                      </div>
+                    )}
 
                     {/* Form fields for pre-filling */}
                     <div className="formm-details-card">
@@ -707,18 +766,62 @@ export default function ReraDesk({ language = "en", stateId }) {
                       </div>
 
                       <div className="editor-container">
-                        <textarea
-                          className="document-textarea"
-                          value={editorText}
-                          onChange={(e) => setEditorText(e.target.value)}
-                          rows={18}
-                          placeholder={translate("placeholder_editor", language)}
-                        />
+                        {!isFormMUnlocked ? (
+                          <div
+                            className="document-preview-wrapper"
+                            onCopy={(e) => e.preventDefault()}
+                            onContextMenu={(e) => e.preventDefault()}
+                            onSelectStart={(e) => e.preventDefault()}
+                          >
+                            <div className="preview-overlay-tag">
+                              <Lock size={13} /> Standard Preview Mode (Non-copyable & Blurred)
+                            </div>
+                            <div className="document-preview-locked">
+                              <div className="preview-text-clear">
+                                {editorText.split('\n').slice(0, 14).join('\n')}
+                              </div>
+                              <div className="preview-text-blurred" aria-hidden="true">
+                                {editorText.split('\n').slice(14).join('\n')}
+                              </div>
+                              <div className="preview-blur-overlay">
+                                <Lock size={24} className="blur-overlay-icon" />
+                                <h4>Form M Litigation Text Locked</h4>
+                                <p>Unlock Form M Litigation to unblur full legal clauses, enable live text editing, and export as Word or PDF.</p>
+                                <button
+                                  type="button"
+                                  className="btn btn-accent btn-sm"
+                                  onClick={() => {
+                                    if (!user) {
+                                      setAuthModalOpen(true);
+                                    } else {
+                                      setTargetPaymentPlan("form_m");
+                                      setPaymentModalOpen(true);
+                                    }
+                                  }}
+                                >
+                                  {!user ? (
+                                    <><LogIn size={14} /> Sign in to Unlock</>
+                                  ) : (
+                                    <><Crown size={14} /> {isBreakdownUnlocked ? "Upgrade ₹20" : "Unlock ₹49"}</>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <textarea
+                            className="document-textarea"
+                            value={editorText}
+                            onChange={(e) => setEditorText(e.target.value)}
+                            rows={18}
+                            placeholder={translate("placeholder_editor", language)}
+                          />
+                        )}
                       </div>
 
                       {/* Export Section */}
                       <div className="editor-actions">
-                        {/* Word download — gated behind login + premium */}
+                        {/* Word download — gated behind login + Form M access (₹49) */}
                         {!user ? (
                           <button
                             type="button"
@@ -727,17 +830,20 @@ export default function ReraDesk({ language = "en", stateId }) {
                             title="Sign in to download"
                           >
                             <LogIn size={14} />
-                            {translate("btn_download_word", language)}
+                            {translate("btn_download_word", language)} (₹49)
                           </button>
-                        ) : !isPremium ? (
+                        ) : !isFormMUnlocked ? (
                           <button
                             type="button"
                             className="btn btn-paywall btn-sm"
-                            onClick={() => setPaymentModalOpen(true)}
-                            title="Unlock Premium to download"
+                            onClick={() => {
+                              setTargetPaymentPlan("form_m");
+                              setPaymentModalOpen(true);
+                            }}
+                            title="Unlock Form M Litigation to download"
                           >
                             <Lock size={14} />
-                            {translate("btn_download_word", language)}
+                            {translate("btn_download_word", language)} ({isBreakdownUnlocked ? "₹20 upgrade" : "₹49"})
                           </button>
                         ) : (
                           <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadWord}>
@@ -745,7 +851,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           </button>
                         )}
 
-                        {/* PDF download — gated behind login + premium */}
+                        {/* PDF download — gated behind login + Form M access (₹49) */}
                         {!user ? (
                           <button
                             type="button"
@@ -754,46 +860,58 @@ export default function ReraDesk({ language = "en", stateId }) {
                             title="Sign in to download"
                           >
                             <LogIn size={14} />
-                            {translate("btn_download_pdf", language)}
+                            {translate("btn_download_pdf", language)} (₹49)
                           </button>
-                        ) : !isPremium ? (
+                        ) : !isFormMUnlocked ? (
                           <button
                             type="button"
                             className="btn btn-paywall btn-sm"
-                            onClick={() => setPaymentModalOpen(true)}
-                            title="Unlock Premium to download"
+                            onClick={() => {
+                              setTargetPaymentPlan("form_m");
+                              setPaymentModalOpen(true);
+                            }}
+                            title="Unlock Form M Litigation to download"
                           >
                             <Lock size={14} />
-                            {translate("btn_download_pdf", language)}
+                            {translate("btn_download_pdf", language)} ({isBreakdownUnlocked ? "₹20 upgrade" : "₹49"})
                           </button>
                         ) : (
                           <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadPDF}>
                             {translate("btn_download_pdf", language)}
                           </button>
                         )}
-
-                        {/* Copy is always free */}
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={handleCopyEditorText}>
-                          {copying ? <Check size={14} /> : <Copy size={14} />}
-                          {copying ? translate("btn_copied", language) : translate("btn_copy", language)}
-                        </button>
                       </div>
 
-                      {/* Premium upsell banner — shown when not premium */}
-                      {!isPremium && (
+                      {/* Upsell Banner */}
+                      {!isFormMUnlocked && (
                         <div className="paywall-banner">
                           <Crown size={15} className="paywall-banner-icon" />
                           <p>
                             {!user
-                              ? 'Sign in to download Form M as PDF or Word.'
-                              : 'Unlock Premium (₹499 one-time) to download Form M as PDF or Word.'}
+                              ? 'Sign in to unlock Form M Litigation (₹49) or Breakdown Report (₹29).'
+                              : isBreakdownUnlocked
+                              ? 'Upgrade to Form M Litigation for ₹20 to download Word & PDF legal complaints.'
+                              : 'Unlock Form M Litigation (₹49 - includes Breakdown Report) for unlimited edits & downloads for this RERA ID.'}
                           </p>
                           <button
                             type="button"
                             className="btn btn-accent btn-sm"
-                            onClick={() => user ? setPaymentModalOpen(true) : setAuthModalOpen(true)}
+                            onClick={() => {
+                              if (!user) {
+                                setAuthModalOpen(true);
+                              } else {
+                                setTargetPaymentPlan("form_m");
+                                setPaymentModalOpen(true);
+                              }
+                            }}
                           >
-                            {user ? <><Crown size={13} /> Unlock ₹499</> : <><LogIn size={13} /> Sign in</>}
+                            {!user ? (
+                              <><LogIn size={13} /> Sign in</>
+                            ) : isBreakdownUnlocked ? (
+                              <><Crown size={13} /> Upgrade ₹20</>
+                            ) : (
+                              <><Crown size={13} /> Unlock ₹49</>
+                            )}
                           </button>
                         </div>
                       )}
@@ -898,13 +1016,12 @@ export default function ReraDesk({ language = "en", stateId }) {
         </div>
       </footer>
 
-      {/* Auth & Payment modals — mounted at ReraDesk level for paywall flow */}
+      {/* Auth & Payment Modals */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         onSuccess={() => {
           setAuthModalOpen(false);
-          // After login, open payment modal if they tried to download
           setPaymentModalOpen(true);
         }}
       />
@@ -912,6 +1029,8 @@ export default function ReraDesk({ language = "en", stateId }) {
         isOpen={paymentModalOpen}
         onClose={() => setPaymentModalOpen(false)}
         onSuccess={() => setPaymentModalOpen(false)}
+        defaultPlan={targetPaymentPlan}
+        initialReraId={currentReraId}
       />
     </div>
   );

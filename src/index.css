@@ -2114,3 +2114,242 @@ tfoot td {
   flex-shrink: 0;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   PLAN CARDS (Tiered pricing ₹29 / ₹49)
+──────────────────────────────────────────────────────────────────────────────*/
+.plan-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.plan-card {
+  position: relative;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+
+.plan-card:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.plan-card.selected {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.plan-badge-tag {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  background: #d97706;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.plan-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plan-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.plan-title-wrap strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.plan-price {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-deep);
+}
+
+.upgrade-note {
+  font-size: 0.725rem;
+  color: #d97706;
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
+.plan-check {
+  color: var(--accent);
+}
+
+.plan-perks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plan-perks li {
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-perks li::before {
+  content: '✓';
+  color: var(--success);
+  font-weight: bold;
+}
+
+.payment-summary-box {
+  background: var(--paper-deep);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-top: 8px;
+}
+
+.upgrade-banner {
+  font-size: 0.775rem;
+  color: #92400e;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   UNLOCKED BANNER
+──────────────────────────────────────────────────────────────────────────────*/
+.unlocked-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NON-COPYABLE FORM M PREVIEW MODE
+──────────────────────────────────────────────────────────────────────────────*/
+.document-preview-wrapper {
+  position: relative;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+.preview-overlay-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+.document-preview-locked {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-height: 480px;
+  overflow: hidden;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+.preview-text-clear {
+  white-space: pre-wrap;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.preview-text-blurred {
+  white-space: pre-wrap;
+  filter: blur(5.5px);
+  opacity: 0.4;
+  margin-top: 10px;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  pointer-events: none;
+}
+
+.preview-blur-overlay {
+  position: absolute;
+  inset: auto 20px 20px 20px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 16px 40px -10px rgba(12, 31, 26, 0.3);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.blur-overlay-icon {
+  color: #d97706;
+}
+
+.preview-blur-overlay h4 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.preview-blur-overlay p {
+  font-size: 0.825rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.45;
+}
+
+
+
+

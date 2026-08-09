@@ -52,6 +52,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, defaultTab = 'lo
       onSuccess?.();
       onClose();
     } catch (err) {
+      console.error('[AuthModal Google Error]', err);
       setError(friendlyError(err));
     } finally {
       setLoading(false);
@@ -71,6 +72,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, defaultTab = 'lo
       onSuccess?.();
       onClose();
     } catch (err) {
+      console.error('[AuthModal Submit Error]', err);
       setError(friendlyError(err));
     } finally {
       setLoading(false);
@@ -206,6 +208,18 @@ function GoogleIcon() {
 
 function friendlyError(err) {
   const code = err?.code || '';
+  const msg = err?.message || '';
+
+  if (code === 'auth/unauthorized-domain')
+    return 'Domain localhost is not authorized in Firebase Console → Authentication → Settings → Authorized domains.';
+  if (code === 'auth/operation-not-allowed')
+    return 'Google sign-in is disabled. Please enable Google in Firebase Console → Authentication → Sign-in method.';
+  if (code === 'auth/popup-blocked')
+    return 'Google popup was blocked by your browser. Please allow popups for localhost.';
+  if (code === 'auth/popup-closed-by-user')
+    return 'Google sign-in popup was closed before completing.';
+  if (code === 'auth/argument-error')
+    return 'Invalid authentication request. Please try again.';
   if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential')
     return 'Incorrect email or password. Please try again.';
   if (code === 'auth/email-already-in-use')
@@ -214,9 +228,10 @@ function friendlyError(err) {
     return 'Password must be at least 6 characters.';
   if (code === 'auth/invalid-email')
     return 'Please enter a valid email address.';
-  if (code === 'auth/popup-closed-by-user')
-    return 'Google sign-in was cancelled.';
   if (code === 'auth/network-request-failed')
     return 'Network error. Check your connection and try again.';
-  return err?.message || 'Something went wrong. Please try again.';
+  if (msg.includes('Database is closing') || msg.includes('IndexedDB'))
+    return 'Browser storage lock error. Please refresh the page and try again.';
+
+  return msg || 'Something went wrong. Please try again.';
 }

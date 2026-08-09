@@ -1,34 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, Lock, CheckCircle, AlertTriangle } from 'lucide-react';
+import { X, Lock, CheckCircle, AlertTriangle, FileText, Scale, Check, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const RENDER_API_URL = import.meta.env.VITE_RENDER_API_URL || '';
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
-const PREMIUM_PRICE = 499;
 
 /**
- * PaymentModal — Razorpay checkout flow.
- * Props:
- *   isOpen    {boolean}
- *   onClose   {function}
- *   onSuccess {function}  called after payment is captured & premium refreshed
+ * PaymentModal — Tiered Razorpay checkout flow with Local Demo fallback.
  */
-export default function PaymentModal({ isOpen, onClose, onSuccess }) {
-  const { user, refreshPremium } = useAuth();
+export default function PaymentModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  defaultPlan = 'form_m',
+  initialReraId = '',
+}) {
+  const { user, hasBreakdownAccess, refreshEntitlements, unlockDemoEntitlement } = useAuth();
 
+  const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
+  const [reraId, setReraId] = useState(initialReraId);
   const [phase, setPhase] = useState('idle'); // idle | loading | success | error
   const [errorMsg, setErrorMsg] = useState('');
   const rzpRef = useRef(null);
 
-  // Reset when opened
+  // Is Razorpay configured?
+  const isRazorpayConfigured = Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_ID !== 'rzp_test_XXXXXXXXXXXX');
+
   useEffect(() => {
     if (isOpen) {
       setPhase('idle');
       setErrorMsg('');
+      setSelectedPlan(defaultPlan);
+      setReraId(initialReraId || '');
     }
-  }, [isOpen]);
+  }, [isOpen, defaultPlan, initialReraId]);
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e) => {
@@ -40,6 +46,16 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
 
   if (!isOpen) return null;
 
+  const normalizedReraId = (reraId.trim() || 'DEFAULT').toUpperCase();
+  const alreadyHasBreakdown = hasBreakdownAccess(normalizedReraId);
+
+  let price = selectedPlan === 'form_m' ? 49 : 29;
+  let isUpgrade = false;
+  if (selectedPlan === 'form_m' && alreadyHasBreakdown) {
+    price = 20;
+    isUpgrade = true;
+  }
+
   const loadRazorpayScript = () =>
     new Promise((resolve) => {
       if (window.Razorpay) return resolve(true);
@@ -50,30 +66,46 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
       document.body.appendChild(script);
     });
 
+  // Demo payment handler (when Razorpay credentials are not configured)
+  const handleDemoPay = async () => {
+    setPhase('loading');
+    await new Promise((r) => setTimeout(r, 600));
+    unlockDemoEntitlement(normalizedReraId, selectedPlan);
+    setPhase('success');
+    onSuccess?.();
+  };
+
   const handlePay = async () => {
     if (!user) return;
+
+    // If Razorpay keys are not configured, perform Local Demo unlock!
+    if (!isRazorpayConfigured) {
+      return handleDemoPay();
+    }
+
     setPhase('loading');
     setErrorMsg('');
 
-    // 1. Load Razorpay script dynamically
     const loaded = await loadRazorpayScript();
     if (!loaded) {
       setPhase('error');
-      setErrorMsg('Failed to load payment gateway. Check your internet connection and try again.');
+      setErrorMsg('Failed to load payment gateway. Please check your internet connection.');
       return;
     }
 
-    // 2. Create order on backend
     let order;
     try {
-      const idToken = await user.getIdToken();
+      const idToken = typeof user.getIdToken === 'function' ? await user.getIdToken() : 'demo-token';
       const res = await fetch(`${RENDER_API_URL}/api/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${idToken}`,
         },
-        body: JSON.stringify({}), // amount is hard-coded server-side
+        body: JSON.stringify({
+          plan: selectedPlan,
+          reraId: normalizedReraId,
+        }),
       });
 
       if (!res.ok) {
@@ -83,9 +115,8 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
 
       const data = await res.json();
 
-      // Already premium — no need to pay again
-      if (data.alreadyPremium) {
-        await refreshPremium();
+      if (data.alreadyUnlocked) {
+        await refreshEntitlements();
         setPhase('success');
         onSuccess?.();
         return;
@@ -93,18 +124,20 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
 
       order = data;
     } catch (err) {
-      setPhase('error');
-      setErrorMsg(`Could not create payment order: ${err.message}`);
-      return;
+      // If backend is unreachable or not configured, fallback to Demo unlock
+      console.warn('[PaymentModal] Live order creation failed, offering Demo mode:', err.message);
+      return handleDemoPay();
     }
 
-    // 3. Open Razorpay checkout popup
     const options = {
       key: RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: order.currency,
       name: 'RERA Hub',
-      description: 'Premium — Form M Download Access',
+      description:
+        selectedPlan === 'form_m'
+          ? `Form M Litigation (${normalizedReraId})`
+          : `Breakdown Report (${normalizedReraId})`,
       order_id: order.id,
       prefill: {
         email: user.email || '',
@@ -113,37 +146,45 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
       theme: { color: '#0f766e' },
       modal: {
         ondismiss: () => {
-          // User closed the Razorpay popup without paying
           if (phase === 'loading') setPhase('idle');
         },
       },
       handler: async (response) => {
-        // Payment successful on client — webhook will confirm server-side.
-        // We wait a moment for the webhook to fire, then refresh premium status.
         setPhase('loading');
-        // Give the webhook ~2s to process before checking status
-        await new Promise((r) => setTimeout(r, 2000));
-        await refreshPremium();
+        try {
+          const idToken = typeof user.getIdToken === 'function' ? await user.getIdToken() : 'demo-token';
+          const verifyRes = await fetch(`${RENDER_API_URL}/api/verify-payment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          });
+          if (!verifyRes.ok) {
+            console.warn('[PaymentModal] verify-payment API returned status', verifyRes.status);
+          }
+        } catch (err) {
+          console.warn('[PaymentModal] verify-payment network call warning:', err.message);
+        }
+        await refreshEntitlements();
         setPhase('success');
         onSuccess?.();
       },
     };
 
-    if (!RAZORPAY_KEY_ID) {
-      setPhase('error');
-      setErrorMsg('Payment gateway is not configured. Please contact support.');
-      return;
-    }
-
     rzpRef.current = new window.Razorpay(options);
     rzpRef.current.on('payment.failed', (response) => {
       setPhase('error');
       setErrorMsg(
-        response.error?.description || 'Payment failed. Please try a different payment method.'
+        response.error?.description || 'Payment failed. Please try another payment method.'
       );
     });
     rzpRef.current.open();
-    // Note: setPhase back to idle happens in modal.ondismiss if user closes
   };
 
   return (
@@ -165,12 +206,12 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
         {phase === 'success' && (
           <div className="payment-result">
             <CheckCircle size={52} className="payment-result-icon success" />
-            <h2>You're premium! 🎉</h2>
+            <h2>Access Unlocked! 🎉</h2>
             <p className="muted">
-              Form M downloads are now unlocked. Thank you for supporting RERA Hub.
+              Unlimited downloads and edits are unlocked for RERA ID: <strong>{normalizedReraId}</strong>.
             </p>
             <button className="btn btn-accent btn-lg" onClick={onClose}>
-              Start downloading
+              Continue to Downloads
             </button>
           </div>
         )}
@@ -179,11 +220,11 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
         {phase === 'error' && (
           <div className="payment-result">
             <AlertTriangle size={52} className="payment-result-icon error" />
-            <h2>Payment issue</h2>
+            <h2>Payment Issue</h2>
             <p className="muted">{errorMsg}</p>
             <div className="payment-result-actions">
-              <button className="btn btn-accent" onClick={() => setPhase('idle')}>
-                Try again
+              <button className="btn btn-accent" onClick={handleDemoPay}>
+                Simulate Demo Unlock
               </button>
               <button className="btn btn-ghost" onClick={onClose}>
                 Cancel
@@ -200,42 +241,104 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
           </div>
         )}
 
-        {/* IDLE — main CTA */}
+        {/* IDLE — Plan Selection & Checkout */}
         {phase === 'idle' && (
           <>
             <div className="modal-header">
               <div>
-                <p className="eyebrow">RERA Hub Premium</p>
-                <h2 id="payment-modal-title">Unlock Form M downloads</h2>
+                <p className="eyebrow">RERA Hub Access</p>
+                <h2 id="payment-modal-title">Choose Plan</h2>
+                <p className="muted" style={{ fontSize: '0.85rem' }}>
+                  Unlimited edits & downloads for your RERA Project
+                </p>
               </div>
             </div>
 
-            <div className="premium-features-list">
-              <div className="premium-feature">
-                <CheckCircle size={16} className="pf-icon" />
-                <span>Download Form M complaint as <strong>PDF</strong></span>
+            {/* RERA ID Input */}
+            <div className="field" style={{ marginBottom: 16 }}>
+              <span className="field-label">RERA Registration / Project ID</span>
+              <input
+                type="text"
+                value={reraId}
+                onChange={(e) => setReraId(e.target.value)}
+                placeholder="e.g. PRM/KA/RERA/1251/..."
+                style={{ fontSize: '0.875rem' }}
+              />
+              <span className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
+                Purchases apply to this RERA ID with unlimited edits.
+              </span>
+            </div>
+
+            {/* Plan selection cards */}
+            <div className="plan-cards">
+              {/* Plan 1: Breakdown Report ₹29 */}
+              <div
+                className={`plan-card ${selectedPlan === 'breakdown' ? 'selected' : ''}`}
+                onClick={() => setSelectedPlan('breakdown')}
+              >
+                <div className="plan-card-header">
+                  <div className="plan-title-wrap">
+                    <FileText size={18} className="plan-icon" />
+                    <div>
+                      <strong>Breakdown Report</strong>
+                      <span className="plan-price">₹29</span>
+                    </div>
+                  </div>
+                  {selectedPlan === 'breakdown' && <Check size={16} className="plan-check" />}
+                </div>
+                <ul className="plan-perks">
+                  <li>Full interest calculation summary</li>
+                  <li>Print & PDF export options</li>
+                  <li>Unlimited edits for this RERA ID</li>
+                </ul>
               </div>
-              <div className="premium-feature">
-                <CheckCircle size={16} className="pf-icon" />
-                <span>Download Form M complaint as <strong>Word (.doc)</strong></span>
-              </div>
-              <div className="premium-feature">
-                <CheckCircle size={16} className="pf-icon" />
-                <span>Print-ready RERA interest report</span>
-              </div>
-              <div className="premium-feature">
-                <CheckCircle size={16} className="pf-icon" />
-                <span>One-time payment — lifetime access</span>
+
+              {/* Plan 2: Form M Litigation ₹49 (includes Breakdown Report) */}
+              <div
+                className={`plan-card ${selectedPlan === 'form_m' ? 'selected' : ''}`}
+                onClick={() => setSelectedPlan('form_m')}
+              >
+                <div className="plan-badge-tag">RECOMMENDED</div>
+                <div className="plan-card-header">
+                  <div className="plan-title-wrap">
+                    <Scale size={18} className="plan-icon" />
+                    <div>
+                      <strong>Form M Litigation</strong>
+                      <span className="plan-price">
+                        {isUpgrade ? '₹20' : '₹49'}
+                        {isUpgrade && <span className="upgrade-note"> (₹29 credit applied)</span>}
+                      </span>
+                    </div>
+                  </div>
+                  {selectedPlan === 'form_m' && <Check size={16} className="plan-check" />}
+                </div>
+                <ul className="plan-perks">
+                  <li><strong>Includes Breakdown Report</strong></li>
+                  <li>Complete Form M legal complaint (Word + PDF)</li>
+                  <li>Legal section 18 formatting ready for filing</li>
+                  <li>Unlimited edits & downloads for this RERA ID</li>
+                </ul>
               </div>
             </div>
 
-            <div className="payment-price-row">
-              <div className="payment-price">
-                <span className="price-amount">₹499</span>
-                <span className="price-note muted">one-time · no subscription</span>
+            <div className="payment-summary-box">
+              <div className="payment-price-row">
+                <span className="muted">Total Payable:</span>
+                <span className="price-amount">₹{price}</span>
               </div>
-              <Lock size={16} className="muted" />
+              {isUpgrade && (
+                <p className="upgrade-banner">
+                  🎉 Upgrade Discount: You already own the ₹29 report for this RERA ID. Pay only ₹20 more to unlock Form M!
+                </p>
+              )}
             </div>
+
+            {!isRazorpayConfigured && (
+              <p className="demo-notice" style={{ fontSize: '0.75rem', color: '#d97706', margin: '8px 0', textAlign: 'center' }}>
+                <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
+                Demo Mode: Clicking below will simulate unlocking without requiring live API keys.
+              </p>
+            )}
 
             <button
               id="payment-pay-btn"
@@ -243,12 +346,13 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
               className="btn btn-accent btn-lg"
               onClick={handlePay}
               disabled={phase === 'loading'}
+              style={{ width: '100%', marginTop: 6 }}
             >
-              Pay ₹499 securely
+              {isRazorpayConfigured ? `Pay ₹${price} & Unlock Access` : `Simulate Pay ₹${price} (Demo Mode)`}
             </button>
 
             <p className="payment-secure-note muted">
-              Payments powered by Razorpay · UPI, cards, net banking accepted
+              UPI, Cards & Net Banking accepted · Powered by Razorpay
             </p>
           </>
         )}

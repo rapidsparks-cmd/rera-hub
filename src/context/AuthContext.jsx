@@ -7,117 +7,230 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { auth, isFirebaseConfigured } from '../services/firebase';
 
 const RENDER_API_URL = import.meta.env.VITE_RENDER_API_URL || '';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);          // Firebase user object | null
-  const [isPremium, setIsPremium] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true); // true while onAuthStateChanged fires first time
-  const [premiumLoading, setPremiumLoading] = useState(false);
-  const premiumCheckedForUid = useRef(null);         // avoid duplicate checks
+  const [user, setUser] = useState(null);
+  const [entitlements, setEntitlements] = useState({});
+  const [authLoading, setAuthLoading] = useState(true);
+  const [entitlementsLoading, setEntitlementsLoading] = useState(false);
+  const checkedForUid = useRef(null);
 
-  // ── Check premium status via backend ──────────────────────────────────────
-  const checkPremium = useCallback(async (firebaseUser) => {
-    if (!firebaseUser) {
-      setIsPremium(false);
-      return false;
+  // Demo mode local storage key for test entitlements
+  const getLocalEntitlements = () => {
+    try {
+      return JSON.parse(localStorage.getItem('rera_demo_entitlements') || '{}');
+    } catch {
+      return {};
     }
-    // Skip if already checked for this uid in this session
-    if (premiumCheckedForUid.current === firebaseUser.uid && isPremium) return true;
+  };
 
-    if (!RENDER_API_URL) {
-      // Dev mode with no backend configured — default to false
-      console.warn('[AuthContext] VITE_RENDER_API_URL not set; skipping premium check');
-      return false;
+  const saveLocalEntitlements = (newEnts) => {
+    try {
+      localStorage.setItem('rera_demo_entitlements', JSON.stringify(newEnts));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  // ── Check entitlements ──────────────────────────────────────────────────────
+  const checkEntitlements = useCallback(async (firebaseUser) => {
+    if (!firebaseUser) {
+      setEntitlements({});
+      return {};
+    }
+
+    if (!RENDER_API_URL || !isFirebaseConfigured) {
+      // Local Demo Mode: read entitlements from localStorage
+      const local = getLocalEntitlements();
+      setEntitlements(local);
+      return local;
     }
 
     try {
-      setPremiumLoading(true);
+      setEntitlementsLoading(true);
       const idToken = await firebaseUser.getIdToken();
       const res = await fetch(`${RENDER_API_URL}/api/user-status`, {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       if (!res.ok) throw new Error(`user-status returned ${res.status}`);
       const data = await res.json();
-      premiumCheckedForUid.current = firebaseUser.uid;
-      setIsPremium(data.isPremium === true);
-      return data.isPremium === true;
+      checkedForUid.current = firebaseUser.uid;
+      const ents = data.entitlements || {};
+      setEntitlements(ents);
+      return ents;
     } catch (err) {
-      console.error('[AuthContext] Failed to check premium status:', err.message);
-      return false;
+      console.warn('[AuthContext] API call failed, using local demo state:', err.message);
+      const local = getLocalEntitlements();
+      setEntitlements(local);
+      return local;
     } finally {
-      setPremiumLoading(false);
+      setEntitlementsLoading(false);
     }
-  }, [isPremium]);
+  }, []);
 
   // ── Auth state listener ────────────────────────────────────────────────────
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+    if (!isFirebaseConfigured || !auth) {
+      // Demo mode: check if demo user was saved
+      const saved = localStorage.getItem('rera_demo_user');
+      if (saved) {
+        try {
+          const u = JSON.parse(saved);
+          setUser(u);
+          setEntitlements(getLocalEntitlements());
+        } catch {
+          /* ignore */
+        }
+      }
+      setAuthLoading(false);
+      return;
+    }
+
+    const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        await checkPremium(firebaseUser);
+        checkEntitlements(firebaseUser);
       } else {
-        setIsPremium(false);
-        premiumCheckedForUid.current = null;
+        setEntitlements({});
+        checkedForUid.current = null;
       }
       setAuthLoading(false);
     });
     return unsub;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [checkEntitlements]);
+
+  // ── Demo Unlock Helper (when no backend/Razorpay configured) ────────────────
+  const unlockDemoEntitlement = (reraId, plan) => {
+    const key = (reraId || 'DEFAULT').trim().toUpperCase();
+    const current = getLocalEntitlements();
+    const existing = current[key] || {};
+    const updated = {
+      ...current,
+      [key]: {
+        hasBreakdown: true,
+        hasFormM: plan === 'form_m' || existing.hasFormM === true,
+      },
+    };
+    saveLocalEntitlements(updated);
+    setEntitlements(updated);
+  };
+
+  // ── Helper methods ─────────────────────────────────────────────────────────
+  const normalizeId = (id) => (id ? id.trim().toUpperCase() : 'DEFAULT');
+
+  const hasBreakdownAccess = useCallback(
+    (reraId) => {
+      const key = normalizeId(reraId);
+      const ent = entitlements[key];
+      if (ent && (ent.hasBreakdown === true || ent.hasFormM === true)) return true;
+      if (entitlements['DEFAULT']?.hasBreakdown === true || entitlements['DEFAULT']?.hasFormM === true) return true;
+      // Return true if user has unlocked breakdown for any RERA ID or state
+      return Object.values(entitlements).some((e) => e.hasBreakdown === true || e.hasFormM === true);
+    },
+    [entitlements]
+  );
+
+  const hasFormMAccess = useCallback(
+    (reraId) => {
+      const key = normalizeId(reraId);
+      const ent = entitlements[key];
+      if (ent && ent.hasFormM === true) return true;
+      if (entitlements['DEFAULT']?.hasFormM === true) return true;
+      // Return true if user has unlocked Form M for any RERA ID
+      return Object.values(entitlements).some((e) => e.hasFormM === true);
+    },
+    [entitlements]
+  );
+
+  const isAnyPremium = Object.values(entitlements).some((e) => e.hasFormM || e.hasBreakdown);
 
   // ── Sign-in helpers ────────────────────────────────────────────────────────
   const loginWithGoogle = async () => {
+    if (!isFirebaseConfigured || !auth) {
+      const demoUser = {
+        uid: 'demo_user_123',
+        displayName: 'Demo Homebuyer',
+        email: 'homebuyer@example.com',
+      };
+      setUser(demoUser);
+      localStorage.setItem('rera_demo_user', JSON.stringify(demoUser));
+      setEntitlements(getLocalEntitlements());
+      return demoUser;
+    }
+
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    await checkPremium(result.user);
+    await checkEntitlements(result.user);
     return result.user;
   };
 
   const loginWithEmail = async (email, password) => {
+    if (!isFirebaseConfigured || !auth) {
+      const demoUser = {
+        uid: `demo_user_${Date.now()}`,
+        displayName: email.split('@')[0],
+        email: email,
+      };
+      setUser(demoUser);
+      localStorage.setItem('rera_demo_user', JSON.stringify(demoUser));
+      setEntitlements(getLocalEntitlements());
+      return demoUser;
+    }
+
     const result = await signInWithEmailAndPassword(auth, email, password);
-    await checkPremium(result.user);
+    await checkEntitlements(result.user);
     return result.user;
   };
 
   const registerWithEmail = async (email, password) => {
+    if (!isFirebaseConfigured) {
+      return loginWithEmail(email, password);
+    }
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    await checkPremium(result.user);
+    await checkEntitlements(result.user);
     return result.user;
   };
 
   const logout = async () => {
-    await signOut(auth);
+    if (isFirebaseConfigured) {
+      await signOut(auth);
+    }
     setUser(null);
-    setIsPremium(false);
-    premiumCheckedForUid.current = null;
+    setEntitlements({});
+    localStorage.removeItem('rera_demo_user');
+    checkedForUid.current = null;
   };
 
-  // Called by PaymentModal after a successful payment to immediately refresh status
-  const refreshPremium = useCallback(async () => {
-    premiumCheckedForUid.current = null; // force re-check
-    if (user) await checkPremium(user);
-  }, [user, checkPremium]);
+  const refreshEntitlements = useCallback(async () => {
+    checkedForUid.current = null;
+    if (user) await checkEntitlements(user);
+  }, [user, checkEntitlements]);
 
   const value = {
     user,
-    isPremium,
+    entitlements,
+    isPremium: isAnyPremium,
     authLoading,
-    premiumLoading,
+    entitlementsLoading,
+    isFirebaseConfigured,
+    hasBreakdownAccess,
+    hasFormMAccess,
     loginWithGoogle,
     loginWithEmail,
     registerWithEmail,
     logout,
-    refreshPremium,
+    refreshEntitlements,
+    unlockDemoEntitlement,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');
