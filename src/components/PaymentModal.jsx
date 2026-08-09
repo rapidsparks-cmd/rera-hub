@@ -23,8 +23,7 @@ export default function PaymentModal({
   const [errorMsg, setErrorMsg] = useState('');
   const rzpRef = useRef(null);
 
-  // Is Razorpay configured?
-  const isRazorpayConfigured = Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_ID !== 'rzp_test_XXXXXXXXXXXX');
+
 
   useEffect(() => {
     if (isOpen) {
@@ -71,22 +70,8 @@ export default function PaymentModal({
       document.body.appendChild(script);
     });
 
-  // Demo payment handler (when Razorpay credentials are not configured)
-  const handleDemoPay = async () => {
-    setPhase('loading');
-    await new Promise((r) => setTimeout(r, 600));
-    unlockDemoEntitlement(normalizedReraId, selectedPlan);
-    setPhase('success');
-    onSuccess?.();
-  };
-
   const handlePay = async () => {
     if (!user) return;
-
-    // If Razorpay keys are not configured, perform Local Demo unlock!
-    if (!isRazorpayConfigured) {
-      return handleDemoPay();
-    }
 
     setPhase('loading');
     setErrorMsg('');
@@ -231,11 +216,8 @@ export default function PaymentModal({
             <h2>Payment Issue</h2>
             <p className="muted">{errorMsg}</p>
             <div className="payment-result-actions">
-              <button className="btn btn-accent" onClick={handleDemoPay}>
-                Simulate Demo Unlock
-              </button>
               <button className="btn btn-ghost" onClick={onClose}>
-                Cancel
+                Close
               </button>
             </div>
           </div>
@@ -357,22 +339,15 @@ export default function PaymentModal({
               )}
             </div>
 
-            {!isRazorpayConfigured && (
-              <p className="demo-notice" style={{ fontSize: '0.75rem', color: '#d97706', margin: '8px 0', textAlign: 'center' }}>
-                <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
-                Demo Mode: Clicking below will simulate unlocking without requiring live API keys.
-              </p>
-            )}
-
             <button
               id="payment-pay-btn"
               type="button"
               className="btn btn-accent btn-lg"
               onClick={handlePay}
               disabled={phase === 'loading'}
-              style={{ width: '100%', marginTop: 6 }}
+              style={{ width: '100%', marginTop: 16 }}
             >
-              {isRazorpayConfigured ? `Pay ₹${price} & Unlock Access` : `Simulate Pay ₹${price} (Demo Mode)`}
+              Pay ₹{price} & Unlock Access
             </button>
 
             <p className="payment-secure-note muted">
