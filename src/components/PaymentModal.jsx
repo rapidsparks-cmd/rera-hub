@@ -322,7 +322,7 @@ export default function PaymentModal({
                   {selectedPlan === 'legal_guidance' && <Check size={16} className="plan-check" />}
                 </div>
                 <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
-                  E2E representation & advice by Adv. Jaydeep Thakur.
+                  E2E representation & advice by Expert RERA Advocates.
                 </p>
               </div>
             </div>

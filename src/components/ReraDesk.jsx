@@ -717,7 +717,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           </div>
                           <h3 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', color: 'var(--text-color)' }}>Owed {formatINR(result.interest)} in Delay Interest? Recover It End-to-End!</h3>
                           <p style={{ margin: '0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                            Filing a complaint against builders under Section 18 requires strict legal compliance. Get direct case representation and consult with <strong>Adv. Jaydeep Thakur</strong> to handle your RERA hearings successfully.
+                            Filing a complaint against builders under Section 18 requires strict legal compliance. Get direct case representation and consult with <strong>Expert RERA Advocates</strong> to handle your RERA hearings successfully.
                           </p>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', minWidth: '180px' }}>
@@ -1187,7 +1187,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                 }}>RECOMMENDED</div>
                 <h3 style={{ fontSize: '1.05rem', margin: '0 0 4px 0', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '6px' }}>Connect with RERA Advocate <Crown size={14} style={{ color: '#d97706', fill: '#d97706' }} /></h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '0 0 12px 0' }}>
-                  Get professional case consultation & E2E guidance by Advocate Jaydeep Thakur for ₹299.
+                  Get professional case consultation & E2E guidance by Expert RERA Advocates for ₹299.
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--brand, #0f766e)' }}>₹299</span>
