@@ -67,12 +67,8 @@ export default function ReraDesk({ language = "en", stateId }) {
   const [bookingDate, setBookingDate] = useState("");
   const [agreementDate, setAgreementDate] = useState("");
 
-  // Editor, AI & key states
-  const [customApiKey, setCustomApiKey] = useState(() => localStorage.getItem("VITE_GEMINI_API_KEY") || "");
+  // Editor text state
   const [editorText, setEditorText] = useState("");
-  const [draftMode, setDraftMode] = useState("template");
-  const [customInstruction, setCustomInstruction] = useState("");
-  const [rephraseLoading, setRephraseLoading] = useState(false);
 
   const effectiveInputMode = ENABLE_INSTALLMENTS_SCHEDULE ? inputMode : "amount";
 
@@ -108,9 +104,9 @@ export default function ReraDesk({ language = "en", stateId }) {
     setResult(null);
   }, [stateId]);
 
-  // Auto-regenerate template draft if inputs or result change (and we are in template mode)
+  // Auto-regenerate template draft if inputs or result change
   useEffect(() => {
-    if (result && draftMode === "template") {
+    if (result) {
       const templateData = {
         complainantName,
         complainantAddress,
@@ -134,7 +130,6 @@ export default function ReraDesk({ language = "en", stateId }) {
     }
   }, [
     result,
-    draftMode,
     stateId,
     complainantName,
     complainantAddress,
@@ -248,47 +243,8 @@ export default function ReraDesk({ language = "en", stateId }) {
 
       const standardText = getFormMTemplate(stateId, templateData);
       setEditorText(standardText);
-      setDraftMode("template");
 
-      let formMText = standardText;
-      
-      // If draftFormM is checked and a key exists, pre-run the AI draft
-      if (ENABLE_RERA_FORM_M_DRAFT && draftFormM && geminiService.hasApiKey(customApiKey)) {
-        try {
-          const apiLanguage = { en: "English", hi: "Hindi", mr: "Marathi" }[language] || "English";
-          const prompt = `You are an expert RERA advocate in India.
-Draft a formal complaint petition under the proper form for ${state.name} (e.g. Form M or standard complaint) for delay in possession under Section 18 of the RERA Act, 2016.
-
-Metadata:
-- Authority: ${state.name}
-- Complainant: ${complainantName || "[Complainant Name]"}
-- Complainant Address: ${complainantAddress || "[Complainant Address]"}
-- Complainant Contact: ${complainantContact || "[Complainant Contact]"}
-- Promoter: ${promoterName || projectDetails?.promoter || "[Promoter Name]"}
-- Promoter Address: ${promoterAddress || "[Promoter Address]"}
-- Project: ${projectDetails?.projectName || "[Project Name]"}
-- RERA Reg No: ${reraRegNo || projectDetails?.regNo || "[RERA Registration Number]"}
-- Principal paid: ${formatINR(report.principal)}
-- Booking Date: ${bookingDate || "[Booking Date]"}
-- Agreement Date: ${agreementDate || "[Agreement Date]"}
-- Promised possession: ${promisedDate}
-- End date: ${endDate}
-- Delay: ${report.delayDays} days
-- Interest: SBI highest MCLR over the delay + state spread from config (${methodLabel(interestMethod)}); weighted avg ≈ ${report.annualRatePct.toFixed(2)}%
-- Interest accrued: ${formatINR(report.interest)}
-- Total claim: ${formatINR(report.total)}
-
-Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted text. Do not add markdown code fences or conversational text.`;
-          
-          formMText = await geminiService.generateLegalDraft(prompt, apiLanguage, customApiKey);
-          setEditorText(formMText);
-          setDraftMode("ai");
-        } catch (err) {
-          console.warn("RERA Hub: Automatic AI drafting failed, falling back to template:", err);
-        }
-      }
-
-      setResult({ ...report, stateName: state.name, formMText });
+      setResult({ ...report, stateName: state.name, formMText: standardText });
       setTimeout(() => {
         reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 50);
@@ -296,100 +252,6 @@ Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted t
       setError(err.message || "Calculation failed.");
     } finally {
       setCalcLoading(false);
-    }
-  };
-
-  const handleSaveApiKey = () => {
-    if (customApiKey.trim() !== "") {
-      localStorage.setItem("VITE_GEMINI_API_KEY", customApiKey.trim());
-      alert("API Key saved locally. AI drafting is now enabled!");
-    }
-  };
-
-  const handleAIRephrase = async (instruction) => {
-    if (!editorText) return;
-    setRephraseLoading(true);
-    try {
-      const stateObj = getStateById(stateId);
-      const rephrased = await geminiService.rephraseFormM(
-        editorText,
-        instruction,
-        stateObj?.name || "RERA Authority",
-        language === "hi" ? "Hindi" : language === "mr" ? "Marathi" : "English",
-        customApiKey
-      );
-      setEditorText(rephrased);
-      setDraftMode("ai");
-      setCustomInstruction("");
-    } catch (err) {
-      alert("Rephrase failed: " + err.message);
-    } finally {
-      setRephraseLoading(false);
-    }
-  };
-
-  const handleSwitchDraftMode = async (mode) => {
-    if (!result) return;
-    setDraftMode(mode);
-    if (mode === "ai") {
-      setRephraseLoading(true);
-      try {
-        const stateObj = getStateById(stateId);
-        const apiLanguage = { en: "English", hi: "Hindi", mr: "Marathi" }[language] || "English";
-        const prompt = `You are an expert RERA advocate in India.
-Draft a formal complaint petition under the proper form for ${stateObj.name} (e.g. Form M or standard complaint) for delay in possession under Section 18 of the RERA Act, 2016.
-
-Metadata:
-- Authority: ${stateObj.name}
-- Complainant: ${complainantName || "[Complainant Name]"}
-- Complainant Address: ${complainantAddress || "[Complainant Address]"}
-- Complainant Contact: ${complainantContact || "[Complainant Contact]"}
-- Promoter: ${promoterName || projectDetails?.promoter || "[Promoter Name]"}
-- Promoter Address: ${promoterAddress || "[Promoter Address]"}
-- Project: ${projectDetails?.projectName || "[Project Name]"}
-- RERA Reg No: ${reraRegNo || projectDetails?.regNo || "[RERA Registration Number]"}
-- Principal paid: ${formatINR(result.principal)}
-- Booking Date: ${bookingDate || "[Booking Date]"}
-- Agreement Date: ${agreementDate || "[Agreement Date]"}
-- Promised possession: ${promisedDate}
-- End date: ${endDate}
-- Delay: ${result.delayDays} days
-- Interest: SBI highest MCLR over the delay + state spread from config (${methodLabel(interestMethod)}); weighted avg ≈ ${result.annualRatePct.toFixed(2)}%
-- Interest accrued: ${formatINR(result.interest)}
-- Total claim: ${formatINR(result.total)}
-
-Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted text. Do not add markdown code fences or conversational text.`;
-        
-        const aiDraft = await geminiService.generateLegalDraft(prompt, apiLanguage, customApiKey);
-        setEditorText(aiDraft);
-      } catch (err) {
-        alert("AI Draft generation failed: " + err.message);
-        setDraftMode("template");
-      } finally {
-        setRephraseLoading(false);
-      }
-    } else {
-      // Re-generate standard template text
-      const templateData = {
-        complainantName,
-        complainantAddress,
-        complainantContact,
-        promoterName: promoterName || projectDetails?.promoter || "",
-        promoterAddress,
-        projectName: projectDetails?.projectName || "",
-        reraRegNo: reraRegNo || projectDetails?.regNo || "",
-        bookingDate,
-        agreementDate,
-        amountPaid: formatINR(result.principal),
-        promisedDate,
-        endDate,
-        delayDays: formatNumber(result.delayDays),
-        interestAmount: formatINR(result.interest),
-        interestRate: result.annualRatePct.toFixed(2),
-        totalClaim: formatINR(result.total)
-      };
-      const text = getFormMTemplate(stateId, templateData);
-      setEditorText(text);
     }
   };
 
@@ -753,7 +615,7 @@ Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted t
                       <p className="eyebrow">Interactive Legal Assistant</p>
                       <h2>Prepare RERA Complaint (Form M)</h2>
                       <p className="muted">
-                        Pre-fill your official state complaint petition below, edit details, and rephrase using Gemini AI.
+                        Pre-fill your official state complaint petition below, edit details, and export directly.
                       </p>
                     </div>
 
@@ -834,51 +696,10 @@ Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted t
                       </div>
                     </div>
 
-                    {/* AI API key entry block if not set in env */}
-                    {!geminiService.hasApiKey(customApiKey) && (
-                      <div className="api-key-panel">
-                        <div className="api-key-header">
-                          <h4>Enable AI Legal Drafting &amp; Rephrasing</h4>
-                          <p>
-                            A Gemini API key is required to use AI rephrasing and translations. Keys are saved securely in your local browser storage.
-                          </p>
-                        </div>
-                        <div className="api-key-input-row">
-                          <input
-                            type="password"
-                            value={customApiKey}
-                            onChange={(e) => setCustomApiKey(e.target.value)}
-                            placeholder="Enter your Gemini API Key..."
-                          />
-                          <button type="button" className="btn btn-accent btn-sm" onClick={handleSaveApiKey}>
-                            Save API Key
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Document Workspace Panel */}
                     <div className="editor-panel">
                       <div className="editor-head">
                         <h3>2. Complaint Draft Workspace</h3>
-                        <div className="editor-tabs">
-                          <button
-                            type="button"
-                            className={draftMode === "template" ? "active" : ""}
-                            onClick={() => handleSwitchDraftMode("template")}
-                          >
-                            Statutory Template
-                          </button>
-                          <button
-                            type="button"
-                            className={draftMode === "ai" ? "active" : ""}
-                            onClick={() => handleSwitchDraftMode("ai")}
-                            disabled={!geminiService.hasApiKey(customApiKey)}
-                            title={!geminiService.hasApiKey(customApiKey) ? "Configure Gemini API Key to enable" : ""}
-                          >
-                            AI Legal Petition
-                          </button>
-                        </div>
                       </div>
 
                       <div className="editor-container">
@@ -890,61 +711,6 @@ Write the entire complaint petition in ${apiLanguage}. Return ONLY the drafted t
                           placeholder="Draft content will appear here..."
                         />
                       </div>
-
-                      {/* AI Rephraser Console */}
-                      {geminiService.hasApiKey(customApiKey) && (
-                        <div className="ai-console">
-                          <h4>3. AI Copilot (Rephrase &amp; Enhance)</h4>
-                          <div className="ai-console-row">
-                            <input
-                              type="text"
-                              value={customInstruction}
-                              onChange={(e) => setCustomInstruction(e.target.value)}
-                              placeholder="Instructions (e.g. 'translate to Hindi', 'add claims for parking charges', 'make assertive')..."
-                            />
-                            <button
-                              type="button"
-                              className="btn btn-accent btn-sm"
-                              onClick={() => handleAIRephrase(customInstruction)}
-                              disabled={rephraseLoading || !customInstruction}
-                            >
-                              {rephraseLoading ? "Processing..." : "Rephrase with AI"}
-                            </button>
-                          </div>
-                          {/* Presets */}
-                          <div className="ai-presets">
-                            <span>Presets:</span>
-                            <button
-                              type="button"
-                              disabled={rephraseLoading}
-                              onClick={() => handleAIRephrase("Make the tone highly assertive and formal for court filing")}
-                            >
-                              Assertive Tone
-                            </button>
-                            <button
-                              type="button"
-                              disabled={rephraseLoading}
-                              onClick={() => handleAIRephrase("Condense the facts section to make it highly concise")}
-                            >
-                              Make Concise
-                            </button>
-                            <button
-                              type="button"
-                              disabled={rephraseLoading}
-                              onClick={() => handleAIRephrase("Translate this entire complaint into Hindi while maintaining legal terminology")}
-                            >
-                              Translate to Hindi
-                            </button>
-                            <button
-                              type="button"
-                              disabled={rephraseLoading}
-                              onClick={() => handleAIRephrase("Translate this entire complaint into Marathi while maintaining legal terminology")}
-                            >
-                              Translate to Marathi
-                            </button>
-                          </div>
-                        </div>
-                      )}
 
                       {/* Export Section */}
                       <div className="editor-actions">
