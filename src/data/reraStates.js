@@ -70,6 +70,7 @@ export const RERA_STATES = [
     region: "state",
     portal: "https://haryanarera.gov.in",
     featured: true,
+    localLang: { code: "hi", name: "हिन्दी (Hindi)" },
     blurb:
       "Mandates SBI MCLR + 2% Simple Interest. Strict verification of date-wise paid receipts is required in litigation filings.",
   },
@@ -96,6 +97,7 @@ export const RERA_STATES = [
     region: "state",
     portal: "https://rera.karnataka.gov.in",
     featured: true,
+    localLang: { code: "kn", name: "ಕನ್ನಡ (Kannada)" },
     blurb:
       "Follows SBI MCLR + 2% Compounded Monthly. Apportioned to the day for outstanding payment balances.",
   },
@@ -122,6 +124,7 @@ export const RERA_STATES = [
     region: "state",
     portal: "https://maharera.maharashtra.gov.in/",
     featured: true,
+    localLang: { code: "mr", name: "मराठी (Marathi)" },
     blurb:
       "Statutory interest at SBI MCLR + 2% Simple Interest per annum, running from the committed possession date.",
   },
@@ -172,6 +175,7 @@ export const RERA_STATES = [
     region: "state",
     portal: "https://up-rera.in",
     featured: true,
+    localLang: { code: "hi", name: "हिन्दी (Hindi)" },
     blurb:
       "Applies SBI MCLR + 1% Compounded Monthly, creating a higher compounding return for long-delayed possession periods.",
   },

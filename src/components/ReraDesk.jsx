@@ -31,6 +31,7 @@ import InterestTrendChart from "./InterestTrendChart";
 import ReportBreakdown from "./ReportBreakdown";
 import { getFormMTemplate } from "../utils/formMTemplates";
 import { downloadAsPDF, downloadAsWord } from "../utils/downloadHelpers";
+import { translate } from "../utils/translations";
 
 const ENABLE_RERA_FORM_M_DRAFT = import.meta.env.VITE_ENABLE_RERA_FORM_M_DRAFT !== "false";
 const ENABLE_INSTALLMENTS_SCHEDULE =
@@ -101,7 +102,7 @@ export default function ReraDesk({ language = "en", stateId }) {
     setResult(null);
   }, [stateId]);
 
-  // Auto-regenerate template draft if inputs or result change
+  // Auto-regenerate template draft if inputs, language or result change
   useEffect(() => {
     if (result) {
       const templateData = {
@@ -122,12 +123,13 @@ export default function ReraDesk({ language = "en", stateId }) {
         interestRate: result.annualRatePct.toFixed(2),
         totalClaim: formatINR(result.total)
       };
-      const text = getFormMTemplate(stateId, templateData);
+      const text = getFormMTemplate(stateId, templateData, language);
       setEditorText(text);
     }
   }, [
     result,
     stateId,
+    language,
     complainantName,
     complainantAddress,
     complainantContact,
@@ -238,7 +240,7 @@ export default function ReraDesk({ language = "en", stateId }) {
         totalClaim: formatINR(report.total)
       };
 
-      const standardText = getFormMTemplate(stateId, templateData);
+      const standardText = getFormMTemplate(stateId, templateData, language);
       setEditorText(standardText);
 
       setResult({ ...report, stateName: state.name, formMText: standardText });
@@ -295,57 +297,53 @@ export default function ReraDesk({ language = "en", stateId }) {
       {/* Hero */}
       <section className="hero">
         <div className="hero-inner">
-          <p className="eyebrow">Section 18 statutory interest compliant</p>
-          <h1>{state?.short || "RERA"} compensation calculator</h1>
+          <p className="eyebrow">{translate("hero_eyebrow", language)}</p>
+          <h1>{state?.short || "RERA"} {translate("hero_title", language)}</h1>
           <p className="hero-lead">
-            Instantly estimate your RERA compensation for {state?.name || "your state"} — statutory
-            interest, refund amounts, and milestone payment delays under Section 18.
+            {translate("hero_lead", language)}
           </p>
           <div className="hero-actions">
             <button type="button" className="btn btn-accent" onClick={scrollToCalc}>
-              Start calculator
+              {translate("btn_start", language)}
             </button>
             <Link className="btn btn-ghost" to="/">
-              Change state
+              {translate("btn_change_state", language)}
             </Link>
             <a className="btn btn-ghost" href="#faq">
-              Browse legal FAQ
+              {translate("btn_faq", language)}
             </a>
           </div>
         </div>
       </section>
 
-
-
       {/* Calculator */}
       <section className="section calculator-section" id="calculator" ref={calcRef}>
         <div className="section-inner">
-          <p className="eyebrow">Statutory interest estimator</p>
-          <h2>Calculate your RERA compensation.</h2>
+          <p className="eyebrow">{translate("hero_eyebrow", language)}</p>
+          <h2>{translate("form_title", language)}</h2>
           <p className="section-lead">
-            Estimate interest receivable for delayed possession under Section 18, calibrated to
-            state-specific SBI MCLR guidelines.
+            {translate("form_lead", language)}
           </p>
 
           <form className="calc-panel" onSubmit={handleCalculate}>
             {ENABLE_INSTALLMENTS_SCHEDULE && (
               <div className="toggle-row">
                 <div>
-                  <span className="field-label">Input mode</span>
+                  <span className="field-label">{translate("input_mode", language)}</span>
                   <div className="segmented">
                     <button
                       type="button"
                       className={inputMode === "amount" ? "active" : ""}
                       onClick={() => setInputMode("amount")}
                     >
-                      Amount
+                      {translate("mode_amount", language)}
                     </button>
                     <button
                       type="button"
                       className={inputMode === "installments" ? "active" : ""}
                       onClick={() => setInputMode("installments")}
                     >
-                      Installments schedule
+                      {translate("mode_installments", language)}
                     </button>
                   </div>
                 </div>
@@ -353,7 +351,7 @@ export default function ReraDesk({ language = "en", stateId }) {
             )}
 
             <label className="field">
-              <span className="field-label">State authority / rules</span>
+              <span className="field-label">{translate("state_rules", language)}</span>
               <select value={stateId} onChange={(e) => changeState(e.target.value)}>
                 {APPLICABLE_RERA_STATES.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -370,7 +368,7 @@ export default function ReraDesk({ language = "en", stateId }) {
 
             {effectiveInputMode === "amount" ? (
               <label className="field">
-                <span className="field-label">Amount paid (₹)</span>
+                <span className="field-label">{translate("amount_paid", language)}</span>
                 <input
                   type="number"
                   min="0"
@@ -427,7 +425,7 @@ export default function ReraDesk({ language = "en", stateId }) {
 
             <div className="field-grid">
               <label className="field">
-                <span className="field-label">Promised date</span>
+                <span className="field-label">{translate("promised_date", language)}</span>
                 <input
                   type="date"
                   value={promisedDate}
@@ -436,7 +434,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                 />
               </label>
               <label className="field">
-                <span className="field-label">Actual / end date</span>
+                <span className="field-label">{translate("actual_date", language)}</span>
                 <input
                   type="date"
                   value={endDate}
@@ -446,7 +444,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                 />
               </label>
               <label className="field">
-                <span className="field-label">RERA spread (%) from state config</span>
+                <span className="field-label">{translate("rera_spread", language)}</span>
                 <input
                   type="number"
                   step="0.01"
@@ -457,7 +455,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                 />
               </label>
               <label className="field">
-                <span className="field-label">Latest SBI highest MCLR (%)</span>
+                <span className="field-label">{translate("latest_mclr", language)}</span>
                 <input
                   type="number"
                   step="0.01"
@@ -476,14 +474,14 @@ export default function ReraDesk({ language = "en", stateId }) {
                 checked={overrideMclr}
                 onChange={(e) => setOverrideMclr(e.target.checked)}
               />
-              Override with a fixed MCLR (disable period-wise dynamic rates)
+              {translate("override_mclr", language)}
             </label>
 
             <div className="rate-strip">
               <strong>
                 {overrideMclr
-                  ? `Fixed effective rate: ${(Number(manualMclr) + effectiveSpread).toFixed(2)}%`
-                  : `Dynamic MCLR + dated ${effectiveSpread.toFixed(2)}% spread (${methodLabel(interestMethod)})`}
+                  ? `${translate("fixed_rate", language)} ${(Number(manualMclr) + effectiveSpread).toFixed(2)}%`
+                  : `${translate("dynamic_rate", language)} ${effectiveSpread.toFixed(2)}% ${translate("spread_label", language)} (${methodLabel(interestMethod)})`}
               </strong>
               <span>
                 {overrideMclr
@@ -512,7 +510,7 @@ export default function ReraDesk({ language = "en", stateId }) {
 
             <button type="submit" className="btn btn-accent btn-lg" disabled={calcLoading}>
               <Calculator size={18} />
-              {calcLoading ? "Calculating…" : "Calculate now"}
+              {calcLoading ? translate("btn_calculating", language) : translate("btn_calculate", language)}
             </button>
           </form>
         </div>
@@ -524,17 +522,17 @@ export default function ReraDesk({ language = "en", stateId }) {
           <div className="report-panel">
             <div className="report-head">
               <div>
-                <p className="eyebrow">RERA interest calculation report</p>
+                <p className="eyebrow">{translate("report_title", language)}</p>
                 <h2>{result?.stateName || state.name}</h2>
-                <p className="muted">Generated by RERA Hub penalty calculator</p>
+                <p className="muted">{translate("report_subtitle", language)}</p>
               </div>
               {result && (
                 <div className="report-actions">
                   <button type="button" className="btn btn-secondary btn-sm" onClick={handleShare}>
-                    <Share2 size={14} /> Share
+                    <Share2 size={14} /> {translate("btn_share", language)}
                   </button>
                   <button type="button" className="btn btn-secondary btn-sm" onClick={handlePrint}>
-                    <Printer size={14} /> Print report
+                    <Printer size={14} /> {translate("btn_print", language)}
                   </button>
                 </div>
               )}
@@ -544,45 +542,45 @@ export default function ReraDesk({ language = "en", stateId }) {
               <>
                 <div className="stat-grid">
                   <div className="stat">
-                    <span>Principal amount</span>
+                    <span>{translate("stat_principal", language)}</span>
                     <strong>{formatINR(result.principal)}</strong>
                   </div>
                   <div className="stat">
-                    <span>Interest accrued</span>
+                    <span>{translate("stat_interest", language)}</span>
                     <strong className="accent">{formatINR(result.interest)}</strong>
                   </div>
                   <div className="stat">
-                    <span>Total payout</span>
+                    <span>{translate("stat_total", language)}</span>
                     <strong>{formatINR(result.total)}</strong>
                   </div>
                   <div className="stat">
-                    <span>Delay period</span>
-                    <strong>{formatNumber(result.delayDays)} days</strong>
+                    <span>{translate("stat_delay", language)}</span>
+                    <strong>{formatNumber(result.delayDays)} {translate("stat_days", language)}</strong>
                   </div>
                 </div>
 
                 <div className="analytics-grid">
                   <div className="analytics-card">
-                    <h3>Financial analytics</h3>
+                    <h3>{translate("analytics_title", language)}</h3>
                     <div className="share-bar" aria-hidden="true">
                       <div style={{ width: `${Math.min(100, 100 - result.interestShare)}%` }} className="share-principal" />
                       <div style={{ width: `${Math.min(100, result.interestShare)}%` }} className="share-interest" />
                     </div>
                     <div className="share-legend">
-                      <span>Principal share {(100 - result.interestShare).toFixed(1)}%</span>
-                      <span>Interest share {result.interestShare.toFixed(1)}%</span>
+                      <span>{translate("principal_share", language)} {(100 - result.interestShare).toFixed(1)}%</span>
+                      <span>{translate("interest_share", language)} {result.interestShare.toFixed(1)}%</span>
                     </div>
                     <div className="mini-stats">
                       <div>
-                        <span>Daily rate</span>
+                        <span>{translate("daily_rate", language)}</span>
                         <strong>{result.dailyRate.toFixed(3)}%</strong>
                       </div>
                       <div>
-                        <span>Monthly accrual</span>
+                        <span>{translate("monthly_accrual", language)}</span>
                         <strong>{formatINR(result.monthlyAccrual)}</strong>
                       </div>
                       <div>
-                        <span>Avg daily interest</span>
+                        <span>{translate("avg_daily_interest", language)}</span>
                         <strong>{formatINR(result.avgDailyInterest)}</strong>
                       </div>
                     </div>
@@ -596,19 +594,19 @@ export default function ReraDesk({ language = "en", stateId }) {
                 {ENABLE_RERA_FORM_M_DRAFT && (
                   <div className="formm-workspace">
                     <div className="workspace-head">
-                      <p className="eyebrow">Interactive Legal Assistant</p>
-                      <h2>Prepare RERA Complaint (Form M)</h2>
+                      <p className="eyebrow">{translate("workspace_eyebrow", language)}</p>
+                      <h2>{translate("workspace_title", language)}</h2>
                       <p className="muted">
-                        Pre-fill your official state complaint petition below, edit details, and export directly.
+                        {translate("workspace_lead", language)}
                       </p>
                     </div>
 
                     {/* Form fields for pre-filling */}
                     <div className="formm-details-card">
-                      <h3>1. Edit Petition Details</h3>
+                      <h3>{translate("section_edit_details", language)}</h3>
                       <div className="formm-details-grid">
                         <label className="field">
-                          <span className="field-label">Complainant Name</span>
+                          <span className="field-label">{translate("label_cname", language)}</span>
                           <input
                             type="text"
                             value={complainantName}
@@ -617,7 +615,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Complainant Address</span>
+                          <span className="field-label">{translate("label_caddress", language)}</span>
                           <input
                             type="text"
                             value={complainantAddress}
@@ -626,7 +624,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Complainant Contact (Email / Phone)</span>
+                          <span className="field-label">{translate("label_ccontact", language)}</span>
                           <input
                             type="text"
                             value={complainantContact}
@@ -635,7 +633,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Project Name</span>
+                          <span className="field-label">{translate("label_pname", language)}</span>
                           <input
                             type="text"
                             value={projectName}
@@ -644,7 +642,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Promoter / Developer Name</span>
+                          <span className="field-label">{translate("label_promoter", language)}</span>
                           <input
                             type="text"
                             value={promoterName}
@@ -653,7 +651,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Promoter Address</span>
+                          <span className="field-label">{translate("label_promoter_addr", language)}</span>
                           <input
                             type="text"
                             value={promoterAddress}
@@ -662,7 +660,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">RERA Registration No.</span>
+                          <span className="field-label">{translate("label_reg_no", language)}</span>
                           <input
                             type="text"
                             value={reraRegNo}
@@ -671,7 +669,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Booking Date</span>
+                          <span className="field-label">{translate("label_booking_date", language)}</span>
                           <input
                             type="date"
                             value={bookingDate}
@@ -679,7 +677,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           />
                         </label>
                         <label className="field">
-                          <span className="field-label">Agreement for Sale Date</span>
+                          <span className="field-label">{translate("label_agreement_date", language)}</span>
                           <input
                             type="date"
                             value={agreementDate}
@@ -692,7 +690,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                     {/* Document Workspace Panel */}
                     <div className="editor-panel">
                       <div className="editor-head">
-                        <h3>2. Complaint Draft Workspace</h3>
+                        <h3>{translate("section_workspace", language)}</h3>
                       </div>
 
                       <div className="editor-container">
@@ -701,21 +699,21 @@ export default function ReraDesk({ language = "en", stateId }) {
                           value={editorText}
                           onChange={(e) => setEditorText(e.target.value)}
                           rows={18}
-                          placeholder="Draft content will appear here..."
+                          placeholder={translate("placeholder_editor", language)}
                         />
                       </div>
 
                       {/* Export Section */}
                       <div className="editor-actions">
                         <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadWord}>
-                          Download Word (.doc)
+                          {translate("btn_download_word", language)}
                         </button>
                         <button type="button" className="btn btn-secondary btn-sm" onClick={handleDownloadPDF}>
-                          Download PDF (.pdf)
+                          {translate("btn_download_pdf", language)}
                         </button>
                         <button type="button" className="btn btn-secondary btn-sm" onClick={handleCopyEditorText}>
                           {copying ? <Check size={14} /> : <Copy size={14} />}
-                          {copying ? "Copied" : "Copy to Clipboard"}
+                          {copying ? translate("btn_copied", language) : translate("btn_copy", language)}
                         </button>
                       </div>
                     </div>
@@ -723,16 +721,15 @@ export default function ReraDesk({ language = "en", stateId }) {
                 )}
 
                 <p className="disclaimer-inline">
-                  This report is for informational purposes only. Consult a legal professional for
-                  official RERA filings.
+                  {translate("disclaimer", language)}
                 </p>
                 <p className="methodology">
-                  <strong>Methodology note:</strong>{" "}
+                  <strong>{translate("methodology_title", language)}</strong>{" "}
                   {result.dynamicMclr
-                    ? "By default this calculator applies SBI highest MCLR and the dated state spread config for each segment of the delay. Weighted-average rate is shown for reference."
-                    : "A fixed MCLR override was used across the full delay period."}{" "}
-                  State spreads come from curated files in{" "}
-                  <code>src/data/stateSpreads/</code>. MCLR sourced from{" "}
+                    ? translate("methodology_dynamic", language)
+                    : translate("methodology_fixed", language)}{" "}
+                  {translate("methodology_spreads", language)}{" "}
+                  <code>src/data/stateSpreads/</code>. {translate("methodology_mclr", language)}{" "}
                   <a href={SBI_MCLR_SOURCE_URL} target="_blank" rel="noreferrer">
                     SBI MCLR historical data
                   </a>
@@ -742,7 +739,15 @@ export default function ReraDesk({ language = "en", stateId }) {
             ) : (
               <div className="report-empty">
                 <Calculator size={28} />
-                <p>Your RERA interest report will appear here after you calculate.</p>
+                <p>
+                  {language === "hi"
+                    ? "गणना करने के बाद आपकी रेरा ब्याज रिपोर्ट यहां दिखाई देगी।"
+                    : language === "mr"
+                    ? "तुमचा रेरा व्याज अहवाल गणना केल्यानंतर येथे दिसेल."
+                    : language === "kn"
+                    ? "ಲೆಕ್ಕಾಚಾರ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ರೇರಾ ಬಡ್ಡಿ ವರದಿ ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ."
+                    : "Your RERA interest report will appear here after you calculate."}
+                </p>
               </div>
             )}
           </div>
@@ -752,19 +757,19 @@ export default function ReraDesk({ language = "en", stateId }) {
       {/* FAQ */}
       <section className="section faq-section" id="faq">
         <div className="section-inner">
-          <p className="eyebrow">RERA legal FAQ</p>
-          <h2>Expert answers to central &amp; state RERA questions</h2>
-          <p className="section-lead">{RERA_FAQ.length} topics · informative only, not legal advice</p>
+          <p className="eyebrow">{translate("faq_eyebrow", language)}</p>
+          <h2>{translate("faq_title", language)}</h2>
+          <p className="section-lead">{RERA_FAQ.length} {translate("faq_subtitle", language)}</p>
           <div className="faq-list">
             {RERA_FAQ.map((item) => {
               const open = openFaq === item.id;
               return (
                 <div key={item.id} className={`faq-item ${open ? "open" : ""}`}>
                   <button
-                    type="button"
-                    className="faq-q"
-                    onClick={() => setOpenFaq(open ? null : item.id)}
-                    aria-expanded={open}
+                     type="button"
+                     className="faq-q"
+                     onClick={() => setOpenFaq(open ? null : item.id)}
+                     aria-expanded={open}
                   >
                     <span>{item.q}</span>
                     <ChevronDown size={18} />
@@ -780,23 +785,19 @@ export default function ReraDesk({ language = "en", stateId }) {
       {/* How-to */}
       <section className="section howto-section" id="howto">
         <div className="section-inner narrow">
-          <h2>How to calculate your RERA delayed-possession interest</h2>
+          <h2>{translate("howto_title", language)}</h2>
           <ol className="howto-steps">
             <li>
-              <strong>Choose your state</strong> — each authority sets its own interest formula
-              (simple vs monthly compound, and the MCLR spread).
+              {translate("howto_step1", language)}
             </li>
             <li>
-              <strong>Enter key dates</strong> — promised possession and actual/end date define the
-              delay window.
+              {translate("howto_step2", language)}
             </li>
             <li>
-              <strong>Enter the amount paid</strong> — the principal on which Section 18 delay
-              interest is estimated for the possession delay window.
+              {translate("howto_step3", language)}
             </li>
             <li>
-              <strong>Review the report</strong> — principal, interest, delay days, and a printable
-              breakdown for your complaint file.
+              {translate("howto_step4", language)}
             </li>
           </ol>
         </div>
@@ -807,18 +808,11 @@ export default function ReraDesk({ language = "en", stateId }) {
           <div className="footer-brand">
             <strong>RERA Hub</strong>
             <p>
-              An interactive statutory interest estimator for homebuyers under the Real Estate
-              (Regulation and Development) Act, 2016.
+              {translate("footer_desc", language)}
             </p>
           </div>
           <p className="footer-disclaimer">
-            <strong>Disclaimer:</strong> Estimates only, based on Section 18/19-style SBI MCLR +
-            spread rules. Actual awards are decided by the State RERA Authority / Adjudicating
-            Officer after reviewing case facts. Verify current SBI MCLR at{" "}
-            <a href="https://sbi.co.in" target="_blank" rel="noreferrer">
-              sbi.co.in
-            </a>
-            . Not legal advice.
+            {translate("footer_disclaimer", language)}
           </p>
         </div>
       </footer>
