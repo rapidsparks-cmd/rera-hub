@@ -18,7 +18,7 @@ import {
   methodLabel,
   ruleSummary,
 } from "../data/reraStates";
-import { RERA_FAQ } from "../data/faq";
+import { getFaqByLanguage } from "../data/faq";
 import { calculateReraInterest, formatINR, formatNumber } from "../utils/reraInterest";
 import {
   getCurrentHighestMclr,
@@ -73,7 +73,7 @@ export default function ReraDesk({ language = "en", stateId }) {
   const [result, setResult] = useState(null);
   const [calcLoading, setCalcLoading] = useState(false);
   const [copying, setCopying] = useState(false);
-  const [openFaq, setOpenFaq] = useState(RERA_FAQ[0]?.id || null);
+  const [openFaq, setOpenFaq] = useState("how-interest");
   const [error, setError] = useState("");
 
   const state = getStateById(stateId);
@@ -587,7 +587,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                   </div>
                 </div>
 
-                <InterestTrendChart rows={result.rows} />
+                <InterestTrendChart rows={result.rows} language={language} />
 
                 <ReportBreakdown result={result} />
 
@@ -759,9 +759,9 @@ export default function ReraDesk({ language = "en", stateId }) {
         <div className="section-inner">
           <p className="eyebrow">{translate("faq_eyebrow", language)}</p>
           <h2>{translate("faq_title", language)}</h2>
-          <p className="section-lead">{RERA_FAQ.length} {translate("faq_subtitle", language)}</p>
+          <p className="section-lead">{getFaqByLanguage(language).length} {translate("faq_subtitle", language)}</p>
           <div className="faq-list">
-            {RERA_FAQ.map((item) => {
+            {getFaqByLanguage(language).map((item) => {
               const open = openFaq === item.id;
               return (
                 <div key={item.id} className={`faq-item ${open ? "open" : ""}`}>

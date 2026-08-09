@@ -90,8 +90,28 @@ export const UI_TRANSLATIONS = {
     howto_step3: "Enter the amount paid — the principal on which Section 18 delay interest is estimated for the possession delay window.",
     howto_step4: "Review the report — principal, interest, delay days, and a printable breakdown for your complaint file.",
     
-    footer_desc: "An interactive statutory interest estimator for homebuyers under the Real Estate (Regulation and Development) Act, 2016.",
-    footer_disclaimer: "Disclaimer: Estimates only, based on Section 18/19-style SBI MCLR + spread rules. Actual awards are decided by the State RERA Authority / Adjudicating Officer after reviewing case facts. Not legal advice."
+    footer_disclaimer: "Disclaimer: Estimates only, based on Section 18/19-style SBI MCLR + spread rules. Actual awards are decided by the State RERA Authority / Adjudicating Officer after reviewing case facts. Not legal advice.",
+    
+    // Chart Translations
+    chart_title: "How your delay interest grows",
+    chart_lead: "The green line shows how much interest builds up as time passes. The orange line shows the interest rate used in each period. Bank rates can change over the years — when they do, the orange line steps up or down.",
+    chart_hint: "Tip: move your mouse (or finger) across the chart to see the rate and interest for any period.",
+    chart_total_interest: "Total interest",
+    chart_rate_periods: "Rate periods",
+    chart_rate_changes: "Times the rate changed",
+    chart_legend_interest: "Interest amount over time",
+    chart_legend_rate: "Interest rate in that period",
+    chart_legend_change: "Rate changed here",
+    chart_axis_interest: "Interest amount",
+    chart_axis_rate: "Interest rate",
+    chart_tip_rate_title: "Interest rate in this period",
+    chart_tip_base_mclr: "Made of bank base rate",
+    chart_tip_rera_extra: "+ RERA extra",
+    chart_tip_built_up: "Interest built up till here",
+    chart_tip_added_period: "Interest added in this period",
+    chart_tip_days: "days at this rate",
+    chart_tip_placeholder: "Hover or tap anywhere on the chart to explore a period",
+    chart_empty: "Your interest chart will appear here after a calculation."
   },
   hi: {
     hero_eyebrow: "धारा 18 वैधानिक ब्याज के अनुरूप",
@@ -180,7 +200,28 @@ export const UI_TRANSLATIONS = {
     howto_step4: "रिपोर्ट की समीक्षा करें — मूलधन, ब्याज, देरी के दिन और आपकी शिकायत फ़ाइल के लिए एक प्रिंट करने योग्य विवरण।",
     
     footer_desc: "रियल एस्टेट (विनियमन और विकास) अधिनियम, 2016 के तहत घर खरीदारों के लिए एक इंटरैक्टिव वैधानिक ब्याज अनुमानक।",
-    footer_disclaimer: "अस्वीकरण: केवल अनुमान, धारा 18/19-शैली एसबीआई एमसीएलआर + स्प्रेड नियमों पर आधारित। वास्तविक फैसले मामले के तथ्यों की समीक्षा करने के बाद राज्य रेरा प्राधिकरण / न्यायनिर्णायक अधिकारी द्वारा लिए जाते हैं। कानूनी सलाह नहीं।"
+    footer_disclaimer: "अस्वीकरण: केवल अनुमान, धारा 18/19-शैली एसबीआई एमसीएलआर + स्प्रेड नियमों पर आधारित। वास्तविक फैसले मामले के तथ्यों की समीक्षा करने के बाद राज्य रेरा प्राधिकरण / न्यायनिर्णायक अधिकारी द्वारा लिए जाते हैं। कानूनी सलाह नहीं।",
+    
+    // Chart Translations (Hindi)
+    chart_title: "आपका विलंब ब्याज कैसे बढ़ता है",
+    chart_lead: "हरी रेखा दर्शाती है कि समय बीतने के साथ कितना ब्याज जमा होता है। नारंगी रेखा प्रत्येक अवधि में उपयोग की जाने वाली ब्याज दर को दर्शाती है। बैंक दरें वर्षों में बदल सकती हैं — जब वे बदलती हैं, तो नारंगी रेखा ऊपर या नीचे कदम बढ़ाती है।",
+    chart_hint: "संकेत: किसी भी अवधि के लिए दर और ब्याज देखने के लिए चार्ट पर अपने माउस (या उंगली) को घुमाएं।",
+    chart_total_interest: "कुल ब्याज",
+    chart_rate_periods: "दर अवधि",
+    chart_rate_changes: "ब्याज दर में बदलाव की संख्या",
+    chart_legend_interest: "समय के साथ ब्याज राशि",
+    chart_legend_rate: "उस अवधि में ब्याज दर",
+    chart_legend_change: "दर यहाँ बदली",
+    chart_axis_interest: "ब्याज राशि",
+    chart_axis_rate: "ब्याज दर",
+    chart_tip_rate_title: "इस अवधि में ब्याज दर",
+    chart_tip_base_mclr: "बैंक बेस रेट से बनी",
+    chart_tip_rera_extra: "+ रेरा अतिरिक्त",
+    chart_tip_built_up: "यहाँ तक संचित ब्याज",
+    chart_tip_added_period: "इस अवधि में जोड़ा गया ब्याज",
+    chart_tip_days: "दिन इस दर पर",
+    chart_tip_placeholder: "किसी अवधि का पता लगाने के लिए चार्ट पर कहीं भी माउस घुमाएं या टैप करें",
+    chart_empty: "गणना करने के बाद आपका ब्याज चार्ट यहाँ दिखाई देगा।"
   },
   mr: {
     hero_eyebrow: "कलम १८ वैधानिक व्याजाच्या अनुरूप",
@@ -268,8 +309,28 @@ export const UI_TRANSLATIONS = {
     howto_step3: "भरलेली रक्कम प्रविष्ट करा — मुद्दल रक्कम ज्यावर ताबा उशीर कालावधीसाठी कलम १८ अंतर्गत व्याजाचा अंदाज लावला जातो.",
     howto_step4: "अहवालाचे पुनरावलोकन करा — मुद्दल, व्याज, विलंबाचे दिवस आणि तुमच्या तक्रार फाईलसाठी प्रिंट करण्यायोग्य अहवाल.",
     
-    footer_desc: "रिअल इस्टेट (नियमन आणि विकास) कायदा, २०१६ अंतर्गत घर खरेदीदारांसाठी एक संवादी वैधानिक व्याज अंदाजक.",
-    footer_disclaimer: "अस्वीकरण: केवळ अंदाज, कलम १८/१९-शैली एसबीआय एमसीएलआर + स्प्रेड नियमांवर आधारित. प्रत्यक्ष निर्णय प्रकरणाच्या तथ्यांचे पुनरावलोकन केल्यानंतर राज्य रेरा प्राधिकरण / न्यायनिर्णय अधिकारी घेतात. कायदेशीर सल्ला नाही."
+    footer_disclaimer: "अस्वीकरण: केवळ अंदाज, कलम १८/१९-शैली एसबीआय एमसीएलआर + स्प्रेड नियमांवर आधारित. प्रत्यक्ष निर्णय प्रकरणाच्या तथ्यांचे पुनरावलोकन केल्यानंतर राज्य रेरा प्राधिकरण / न्यायनिर्णय अधिकारी घेतात. कायदेशीर सल्ला नाही.",
+    
+    // Chart Translations (Marathi)
+    chart_title: "तुमचे विलंब व्याज कसे वाढते",
+    chart_lead: "हिरवी रेषा दर्शवते की काळानुसार किती व्याज जमा होते. नारंगी रेषा प्रत्येक कालावधीत वापरलेला व्याजदर दर्शवते. बँक दर वर्षभरात बदलू शकतात — जेव्हा ते बदलतात, तेव्हा नारंगी रेषा वर किंवा खाली सरकते.",
+    chart_hint: "टीप: कोणत्याही कालावधीचे दर आणि व्याज पाहण्यासाठी चार्टवर माउस (किंवा बोट) फिरवा.",
+    chart_total_interest: "एकूण व्याज",
+    chart_rate_periods: "व्याज कालावधी संख्या",
+    chart_rate_changes: "दर बदलण्याची संख्या",
+    chart_legend_interest: "काळानुसार व्याजाची रक्कम",
+    chart_legend_rate: "त्या कालावधीतील व्याजदर",
+    chart_legend_change: "दर येथे बदलला",
+    chart_axis_interest: "व्याजाची रक्कम",
+    chart_axis_rate: "व्याजदर",
+    chart_tip_rate_title: "या कालावधीतील व्याजदर",
+    chart_tip_base_mclr: "बँक बेस रेटपासून बनलेला",
+    chart_tip_rera_extra: "+ रेरा अतिरिक्त",
+    chart_tip_built_up: "येथपर्यंत जमा झालेले व्याज",
+    chart_tip_added_period: "या कालावधीत जोडलेले व्याज",
+    chart_tip_days: "दिवस या दराने",
+    chart_tip_placeholder: "कालावधी एक्सप्लोर करण्यासाठी चार्टवर कुठेही माउस फिरवा किंवा टॅप करा",
+    chart_empty: "गणना केल्यानंतर तुमचा व्याज चार्ट येथे दिसेल।"
   },
   kn: {
     hero_eyebrow: "ಸೆಕ್ಷನ್ 18 ಶಾಸನಬದ್ಧ ಬಡ್ಡಿಗೆ ಅನುಗುಣವಾಗಿದೆ",
@@ -357,8 +418,28 @@ export const UI_TRANSLATIONS = {
     howto_step3: "ಪಾವತಿಸಿದ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ — ಸ್ವಾಧೀನ ವಿಳಂಬ ಅವಧಿಗೆ ಸೆಕ್ಷನ್ 18 ರ ಅಡಿಯಲ್ಲಿ ಬಡ್ಡಿಯನ್ನು ಅಂದಾಜು ಮಾಡುವ ಅಸಲು ಮೊತ್ತ.",
     howto_step4: "ವರದಿಯನ್ನು ಪರಿಶೀಲಿಸಿ — ನಿಮ್ಮ ದೂರು ಫೈಲ್‌ಗಾಗಿ ಅಸಲು, ಬಡ್ಡಿ, ವಿಳಂಬದ ದಿನಗಳು ಮತ್ತು ಮುದ್ರಿಸಬಹುದಾದ ವರದಿ.",
     
-    footer_desc: "ರಿಯಲ್ ಎಸ್ಟೇಟ್ (ನಿಯಂತ್ರಣ ಮತ್ತು ಅಭಿವೃದ್ಧಿ) ಕಾಯ್ದೆ, 2016 ರ ಅಡಿಯಲ್ಲಿ ಮನೆ ಖರೀದಿದಾರರಿಗೆ ಒಂದು ಸಂವಾದಾತ್ಮಕ ಶಾಸನಬದ್ಧ ಬಡ್ಡಿ ಅಂದಾಜು ಸಾಧನ.",
-    footer_disclaimer: "ಹಕ್ಕುತ್ಯಾಗ: ಅಂದಾಜುಗಳು ಮಾತ್ರ, ಸೆಕ್ಷನ್ 18/19 ರ ಎಸ್‌ಬಿಐ ಎಂಸಿಎಲ್‌ಆರ್ + ಸ್ಪ್ರೆಡ್ ನಿಯಮಗಳ ಆಧಾರದ ಮೇಲೆ. ನಿಜವಾದ ತೀರ್ಪುಗಳನ್ನು ರಾಜ್ಯ ರೇರಾ ಪ್ರಾಧಿಕಾರ / ನ್ಯಾಯಾಧಿಕಾರಿಗಳು ಪ್ರಕರಣದ ಸತ್ಯಾಂಶಗಳನ್ನು ಪರಿಶೀಲಿಸಿದ ನಂತರ ನಿರ್ಧರಿಸುತ್ತಾರೆ. ಕಾನೂನು ಸಲಹೆಯಲ್ಲ."
+    footer_disclaimer: "ಹಕ್ಕುತ್ಯಾಗ: ಅಂದಾಜುಗಳು ಮಾತ್ರ, ಸೆಕ್ಷನ್ 18/19 ರ ಎಸ್‌ಬಿಐ ಎಂಸಿಎಲ್‌ಆರ್ + ಸ್ಪ್ರೆಡ್ ನಿಯಮಗಳ ಆಧಾರದ ಮೇಲೆ. ನಿಜವಾದ ತೀರ್ಪುಗಳನ್ನು ರಾಜ್ಯ ರೇರಾ ಪ್ರಾಧಿಕಾರ / ನ್ಯಾಯಾಧಿಕಾರಿಗಳು ಪ್ರಕರಣದ ಸತ್ಯಾಂಶಗಳನ್ನು ಪರಿಶೀಲಿಸಿದ ನಂತರ ನಿರ್ಧರಿಸುತ್ತಾರೆ. ಕಾನೂನು ಸಲಹೆಯಲ್ಲ.",
+    
+    // Chart Translations (Kannada)
+    chart_title: "ನಿಮ್ಮ ವಿಳಂಬ ಬಡ್ಡಿ ಹೇಗೆ ಬೆಳೆಯುತ್ತದೆ",
+    chart_lead: "ಹಸಿರು ರೇಖೆಯು ಸಮಯ ಕಳೆದಂತೆ ಎಷ್ಟು ಬಡ್ಡಿ ಸಂಗ್ರಹವಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ತೋರಿಸುತ್ತದೆ. ಕಿತ್ತಳೆ ರೇಖೆಯು ಪ್ರತಿ ಅವಧಿಯಲ್ಲಿ ಬಳಸಿದ ಬಡ್ಡಿ ದರವನ್ನು ತೋರಿಸುತ್ತದೆ. ಬ್ಯಾಂಕ್ ದರಗಳು ವರ್ಷಗಳಲ್ಲಿ ಬದಲಾಗಬಹುದು — ಅವು ಬದಲಾದಾಗ, ಕಿತ್ತಳೆ ರೇಖೆಯು ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಹೋಗುತ್ತದೆ.",
+    chart_hint: "ಸಲಹೆ: ಯಾವುದೇ ಅವಧಿಯ ದರ ಮತ್ತು ಬಡ್ಡಿಯನ್ನು ನೋಡಲು ಚಾರ್ಟ್ ಮೇಲೆ ನಿಮ್ಮ ಮೌಸ್ (ಅಥವಾ ಬೆರಳು) ಚಲಿಸಿ.",
+    chart_total_interest: "ಒಟ್ಟು ಬಡ್ಡಿ",
+    chart_rate_periods: "ದರ ಅವಧಿಗಳು",
+    chart_rate_changes: "ದರ ಬದಲಾದ ಸಂಖ್ಯೆ",
+    chart_legend_interest: "ಸಮಯದೊಂದಿಗೆ ಬಡ್ಡಿ ಮೊತ್ತ",
+    chart_legend_rate: "ಆ ಅವಧಿಯ ಬಡ್ಡಿ ದರ",
+    chart_legend_change: "ದರ ಇಲ್ಲಿ ಬದಲಾಗಿದೆ",
+    chart_axis_interest: "ಬಡ್ಡಿ ಮೊತ್ತ",
+    chart_axis_rate: "ಬಡ್ಡಿ ದರ",
+    chart_tip_rate_title: "ಈ ಅವಧಿಯ ಬಡ್ಡಿ ದರ",
+    chart_tip_base_mclr: "ಬ್ಯಾಂಕ್ ಬೇಸ್ ದರದಿಂದ ಕೂಡಿದೆ",
+    chart_tip_rera_extra: "+ ರೇರಾ ಹೆಚ್ಚುವರಿ",
+    chart_tip_built_up: "ಇಲ್ಲಿಯವರೆಗೆ ಸಂಚಿತ ಬಡ್ಡಿ",
+    chart_tip_added_period: "ಈ ಅವಧಿಯಲ್ಲಿ ಸೇರಿಸಲಾದ ಬಡ್ಡಿ",
+    chart_tip_days: "ದಿನಗಳು ಈ ದರದಲ್ಲಿ",
+    chart_tip_placeholder: "ಅವಧಿಯನ್ನು ಅನ್ವೇಷಿಸಲು ಚಾರ್ಟ್‌ನಲ್ಲಿ ಎಲ್ಲಿಯಾದರೂ ಮೌಸ್ ಚಲಿಸಿ ಅಥವಾ ಟ್ಯಾಪ್ ಮಾಡಿ",
+    chart_empty: "ಲೆಕ್ಕಾಚಾರ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಬಡ್ಡಿ ಚಾರ್ಟ್ ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ."
   }
 };
 

@@ -1,62 +1,256 @@
-export const RERA_FAQ = [
-  {
-    id: "how-interest",
-    q: "How is delay interest calculated?",
-    a: "Under Section 18 of the RERA Act, interest is typically charged at SBI’s highest MCLR plus a state-prescribed spread (often +2%). Simple-interest states use Principal × Rate × Days ÷ 365. Compound-monthly states apply the monthly rate to the outstanding principal for each month of delay.",
-  },
-  {
-    id: "force-majeure",
-    q: "What if the builder claims Force Majeure?",
-    a: "Force majeure extensions must usually be granted by the competent RERA authority. Routine business issues, approval delays, and labour shortages are often rejected as force majeure. Interest may be excluded only for formally approved extension periods.",
-  },
-  {
-    id: "refund",
-    q: "Can I claim a refund with interest?",
-    a: "Yes. Section 18 typically lets the allottee choose: continue with the project and claim delay interest until possession, or withdraw and seek refund of amounts paid with interest at the prescribed rate.",
-  },
-  {
-    id: "parity",
-    q: "Does RERA apply equal interest (parity)?",
-    a: "Many state rules aim for parity: the interest rate a promoter charges a defaulting allottee should not exceed the rate payable by the promoter for delay. Exact wording varies by state rules.",
-  },
-  {
-    id: "70-30",
-    q: "What is the 70/30 refund rule?",
-    a: "Some authorities and practice notes discuss staged refunds or escrow-linked payouts. Always check your state RERA orders and agreement terms — there is no single nationwide 70/30 formula that overrides Section 18.",
-  },
-  {
-    id: "10-percent",
-    q: "What is the 10% rule in RERA?",
-    a: "Buyers often refer to booking-amount / cancellation deductions capped around 10% in certain agreement or rule contexts. This is separate from Section 18 delay interest. Verify the specific state rules and your Agreement for Sale.",
-  },
-  {
-    id: "possession-delay",
-    q: "What happens if the builder delays possession under RERA?",
-    a: "If the promoter fails to complete or give possession as per the agreement, the allottee may claim interest for every day of delay on amounts paid, and/or seek refund with interest, subject to state adjudication.",
-  },
-  {
-    id: "rate",
-    q: "What is the RERA interest rate for builder delay?",
-    a: "Most states use SBI highest MCLR + spread (commonly +2%). UP RERA commonly uses MCLR + 1% with monthly compounding. Always confirm the current MCLR on sbi.co.in and your state RERA rules.",
-  },
-  {
-    id: "calculator",
-    q: "How should I use a RERA compensation calculator?",
-    a: "Select your state authority, enter the amount paid, then the promised possession date and actual/end date. Interest is estimated for the delay window using that state’s SBI MCLR + spread rules.",
-  },
-  {
-    id: "compensation",
-    q: "What compensation can I receive for delayed possession?",
-    a: "Statutory interest on amounts paid is the core claim. Additional heads (rent, mental agony, litigation costs) depend on facts and the adjudicating officer’s discretion.",
-  },
-  {
-    id: "maharera",
-    q: "How does MahaRERA compensation for delay work?",
-    a: "MahaRERA generally applies simple interest at SBI highest MCLR + 2% on amounts actually paid, from the committed possession date (or payment date if later) until possession/refund.",
-  },
-  {
-    id: "no-possession",
-    q: "Builder is not giving possession after full payment — what next?",
-    a: "Collect your agreement, payment proofs, and RERA registration details; calculate statutory interest; send a demand/notice; and consider a Form M / state complaint before the RERA authority or adjudicating officer.",
-  },
-];
+// FAQ data for RERA Hub supporting English, Hindi, Marathi, and Kannada.
+
+export const FAQ_TRANSLATIONS = {
+  en: [
+    {
+      id: "how-interest",
+      q: "How is delay interest calculated?",
+      a: "Under Section 18 of the RERA Act, interest is typically charged at SBI’s highest MCLR plus a state-prescribed spread (often +2%). Simple-interest states use Principal × Rate × Days ÷ 365. Compound-monthly states apply the monthly rate to the outstanding principal for each month of delay.",
+    },
+    {
+      id: "force-majeure",
+      q: "What if the builder claims Force Majeure?",
+      a: "Force majeure extensions must usually be granted by the competent RERA authority. Routine business issues, approval delays, and labour shortages are often rejected as force majeure. Interest may be excluded only for formally approved extension periods.",
+    },
+    {
+      id: "refund",
+      q: "Can I claim a refund with interest?",
+      a: "Yes. Section 18 typically lets the allottee choose: continue with the project and claim delay interest until possession, or withdraw and seek refund of amounts paid with interest at the prescribed rate.",
+    },
+    {
+      id: "parity",
+      q: "Does RERA apply equal interest (parity)?",
+      a: "Many state rules aim for parity: the interest rate a promoter charges a defaulting allottee should not exceed the rate payable by the promoter for delay. Exact wording varies by state rules.",
+    },
+    {
+      id: "70-30",
+      q: "What is the 70/30 refund rule?",
+      a: "Some authorities and practice notes discuss staged refunds or escrow-linked payouts. Always check your state RERA orders and agreement terms — there is no single nationwide 70/30 formula that overrides Section 18.",
+    },
+    {
+      id: "10-percent",
+      q: "What is the 10% rule in RERA?",
+      a: "Buyers often refer to booking-amount / cancellation deductions capped around 10% in certain agreement or rule contexts. This is separate from Section 18 delay interest. Verify the specific state rules and your Agreement for Sale.",
+    },
+    {
+      id: "possession-delay",
+      q: "What happens if the builder delays possession under RERA?",
+      a: "If the promoter fails to complete or give possession as per the agreement, the allottee may claim interest for every day of delay on amounts paid, and/or seek refund with interest, subject to state adjudication.",
+    },
+    {
+      id: "rate",
+      q: "What is the RERA interest rate for builder delay?",
+      a: "Most states use SBI highest MCLR + spread (commonly +2%). UP RERA commonly uses MCLR + 1% with monthly compounding. Always confirm the current MCLR on sbi.co.in and your state RERA rules.",
+    },
+    {
+      id: "calculator",
+      q: "How should I use a RERA compensation calculator?",
+      a: "Select your state authority, enter the amount paid, then the promised possession date and actual/end date. Interest is estimated for the delay window using that state’s SBI MCLR + spread rules.",
+    },
+    {
+      id: "compensation",
+      q: "What compensation can I receive for delayed possession?",
+      a: "Statutory interest on amounts paid is the core claim. Additional heads (rent, mental agony, litigation costs) depend on facts and the adjudicating officer’s discretion.",
+    },
+    {
+      id: "maharera",
+      q: "How does MahaRERA compensation for delay work?",
+      a: "MahaRERA generally applies simple interest at SBI highest MCLR + 2% on amounts actually paid, from the committed possession date (or payment date if later) until possession/refund.",
+    },
+    {
+      id: "no-possession",
+      q: "Builder is not giving possession after full payment — what next?",
+      a: "Collect your agreement, payment proofs, and RERA registration details; calculate statutory interest; send a demand/notice; and consider a Form M / state complaint before the RERA authority or adjudicating officer.",
+    },
+  ],
+  hi: [
+    {
+      id: "how-interest",
+      q: "देरी के ब्याज की गणना कैसे की जाती है?",
+      a: "रेरा अधिनियम की धारा 18 के तहत, आमतौर पर एसबीआई के उच्चतम एमसीएलआर प्लस एक राज्य-निर्धारित स्प्रेड (अक्सर +2%) पर ब्याज लिया जाता है। साधारण-ब्याज वाले राज्य मूलधन × दर × दिन ÷ 365 का उपयोग करते हैं। मासिक-चक्रवृद्धि वाले राज्य देरी के प्रत्येक महीने के लिए बकाया मूलधन पर मासिक दर लागू करते हैं।",
+    },
+    {
+      id: "force-majeure",
+      q: "क्या होगा यदि बिल्डर फोर्स मेज्योर (अपरिहार्य परिस्थिति) का दावा करता है?",
+      a: "फोर्स मेज्योर विस्तार आमतौर पर सक्षम रेरा प्राधिकरण द्वारा दिया जाना चाहिए। नियमित व्यावसायिक मुद्दों, अनुमोदन में देरी और श्रम की कमी को अक्सर फोर्स मेज्योर के रूप में खारिज कर दिया जाता है। ब्याज को केवल औपचारिक रूप से स्वीकृत विस्तार अवधियों के लिए ही बाहर रखा जा सकता है।",
+    },
+    {
+      id: "refund",
+      q: "क्या मैं ब्याज के साथ रिफंड का दावा कर सकता हूँ?",
+      a: "हाँ। धारा 18 आम तौर पर आवंटी को चुनने देती है: परियोजना के साथ बने रहें और कब्जा मिलने तक देरी के ब्याज का दावा करें, या वापस लें और निर्धारित दर पर ब्याज के साथ भुगतान की गई राशि का रिफंड मांगें।",
+    },
+    {
+      id: "parity",
+      q: "क्या रेरा समान ब्याज (समानता) लागू करता है?",
+      a: "कई राज्य नियमों का उद्देश्य समानता है: एक प्रमोटर डिफ़ॉल्ट आवंटी से जो ब्याज दर लेता है वह प्रमोटर द्वारा देरी के लिए देय दर से अधिक नहीं होनी चाहिए। सटीक शब्द राज्य के नियमों के अनुसार भिन्न होते हैं।",
+    },
+    {
+      id: "70-30",
+      q: "70/30 रिफंड नियम क्या है?",
+      a: "कुछ प्राधिकरण चरणबद्ध रिफंड या एस्क्रो-लिंक्ड भुगतान पर चर्चा करते हैं। हमेशा अपने राज्य के रेरा आदेशों और समझौते की शर्तों की जांच करें — कोई एक राष्ट्रव्यापी 70/30 फॉर्मूला नहीं है जो धारा 18 को ओवरराइड करता है।",
+    },
+    {
+      id: "10-percent",
+      q: "रेरा में 10% नियम क्या है?",
+      a: "खरीदार अक्सर बुकिंग-राशि / रद्दीकरण कटौती को संदर्भित करते हैं जो कुछ समझौतों या नियमों में लगभग 10% तक सीमित है। यह धारा 18 विलंब ब्याज से अलग है। विशिष्ट राज्य नियमों और अपने बिक्री के समझौते को सत्यापित करें।",
+    },
+    {
+      id: "possession-delay",
+      q: "यदि बिल्डर रेरा के तहत कब्जा देने में देरी करता है तो क्या होता है?",
+      a: "यदि प्रमोटर समझौते के अनुसार कब्जा देने में विफल रहता है, तो आवंटी भुगतान की गई राशि पर देरी के प्रत्येक दिन के लिए ब्याज का दावा कर सकता है, और/या ब्याज के साथ रिफंड मांग सकता है।",
+    },
+    {
+      id: "rate",
+      q: "बिल्डर देरी के लिए रेरा ब्याज दर क्या है?",
+      a: "अधिकांश राज्य एसबीआई उच्चतम एमसीएलआर + स्प्रेड (आमतौर पर +2%) का उपयोग करते हैं। यूपी रेरा आमतौर पर मासिक चक्रवृद्धि के साथ एमसीएलआर + 1% का उपयोग करता है। हमेशा sbi.co.in पर वर्तमान एमसीएलआर और अपने राज्य के रेरा नियमों की पुष्टि करें।",
+    },
+    {
+      id: "calculator",
+      q: "मुझे रेरा मुआवजा कैलकुलेटर का उपयोग कैसे करना चाहिए?",
+      a: "अपने राज्य प्राधिकरण का चयन करें, भुगतान की गई राशि दर्ज करें, फिर कब्जा देने की तिथि और वास्तविक/अंतिम तिथि दर्ज करें। ब्याज का अनुमान उस राज्य के एसबीआई एमसीएलआर + स्प्रेड नियमों का उपयोग करके देरी की अवधि के लिए लगाया जाता है।",
+    },
+    {
+      id: "compensation",
+      q: "कब्जा मिलने में देरी के लिए मुझे क्या मुआवजा मिल सकता है?",
+      a: "भुगतान की गई राशि पर वैधानिक ब्याज मुख्य दावा है। अतिरिक्त शीर्ष (किराया, मानसिक उत्पीड़न, मुकदमेबाजी लागत) तथ्यों और न्यायनिर्णायक अधिकारी के विवेक पर निर्भर करते हैं।",
+    },
+    {
+      id: "maharera",
+      q: "महारेरा में देरी के लिए मुआवजा कैसे काम करता है?",
+      a: "महारेरा आम तौर पर कब्जा देने की तारीख से कब्जा मिलने/रिफंड मिलने तक, वास्तव में भुगतान की गई राशि पर एसबीआई उच्चतम एमसीएलआर + 2% साधारण ब्याज दर लागू करता है।",
+    },
+    {
+      id: "no-possession",
+      q: "पूरा भुगतान करने के बाद भी बिल्डर कब्जा नहीं दे रहा है — आगे क्या करें?",
+      a: "अपना समझौता, भुगतान प्रमाण और रेरा पंजीकरण विवरण एकत्र करें; वैधानिक ब्याज की गणना करें; एक मांग/नोटिस भेजें; और रेरा प्राधिकरण या न्यायनिर्णायक अधिकारी के समक्ष फॉर्म एम / शिकायत दर्ज करने पर विचार करें।",
+    },
+  ],
+  mr: [
+    {
+      id: "how-interest",
+      q: "ताबा विलंब व्याजाची गणना कशी केली जाते?",
+      a: "रेरा कायद्याच्या कलम १८ अंतर्गत, सहसा एसबीआयच्या सर्वोच्च एमसीएलआर अधिक राज्य-विहित स्प्रेड (बऱ्याचदा +२%) वर व्याज आकारले जाते. साधे व्याज देणारी राज्ये मुद्दल × दर × दिवस ÷ ३६५ हे सूत्र वापरतात. मासिक चक्रवाढ व्याज देणारी राज्ये विलंबाच्या प्रत्येक महिन्यासाठी थकीत मुद्दलावर मासिक दर लागू करतात.",
+    },
+    {
+      id: "force-majeure",
+      q: "बिल्डरने फोर्स मेज्योर (अपरिहार्य परिस्थिती) चा दावा केल्यास काय करावे?",
+      a: "फोर्स मेज्योर मुदतवाढ सहसा सक्षम रेरा प्राधिकरणाद्वारे मंजूर केली जाणे आवश्यक असते. सामान्य व्यावसायिक अडचणी, मंजुरीमधील विलंब आणि कामगारांची टंचाई हे दावे नाकारले जातात. केवळ अधिकृतपणे मंजूर केलेल्या मुदतवाढीच्या कालावधीसाठी व्याज वगळले जाऊ शकते.",
+    },
+    {
+      id: "refund",
+      q: "मी व्याजासह परताव्याची (रिफंड) मागणी करू शकतो का?",
+      a: "होय. कलम १८ सामान्यतः खरेदीदाराला निवड करू देते: प्रकल्पासोबत सुरू ठेवा आणि ताबा मिळेपर्यंत विलंबाचे व्याज मागा, किंवा बाहेर पडा आणि भरलेल्या रकमेवर विहित दराने व्याजासह परतावा मागा.",
+    },
+    {
+      id: "parity",
+      q: "रेरा समान व्याज दर (पॅरिटी) नियम लागू करतो का?",
+      a: "बऱ्याच राज्यांचे नियम समानतेचे उद्दिष्ट ठेवतात: प्रमोटरने थकीत खरेदीदाराकडून आकारलेला व्याजदर हा ताबा विलंबासाठी प्रमोटरने देय असलेल्या दरापेक्षा जास्त नसावा. अचूक शब्दरचना राज्यानुसार बदलते.",
+    },
+    {
+      id: "70-30",
+      q: "७०/३० परतावा नियम काय आहे?",
+      a: "काही प्राधिकरणांचे आदेश किंवा नियम टप्प्याटप्प्याने परतावा किंवा एस्क्रो-लिंक्ड पेमेंटबद्दल बोलतात. नेहमी तुमच्या राज्याचे रेरा आदेश आणि खरेदी करारातील अटी तपासा — संपूर्ण देशात असा कोणताही एकच ७०/३० फॉर्म्युला नाही जो कलम १८ ला ओव्हरराइड करतो.",
+    },
+    {
+      id: "10-percent",
+      q: "रेरामधील १०% नियम काय आहे?",
+      a: "खरेदीदार सहसा बुकिंग-रक्कम / रद्दबातल कपातीचा संदर्भ देतात जी काही करारांमध्ये किंवा नियमांमध्ये १०% पर्यंत मर्यादित असते. हे कलम १८ विलंबाच्या व्याजापेक्षा वेगळे आहे. तुमचे राज्य रेरा नियम आणि खरेदी करार तपासून पहा.",
+    },
+    {
+      id: "possession-delay",
+      q: "बिल्डरने रेरा अंतर्गत ताबा देण्यास उशीर केल्यास काय होते?",
+      a: "प्रमोटर कराराप्रमाणे ताबा देण्यास अयशस्वी ठरल्यास, खरेदीदार भरलेल्या रकमेवर विलंबाच्या प्रत्येक दिवसासाठी व्याजाची मागणी करू शकतो किंवा व्याजासह संपूर्ण परतावा मागू शकतो.",
+    },
+    {
+      id: "rate",
+      q: "बिल्डर विलंबासाठी रेराचा व्याजदर काय आहे?",
+      a: "बहुतांश राज्ये एसबीआय सर्वोच्च एमसीएलआर + स्प्रेड (सामान्यतः +२%) वापरतात. यूपी रेरा सहसा मासिक चक्रवाढीसह एमसीएलआर + १% वापरते. नेहमी sbi.co.in वरील सद्य एमसीएलआर आणि तुमच्या राज्याचे रेरा नियम तपासून पहा.",
+    },
+    {
+      id: "calculator",
+      q: "मी रेरा भरपाई कॅल्क्युलेटर कसा वापरावा?",
+      a: "तुमचे राज्य निवडा, भरलेली रक्कम टाका, त्यानंतर वचन दिलेली ताबा तारीख आणि वास्तविक/अंतिम तारीख प्रविष्ट करा. व्याजाचा अंदाज त्या राज्याच्या एसबीआय एमसीएलआर + स्प्रेड नियमांनुसार लावला जातो.",
+    },
+    {
+      id: "compensation",
+      q: "ताबा मिळण्यास उशीर झाल्यास मला कोणती भरपाई मिळू शकते?",
+      a: "भरलेल्या रकमेवरील कायदेशीर व्याज हा मुख्य दावा आहे. इतर बाबी (भाडे, मानसिक त्रास, न्यायालयीन खर्च) प्रकरणातील तथ्ये आणि सक्षम अधिकाऱ्यांच्या निर्णयावर अवलंबून असतात.",
+    },
+    {
+      id: "maharera",
+      q: "महारेरा विलंबासाठी भरपाई कशी दिली जाते?",
+      a: "महारेरा सामान्यतः सदनिकेच्या वचन दिलेल्या ताबा तारखेपासून प्रत्यक्ष ताबा मिळेपर्यंत भरलेल्या रकमेवर एसबीआय सर्वोच्च एमसीएलआर + २% दराने साधे व्याज लागू करते.",
+    },
+    {
+      id: "no-possession",
+      q: "पूर्ण पेमेंट करूनही बिल्डर ताबा देत नाही — पुढे काय करावे?",
+      a: "खरेदी करार, पेमेंट पावती आणि रेरा नोंदणी तपशील गोळा करा; कायदेशीर व्याजाची गणना करा; प्रमोटरला कायदेशीर नोटीस पाठवा; आणि रेरा प्राधिकरणाकडे तक्रार दाखल करण्याचा विचार करा.",
+    },
+  ],
+  kn: [
+    {
+      id: "how-interest",
+      q: "ವಿಳಂಬದ ಬಡ್ಡಿಯನ್ನು ಹೇಗೆ ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತದೆ?",
+      a: "ರೇರಾ ಕಾಯ್ದೆಯ ಸೆಕ್ಷನ್ 18 ರ ಅಡಿಯಲ್ಲಿ, ಸಾಮಾನ್ಯವಾಗಿ ಎಸ್‌ಬಿಐನ ಗರಿಷ್ಠ ಎಂಸಿಎಲ್‌ಆರ್ ಮತ್ತು ರಾಜ್ಯ ನಿಗದಿಪಡಿಸಿದ ಸ್ಪ್ರೆಡ್ (ಸಾಮಾನ್ಯವಾಗಿ +2%) ಸೇರಿಸಿ ಬಡ್ಡಿ ವಿಧಿಸಲಾಗುತ್ತದೆ. ಸರಳ ಬಡ್ಡಿಯ ರಾಜ್ಯಗಳು ಅಸಲು × ದರ × ದಿನಗಳು ÷ 365 ಸೂತ್ರ ಬಳಸುತ್ತವೆ. ಮಾಸಿಕ ಚಕ್ರಬಡ್ಡಿಯ ರಾಜ್ಯಗಳು ಪ್ರತಿ ತಿಂಗಳ ವಿಳಂಬಕ್ಕೆ ಬಾಕಿ ಇರುವ ಅಸಲಿನ ಮೇಲೆ ಮಾಸಿಕ ದರವನ್ನು ಅನ್ವಯಿಸುತ್ತವೆ.",
+    },
+    {
+      id: "force-majeure",
+      q: "ಬಿಲ್ಡರ್ ಫೋರ್ಸ್ ಮೆಜರ್ (ಅನಿವಾರ್ಯ ಪರಿಸ್ಥಿತಿ) ಎಂದು ಕ್ಲೈಮ್ ಮಾಡಿದರೆ ಏನು ಮಾಡಬೇಕು?",
+      a: "ಫೋರ್ಸ್ ಮೆಜರ್ ವಿನಾಯಿತಿಗಳನ್ನು ಸಾಮಾನ್ಯವಾಗಿ ಸಕ್ಷಮ ರೇರಾ ಪ್ರಾಧಿಕಾರವು ಅನುಮೋದಿಸಬೇಕು. ನಿಯಮಿತ ವ್ಯಾಪಾರ ತೊಂದರೆಗಳು, ಅನುಮೋದನೆ ವಿಳಂಬಗಳು ಮತ್ತು ಕಾರ್ಮಿಕರ ಕೊರತೆಯನ್ನು ಫೋರ್ಸ್ ಮೆಜರ್ ಎಂದು ಪರಿಗಣಿಸುವುದಿಲ್ಲ. ಅಧಿಕೃತವಾಗಿ ಅನುಮೋದಿಸಲಾದ ವಿಸ್ತರಣಾ ಅವಧಿಗೆ ಮಾತ್ರ ಬಡ್ಡಿಯನ್ನು ಹೊರತುಪಡಿಸಬಹುದು.",
+    },
+    {
+      id: "refund",
+      q: "ನಾನು ಬಡ್ಡಿಯೊಂದಿಗೆ ಮರುಪಾವತಿ (ರಿಫಂಡ್) ಕ್ಲೈಮ್ ಮಾಡಬಹುದೇ?",
+      a: "ಹೌದು. ಸೆಕ್ಷನ್ 18 ರ ಪ್ರಕಾರ ಖರೀದಿದಾರರು ಎರಡು ಆಯ್ಕೆಗಳನ್ನು ಹೊಂದಿರುತ್ತಾರೆ: ಯೋಜನೆಯೊಂದಿಗೆ ಮುಂದುವರಿದು ಸ್ವಾಧೀನದವರೆಗೆ ವಿಳಂಬ ಬಡ್ಡಿಯನ್ನು ಪಡೆಯುವುದು, ಅಥವಾ ಯೋಜನೆಯಿಂದ ಹಿಂದೆ ಸರಿದು ಪಾವತಿಸಿದ ಮೊತ್ತವನ್ನು ನಿಗದಿತ ಬಡ್ಡಿಯೊಂದಿಗೆ ಮರುಪಾವತಿ ಪಡೆಯುವುದು.",
+    },
+    {
+      id: "parity",
+      q: "ರೇರಾ ಸಮಾನ ಬಡ್ಡಿ ದರ (ಪ್ಯಾರಿಟಿ) ನಿಯಮವನ್ನು ಅನ್ವಯಿಸುತ್ತದೆಯೇ?",
+      a: "ಅನೇಕ ರಾಜ್ಯಗಳ ನಿಯಮಗಳು ಸಮಾನತೆಯ ಗುರಿ ಹೊಂದಿವೆ: ಬಿಲ್ಡರ್ ವಿಳಂಬಕ್ಕೆ ಪಾವತಿಸಬೇಕಾದ ಬಡ್ಡಿ ದರವು ಖರೀದಿದಾರರಿಂದ ಬಿಲ್ಡರ್ ವಸೂಲಿ ಮಾಡುವ ಬಡ್ಡಿ ದರಕ್ಕಿಂತ ಕಡಿಮೆ ಇರಬಾರದು. ನಿಖರವಾದ ನಿಯಮಗಳು ರಾಜ್ಯದಿಂದ ರಾಜ್ಯಕ್ಕೆ ಬದಲಾಗುತ್ತವೆ.",
+    },
+    {
+      id: "70-30",
+      q: "70/30 ರ ಮರುಪಾವತಿ ನಿಯಮ ಎಂದರೇನು?",
+      a: "ಕೆಲವು ಪ್ರಾಧಿಕಾರಗಳು ಹಂತ-ಹಂತದ ಮರುಪಾವತಿ ಅಥವಾ ಎಸ್ಕ್ರೋ ಖಾತೆಯ ಮೂಲಕ ಪಾವತಿಗಳನ್ನು ಚರ್ಚಿಸುತ್ತವೆ. ಯಾವಾಗಲೂ ನಿಮ್ಮ ರಾಜ್ಯದ ರೇರಾ ಆದೇಶಗಳನ್ನು ಮತ್ತು ಒಪ್ಪಂದದ ನಿಯಮಗಳನ್ನು ಪರಿಶೀಲಿಸಿ — ಸೆಕ್ಷನ್ 18 ಅನ್ನು ಅತಿಕ್ರಮಿಸುವ ಯಾವುದೇ ಒಂದು ರಾಷ್ಟ್ರವ್ಯಾಪಿ 70/30 ಸೂತ್ರವಿಲ್ಲ.",
+    },
+    {
+      id: "10-percent",
+      q: "ರೇರಾದಲ್ಲಿ 10% ನಿಯಮ ಎಂದರೇನು?",
+      a: "ಖರೀದಿದಾರರು ಸಾಮಾನ್ಯವಾಗಿ ಬುಕಿಂಗ್ ಮೊತ್ತ ಅಥವಾ ರದ್ದತಿ ಕಡಿತಗಳನ್ನು ಉಲ್ಲೇಖಿಸುತ್ತಾರೆ, ಇದನ್ನು ಕೆಲವು ಒಪ್ಪಂದಗಳಲ್ಲಿ 10% ಕ್ಕೆ ಸೀಮಿತಗೊಳಿಸಲಾಗಿದೆ. ಇದು ಸೆಕ್ಷನ್ 18 ರ ವಿಳಂಬ ಬಡ್ಡಿಗಿಂತ ಭಿನ್ನವಾಗಿದೆ. ನಿಮ್ಮ ಮಾರಾಟ ಒಪ್ಪಂದ ಮತ್ತು ರಾಜ್ಯ ನಿಯಮಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
+    },
+    {
+      id: "possession-delay",
+      q: "ಬಿಲ್ಡರ್ ರೇರಾ ಅಡಿಯಲ್ಲಿ ಸ್ವಾಧೀನ ನೀಡಲು ವಿಳಂಬ ಮಾಡಿದರೆ ಏನಾಗುತ್ತದೆ?",
+      a: "ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಬಿಲ್ಡರ್ ಸ್ವಾಧೀನ ನೀಡಲು ವಿಫಲವಾದರೆ, ಖರೀದಿದಾರರು ಪಾವತಿಸಿದ ಮೊತ್ತದ ಮೇಲೆ ಪ್ರತಿ ದಿನದ ವಿಳಂಬಕ್ಕೆ ಬಡ್ಡಿಯನ್ನು ಕ್ಲೈಮ್ ಮಾಡಬಹುದು, ಅಥವಾ ಬಡ್ಡಿಯೊಂದಿಗೆ ಮರುಪಾವತಿಯನ್ನು ಕೇಳಬಹುದು.",
+    },
+    {
+      id: "rate",
+      q: "ಬಿಲ್ಡರ್ ವಿಳಂಬಕ್ಕೆ ರೇರಾ ಬಡ್ಡಿ ದರ ಎಷ್ಟು?",
+      a: "ಹೆಚ್ಚಿನ ರಾಜ್ಯಗಳು ಎಸ್‌ಬಿಐ ಗರಿಷ್ಠ ಎಂಸಿಎಲ್‌ಆರ್ + ಸ್ಪ್ರೆಡ್ (ಸಾಮಾನ್ಯವಾಗಿ +2%) ಅನ್ನು ಬಳಸುತ್ತವೆ. ಯುಪಿ ರೇರಾ ಸಾಮಾನ್ಯವಾಗಿ ಮಾಸಿಕ ಚಕ್ರಬಡ್ಡಿಯೊಂದಿಗೆ ಎಂಸಿಎಲ್‌ಆರ್ + 1% ಬಳಸುತ್ತದೆ. sbi.co.in ನಲ್ಲಿ ಪ್ರಸ್ತುತ ಎಂಸಿಎಲ್‌ಆರ್ ಮತ್ತು ನಿಮ್ಮ ರಾಜ್ಯದ ರೇರಾ ನಿಯಮಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
+    },
+    {
+      id: "calculator",
+      q: "ನಾನು ರೇರಾ ಪರಿಹಾರ ಕ್ಯಾಲ್ಕುಲೇಟರ್ ಅನ್ನು ಹೇಗೆ ಬಳಸಬೇಕು?",
+      a: "ನಿಮ್ಮ ರಾಜ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ, ಪಾವತಿಸಿದ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ, ನಂತರ ಸ್ವಾಧೀನ ದಿನಾಂಕ ಮತ್ತು ಕೊನೆಯ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ. ಆ ರಾಜ್ಯದ ನಿಯಮಗಳ ಪ್ರಕಾರ ವಿಳಂಬ ಅವಧಿಗೆ ಬಡ್ಡಿಯನ್ನು ಅಂದಾಜು ಮಾಡಲಾಗುತ್ತದೆ.",
+    },
+    {
+      id: "compensation",
+      q: "ವಿಳಂಬಿತ ಸ್ವಾಧೀನಕ್ಕಾಗಿ ನಾನು ಯಾವ ಪರಿಹಾರವನ್ನು ಪಡೆಯಬಹುದು?",
+      a: "ಪಾವತಿಸಿದ ಮೊತ್ತದ ಮೇಲಿನ ಶಾಸನಬದ್ಧ ಬಡ್ಡಿಯು ಮುಖ್ಯ ಕ್ಲೈಮ್ ಆಗಿದೆ. ಹೆಚ್ಚುವರಿ ಪರಿಹಾರಗಳು (ಬಾಡಿಗೆ, ಮಾನಸಿಕ ತೊಂದರೆ, ಕಾನೂನು ವೆಚ್ಚಗಳು) ಪ್ರಕರಣದ ಸತ್ಯಾಂಶಗಳು ಮತ್ತು ರೇರಾ ಪ್ರಾಧಿಕಾರದ ತೀರ್ಪನ್ನು ಅವಲಂಬಿಸಿವೆ.",
+    },
+    {
+      id: "maharera",
+      q: "ಮಹಾರೆರಾ ವಿಳಂಬ ಪರಿಹಾರ ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ?",
+      a: "ಮಹಾರೆರಾ ಸಾಮಾನ್ಯವಾಗಿ ಭರವಸೆ ನೀಡಿದ ಸ್ವಾಧೀನ ದಿನಾಂಕದಿಂದ ಸ್ವಾಧೀನಪಡಿಸಿಕೊಳ್ಳುವವರೆಗೆ ಪಾವತಿಸಿದ ಮೊತ್ತದ ಮೇಲೆ ಎಸ್‌ಬಿಐ ಗರಿಷ್ಠ ಎಂಸಿಎಲ್‌ಆರ್ + 2% ಸರಳ ಬಡ್ಡಿಯನ್ನು ಅನ್ವಯಿಸುತ್ತದೆ.",
+    },
+    {
+      id: "no-possession",
+      q: "ಪೂರ್ಣ ಪಾವತಿ ಮಾಡಿದ ನಂತರವೂ ಬಿಲ್ಡರ್ ಸ್ವಾಧೀನ ನೀಡುತ್ತಿಲ್ಲ — ಮುಂದೆ ಏನು ಮಾಡಬೇಕು?",
+      a: "ನಿಮ್ಮ ಒಪ್ಪಂದ, ಪಾವತಿ ರಶೀದಿಗಳು ಮತ್ತು ರೇರಾ ನೋಂದಣಿ ವಿವರಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ; ಶಾಸನಬದ್ಧ ಬಡ್ಡಿಯನ್ನು ಲೆಕ್ಕಹಾಕಿ; ಬಿಲ್ಡರ್‌ಗೆ ನೋಟಿಸ್ ಕಳುಹಿಸಿ; ಮತ್ತು ರೇರಾ ಪ್ರಾಧಿಕಾರಕ್ಕೆ ದೂರು ಸಲ್ಲಿಸುವುದನ್ನು ಪರಿಗಣಿಸಿ.",
+    },
+  ],
+};
+
+export function getFaqByLanguage(lang = "en") {
+  return FAQ_TRANSLATIONS[lang] || FAQ_TRANSLATIONS.en;
+}

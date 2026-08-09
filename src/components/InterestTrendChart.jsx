@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { buildInterestTimeline } from "../utils/interestTimeline";
 import { formatINR } from "../utils/reraInterest";
+import { translate } from "../utils/translations";
 
 const WIDTH = 760;
 const HEIGHT = 340;
@@ -22,7 +23,7 @@ function formatAxisMoney(v) {
   return `₹${Math.round(v)}`;
 }
 
-export default function InterestTrendChart({ rows }) {
+export default function InterestTrendChart({ rows, language = "en" }) {
   const svgRef = useRef(null);
   const [hover, setHover] = useState(null);
 
@@ -130,7 +131,7 @@ export default function InterestTrendChart({ rows }) {
   if (!geometry) {
     return (
       <div className="chart-empty muted">
-        Your interest chart will appear here after a calculation.
+        {translate("chart_empty", language)}
       </div>
     );
   }
@@ -202,38 +203,34 @@ export default function InterestTrendChart({ rows }) {
   return (
     <div className="interest-chart">
       <div className="chart-intro">
-        <h3>How your delay interest grows</h3>
+        <h3>{translate("chart_title", language)}</h3>
         <p>
-          The <strong className="text-interest">green line</strong> shows how much interest builds up
-          as time passes. The <strong className="text-rate">orange line</strong> shows the interest
-          rate used in each period. Bank rates can change over the years — when they do, the orange
-          line steps up or down.
+          {translate("chart_lead", language)}
         </p>
         <p className="chart-hint">
-          Tip: move your mouse (or finger) across the chart to see the rate and interest for any
-          period.
+          {translate("chart_hint", language)}
         </p>
       </div>
 
       <div className="chart-summary-pills">
         <div className="chart-pill pill-interest">
-          <span>Total interest</span>
+          <span>{translate("chart_total_interest", language)}</span>
           <strong>{formatINR(finalInterest)}</strong>
         </div>
         <div className="chart-pill">
-          <span>Rate periods</span>
+          <span>{translate("chart_rate_periods", language)}</span>
           <strong>{rateCount}</strong>
         </div>
         <div className="chart-pill pill-rate">
-          <span>Times the rate changed</span>
+          <span>{translate("chart_rate_changes", language)}</span>
           <strong>{changeCount}</strong>
         </div>
       </div>
 
       <div className="chart-legend">
-        <span className="legend-item legend-interest">Interest amount over time</span>
-        <span className="legend-item legend-rate">Interest rate in that period</span>
-        <span className="legend-item legend-change">Rate changed here</span>
+        <span className="legend-item legend-interest">{translate("chart_legend_interest", language)}</span>
+        <span className="legend-item legend-rate">{translate("chart_legend_rate", language)}</span>
+        <span className="legend-item legend-change">{translate("chart_legend_change", language)}</span>
       </div>
 
       <div className="chart-frame">
@@ -376,7 +373,7 @@ export default function InterestTrendChart({ rows }) {
             )}
 
             <text x={PAD.left + 4} y={PAD.top - 10} className="chart-axis-title">
-              Interest amount
+              {translate("chart_axis_interest", language)}
             </text>
             <text
               x={WIDTH - PAD.right - 4}
@@ -384,7 +381,7 @@ export default function InterestTrendChart({ rows }) {
               textAnchor="end"
               className="chart-axis-title chart-axis-rate"
             >
-              Interest rate
+              {translate("chart_axis_rate", language)}
             </text>
           </svg>
         </div>
@@ -395,27 +392,31 @@ export default function InterestTrendChart({ rows }) {
               {formatFriendlyDate(tip.from)} – {formatFriendlyDate(tip.to)}
             </strong>
             <div className="tip-block">
-              <span className="tip-label">Interest rate in this period</span>
-              <span className="tip-value accent-rate">{Number(tip.annualRate).toFixed(2)}% per year</span>
+              <span className="tip-label">{translate("chart_tip_rate_title", language)}</span>
+              <span className="tip-value accent-rate">
+                {Number(tip.annualRate).toFixed(2)}% {language === "hi" ? "प्रति वर्ष" : language === "mr" ? "प्रति वर्ष" : language === "kn" ? "ಪ್ರತಿ ವರ್ಷ" : "per year"}
+              </span>
             </div>
             <div className="tip-block muted">
-              Made of bank base rate {tip.mclr != null ? `${Number(tip.mclr).toFixed(2)}%` : "—"}{" "}
-              + RERA extra {tip.spread != null ? `${Number(tip.spread).toFixed(2)}%` : "—"}
+              {translate("chart_tip_base_mclr", language)} {tip.mclr != null ? `${Number(tip.mclr).toFixed(2)}%` : "—"}{" "}
+              {translate("chart_tip_rera_extra", language)} {tip.spread != null ? `${Number(tip.spread).toFixed(2)}%` : "—"}
             </div>
             <div className="tip-divider" />
             <div className="tip-block">
-              <span className="tip-label">Interest built up till here</span>
+              <span className="tip-label">{translate("chart_tip_built_up", language)}</span>
               <span className="tip-value">{formatINR(tip.cumulativeInterest)}</span>
             </div>
             <div className="tip-block">
-              <span className="tip-label">Interest added in this period</span>
+              <span className="tip-label">{translate("chart_tip_added_period", language)}</span>
               <span className="tip-value">{formatINR(tip.segmentInterest)}</span>
             </div>
-            <div className="tip-foot muted">{tip.days} days at this rate</div>
+            <div className="tip-foot muted">
+              {tip.days} {language === "hi" ? "दिन इस दर पर" : language === "mr" ? "दिवस या दराने" : language === "kn" ? "ದಿನಗಳು ಈ ದರದಲ್ಲಿ" : "days at this rate"}
+            </div>
           </div>
         ) : (
           <div className="chart-tooltip-placeholder">
-            Hover or tap anywhere on the chart to explore a period
+            {translate("chart_tip_placeholder", language)}
           </div>
         )}
       </div>
