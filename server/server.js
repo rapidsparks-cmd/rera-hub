@@ -47,6 +47,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 // Pricing constants in INR
 const PRICE_BREAKDOWN = 29; // ₹29 for breakdown report
 const PRICE_FORM_M = 49;    // ₹49 for Form M (includes breakdown report)
+const PRICE_LEGAL_GUIDANCE = 299; // ₹299 for Expert E2E Legal Guidance
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 const app = express();
@@ -96,14 +97,14 @@ function normalizeReraId(id) {
 }
 
 // ─── POST /api/create-order ───────────────────────────────────────────────────
-// Creates a Razorpay order for a specified plan ('breakdown' | 'form_m') and reraId.
-// Body: { plan: 'breakdown' | 'form_m', reraId: string }
+// Creates a Razorpay order for a specified plan ('breakdown' | 'form_m' | 'legal_guidance') and reraId.
+// Body: { plan: 'breakdown' | 'form_m' | 'legal_guidance', reraId: string }
 app.post('/api/create-order', async (req, res) => {
   const decoded = await verifyToken(req, res);
   if (!decoded) return;
 
   const { uid, email } = decoded;
-  const plan = req.body.plan === 'form_m' ? 'form_m' : 'breakdown';
+  const plan = ['form_m', 'breakdown', 'legal_guidance'].includes(req.body.plan) ? req.body.plan : 'breakdown';
   const reraId = normalizeReraId(req.body.reraId);
 
   try {
@@ -112,11 +113,16 @@ app.post('/api/create-order', async (req, res) => {
     const entSnap = await entitlementRef.get();
     const existing = entSnap.exists ? entSnap.data() : null;
 
-    let price = plan === 'form_m' ? PRICE_FORM_M : PRICE_BREAKDOWN;
+    let price = PRICE_BREAKDOWN;
+    if (plan === 'form_m') price = PRICE_FORM_M;
+    else if (plan === 'legal_guidance') price = PRICE_LEGAL_GUIDANCE;
 
     // Check if user already owns access
     if (existing) {
-      if (existing.hasFormM) {
+      if (plan === 'legal_guidance' && existing.hasLegalGuidance) {
+        return res.status(200).json({ alreadyUnlocked: true, plan: 'legal_guidance', reraId });
+      }
+      if (existing.hasFormM && plan !== 'legal_guidance') {
         // User already has full access to this RERA ID
         return res.status(200).json({ alreadyUnlocked: true, plan: 'form_m', reraId });
       }
@@ -235,6 +241,7 @@ app.post('/api/verify-payment', async (req, res) => {
           reraId: reraId,
           hasBreakdown: true,
           hasFormM: plan === 'form_m' || existing.hasFormM === true,
+          hasLegalGuidance: plan === 'legal_guidance' || existing.hasLegalGuidance === true,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         { merge: true }
@@ -275,14 +282,14 @@ app.get('/api/user-status', async (req, res) => {
         entitlements[data.reraId] = {
           hasBreakdown: data.hasBreakdown === true || data.hasFormM === true,
           hasFormM: data.hasFormM === true,
+          hasLegalGuidance: data.hasLegalGuidance === true,
         };
       }
     });
 
     return res.status(200).json({
       entitlements,
-      // For backwards compatibility:
-      isPremium: Object.values(entitlements).some((e) => e.hasFormM || e.hasBreakdown),
+      isPremium: Object.values(entitlements).some((e) => e.hasFormM || e.hasBreakdown || e.hasLegalGuidance),
     });
   } catch (err) {
     console.error('[user-status] Firestore error:', err.message);
@@ -361,7 +368,8 @@ app.post('/webhooks/razorpay', async (req, res) => {
       const existing = entSnap.exists ? entSnap.data() : {};
 
       const isFormM = plan === 'form_m' || existing.hasFormM === true;
-      const isBreakdown = true; // Form M includes breakdown as well!
+      const isLegalGuidance = plan === 'legal_guidance' || existing.hasLegalGuidance === true;
+      const isBreakdown = true;
 
       await entitlementRef.set(
         {
@@ -369,6 +377,7 @@ app.post('/webhooks/razorpay', async (req, res) => {
           reraId: reraId,
           hasBreakdown: isBreakdown,
           hasFormM: isFormM,
+          hasLegalGuidance: isLegalGuidance,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         { merge: true }

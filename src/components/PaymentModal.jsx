@@ -49,7 +49,12 @@ export default function PaymentModal({
   const normalizedReraId = (reraId.trim() || 'DEFAULT').toUpperCase();
   const alreadyHasBreakdown = hasBreakdownAccess(normalizedReraId);
 
-  let price = selectedPlan === 'form_m' ? 49 : 29;
+  let price = 29;
+  if (selectedPlan === 'form_m') {
+    price = 49;
+  } else if (selectedPlan === 'legal_guidance') {
+    price = 299;
+  }
   let isUpgrade = false;
   if (selectedPlan === 'form_m' && alreadyHasBreakdown) {
     price = 20;
@@ -124,9 +129,10 @@ export default function PaymentModal({
 
       order = data;
     } catch (err) {
-      // If backend is unreachable or not configured, fallback to Demo unlock
-      console.warn('[PaymentModal] Live order creation failed, offering Demo mode:', err.message);
-      return handleDemoPay();
+      console.warn('[PaymentModal] Live order creation failed:', err.message);
+      setPhase('error');
+      setErrorMsg(`Failed to initiate live payment: ${err.message}. Please check if your backend server is running and configured.`);
+      return;
     }
 
     const options = {
@@ -135,7 +141,9 @@ export default function PaymentModal({
       currency: order.currency,
       name: 'RERA Hub',
       description:
-        selectedPlan === 'form_m'
+        selectedPlan === 'legal_guidance'
+          ? `Expert E2E Legal Guidance (${normalizedReraId})`
+          : selectedPlan === 'form_m'
           ? `Form M Litigation (${normalizedReraId})`
           : `Breakdown Report (${normalizedReraId})`,
       order_id: order.id,
@@ -270,7 +278,7 @@ export default function PaymentModal({
             </div>
 
             {/* Plan selection cards */}
-            <div className="plan-cards">
+            <div className="plan-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
               {/* Plan 1: Breakdown Report ₹29 */}
               <div
                 className={`plan-card ${selectedPlan === 'breakdown' ? 'selected' : ''}`}
@@ -298,7 +306,6 @@ export default function PaymentModal({
                 className={`plan-card ${selectedPlan === 'form_m' ? 'selected' : ''}`}
                 onClick={() => setSelectedPlan('form_m')}
               >
-                <div className="plan-badge-tag">RECOMMENDED</div>
                 <div className="plan-card-header">
                   <div className="plan-title-wrap">
                     <Scale size={18} className="plan-icon" />
@@ -316,7 +323,31 @@ export default function PaymentModal({
                   <li><strong>Includes Breakdown Report</strong></li>
                   <li>Complete Form M legal complaint (Word + PDF)</li>
                   <li>Legal section 18 formatting ready for filing</li>
-                  <li>Unlimited edits & downloads for this RERA ID</li>
+                </ul>
+              </div>
+
+              {/* Plan 3: E2E Expert Legal Guidance ₹299 (includes Breakdown & Form M) */}
+              <div
+                className={`plan-card ${selectedPlan === 'legal_guidance' ? 'selected' : ''}`}
+                onClick={() => setSelectedPlan('legal_guidance')}
+                style={{ position: 'relative' }}
+              >
+                <div className="plan-badge-tag" style={{ background: '#0d9488' }}>BEST VALUE</div>
+                <div className="plan-card-header">
+                  <div className="plan-title-wrap">
+                    <Scale size={18} className="plan-icon" style={{ color: '#0d9488' }} />
+                    <div>
+                      <strong>Expert Legal Guidance</strong>
+                      <span className="plan-price" style={{ color: '#0d9488' }}>₹299</span>
+                    </div>
+                  </div>
+                  {selectedPlan === 'legal_guidance' && <Check size={16} className="plan-check" />}
+                </div>
+                <ul className="plan-perks">
+                  <li><strong>Includes Breakdown & Form M</strong></li>
+                  <li>Advocate representation details</li>
+                  <li>Direct Phone & Email consultation</li>
+                  <li>Adv. Jaydeep Thakur consultation</li>
                 </ul>
               </div>
             </div>

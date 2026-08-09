@@ -138,6 +138,7 @@ function AppShell() {
             <>
               <Link to="/">Change state</Link>
               <a href="#faq">Legal FAQ</a>
+              <a href="#expert-legal-advice" className="nav-expert-advice-btn" style={{ color: '#0d9488', fontWeight: '600' }}>Expert Legal Advice</a>
             </>
           )}
           <select

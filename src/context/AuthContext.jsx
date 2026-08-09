@@ -114,6 +114,7 @@ export function AuthProvider({ children }) {
       [key]: {
         hasBreakdown: true,
         hasFormM: plan === 'form_m' || existing.hasFormM === true,
+        hasLegalGuidance: plan === 'legal_guidance' || existing.hasLegalGuidance === true,
       },
     };
     saveLocalEntitlements(updated);
@@ -147,7 +148,18 @@ export function AuthProvider({ children }) {
     [entitlements]
   );
 
-  const isAnyPremium = Object.values(entitlements).some((e) => e.hasFormM || e.hasBreakdown);
+  const hasLegalGuidanceAccess = useCallback(
+    (reraId) => {
+      const key = normalizeId(reraId);
+      const ent = entitlements[key];
+      if (ent && ent.hasLegalGuidance === true) return true;
+      if (entitlements['DEFAULT']?.hasLegalGuidance === true) return true;
+      return Object.values(entitlements).some((e) => e.hasLegalGuidance === true);
+    },
+    [entitlements]
+  );
+
+  const isAnyPremium = Object.values(entitlements).some((e) => e.hasFormM || e.hasBreakdown || e.hasLegalGuidance);
 
   // ── Sign-in helpers ────────────────────────────────────────────────────────
   const loginWithGoogle = async () => {
@@ -253,6 +265,7 @@ export function AuthProvider({ children }) {
     isFirebaseConfigured,
     hasBreakdownAccess,
     hasFormMAccess,
+    hasLegalGuidanceAccess,
     loginWithGoogle,
     loginWithEmail,
     registerWithEmail,
