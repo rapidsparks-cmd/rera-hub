@@ -278,7 +278,7 @@ export default function PaymentModal({
             </div>
 
             {/* Plan selection cards */}
-            <div className="plan-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+            <div className="plan-cards">
               {/* Plan 1: Breakdown Report ₹29 */}
               <div
                 className={`plan-card ${selectedPlan === 'breakdown' ? 'selected' : ''}`}
@@ -294,11 +294,9 @@ export default function PaymentModal({
                   </div>
                   {selectedPlan === 'breakdown' && <Check size={16} className="plan-check" />}
                 </div>
-                <ul className="plan-perks">
-                  <li>Full interest calculation summary</li>
-                  <li>Print & PDF export options</li>
-                  <li>Unlimited edits for this RERA ID</li>
-                </ul>
+                <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
+                  Full interest calculation report with PDF/print options.
+                </p>
               </div>
 
               {/* Plan 2: Form M Litigation ₹49 (includes Breakdown Report) */}
@@ -319,11 +317,9 @@ export default function PaymentModal({
                   </div>
                   {selectedPlan === 'form_m' && <Check size={16} className="plan-check" />}
                 </div>
-                <ul className="plan-perks">
-                  <li><strong>Includes Breakdown Report</strong></li>
-                  <li>Complete Form M legal complaint (Word + PDF)</li>
-                  <li>Legal section 18 formatting ready for filing</li>
-                </ul>
+                <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
+                  Draft your official RERA complaint petition (Word + PDF).
+                </p>
               </div>
 
               {/* Plan 3: E2E Expert Legal Guidance ₹299 (includes Breakdown & Form M) */}
@@ -343,12 +339,9 @@ export default function PaymentModal({
                   </div>
                   {selectedPlan === 'legal_guidance' && <Check size={16} className="plan-check" />}
                 </div>
-                <ul className="plan-perks">
-                  <li><strong>Includes Breakdown & Form M</strong></li>
-                  <li>Advocate representation details</li>
-                  <li>Direct Phone & Email consultation</li>
-                  <li>Adv. Jaydeep Thakur consultation</li>
-                </ul>
+                <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
+                  E2E representation & advice by Adv. Jaydeep Thakur.
+                </p>
               </div>
             </div>
 
