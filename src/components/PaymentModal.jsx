@@ -164,7 +164,7 @@ export default function PaymentModal({
       theme: { color: '#0f766e' },
       modal: {
         ondismiss: () => {
-          if (phase === 'loading') setPhase('idle');
+          setPhase('idle');
         },
       },
       handler: async (response) => {

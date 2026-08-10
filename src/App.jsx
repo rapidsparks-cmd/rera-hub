@@ -138,7 +138,22 @@ function AppShell() {
             <>
               <Link to="/">Change state</Link>
               <a href="#faq">Legal FAQ</a>
-              <a href="#expert-legal-advice" className="nav-expert-advice-btn" style={{ color: '#0d9488', fontWeight: '600' }}>Expert Legal Advice</a>
+              <a
+                href="#expert-legal-advice"
+                className="nav-expert-advice-btn"
+                style={{ color: '#0d9488', fontWeight: '600' }}
+                onClick={(e) => {
+                  const target = document.getElementById('expert-legal-advice');
+                  if (target) {
+                    // Let default hash scroll handle it
+                  } else {
+                    e.preventDefault();
+                    window.dispatchEvent(new CustomEvent('open-legal-guidance'));
+                  }
+                }}
+              >
+                Expert Legal Advice
+              </a>
             </>
           )}
           <select

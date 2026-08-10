@@ -118,6 +118,19 @@ export default function ReraDesk({ language = "en", stateId }) {
   }, []);
 
   useEffect(() => {
+    const handleOpenGuidance = () => {
+      if (!user) {
+        setAuthModalOpen(true);
+      } else {
+        setTargetPaymentPlan("legal_guidance");
+        setPaymentModalOpen(true);
+      }
+    };
+    window.addEventListener('open-legal-guidance', handleOpenGuidance);
+    return () => window.removeEventListener('open-legal-guidance', handleOpenGuidance);
+  }, [user]);
+
+  useEffect(() => {
     setResult(null);
   }, [stateId]);
 
