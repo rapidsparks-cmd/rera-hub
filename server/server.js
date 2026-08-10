@@ -143,6 +143,12 @@ app.post('/api/create-order', async (req, res) => {
       }
     }
 
+    if (!razorpay) {
+      return res.status(500).json({
+        error: 'Razorpay API is not configured on the backend. Please verify that RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are set in the Render environment variables.'
+      });
+    }
+
     const order = await razorpay.orders.create({
       amount: price * 100, // paise
       currency: 'INR',
