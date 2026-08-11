@@ -11,8 +11,8 @@ export default function ExpertAdvocateCard({ advocate, isUnlocked = false, onCon
     location = 'Bangalore',
     practiceArea = 'Criminal + 2 more',
     maskedPhone = '+91 6644****52',
-    fullPhone = '+91 98451 26452',
-    avatar = '/avatars/female_advocate.png',
+    fullPhone = '+91 98451 66452',
+    avatar = '/avatars/male_advocate.png',
     isVerified = true,
   } = advocate || {};
 
@@ -36,7 +36,7 @@ export default function ExpertAdvocateCard({ advocate, isUnlocked = false, onCon
           alt={name}
           className="advocate-avatar-img"
           onError={(e) => {
-            e.target.src = '/avatars/female_advocate.png';
+            e.target.src = '/avatars/male_advocate.png';
           }}
         />
         {isVerified && (

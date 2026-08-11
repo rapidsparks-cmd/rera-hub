@@ -1,108 +1,74 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin } from "lucide-react";
-import {
-  APPLICABLE_RERA_STATES,
-  MOHUA_RERA_DIRECTORY_URL,
-  methodLabel,
-} from "../data/reraStates";
-import { getCurrentHighestMclr, refreshMclrFromSbi } from "../services/mclrService";
-import { getCurrentSpreadRule } from "../services/stateSpreadService";
+import { Scale, Calculator, ArrowRight } from "lucide-react";
+import { MOHUA_RERA_DIRECTORY_URL } from "../data/reraStates";
 
 export default function StateLanding() {
   const navigate = useNavigate();
-  const [stateId, setStateId] = useState("");
-  const [error, setError] = useState("");
-  const [latestMclr, setLatestMclr] = useState(() => getCurrentHighestMclr());
-
-  useEffect(() => {
-    refreshMclrFromSbi().then((meta) => {
-      if (meta.latestHighest != null) setLatestMclr(meta.latestHighest);
-    });
-  }, []);
-
-  const selected = APPLICABLE_RERA_STATES.find((s) => s.id === stateId);
-  const selectedSpread = stateId ? getCurrentSpreadRule(stateId) : null;
-
-  const handleContinue = (e) => {
-    e.preventDefault();
-    if (!stateId) {
-      setError("Please select your project’s RERA state to continue.");
-      return;
-    }
-    navigate(`/calculator/${stateId}`);
-  };
 
   return (
     <div className="landing">
       <div className="landing-backdrop" aria-hidden="true" />
-      <div className="landing-modal" role="dialog" aria-labelledby="landing-title" aria-modal="true">
-        <p className="eyebrow">RERA Hub</p>
-        <h1 id="landing-title">Select your project state</h1>
+      <div className="landing-modal landing-modal-large" role="dialog" aria-labelledby="landing-title" aria-modal="true">
+        <p className="eyebrow">RERA Hub Platform</p>
+        <h1 id="landing-title">Select a Service</h1>
         <p className="landing-lead">
-          Interest formulas differ by state RERA authority. Choose where the project is registered
-          to open the matching Section 18 calculator.
+          Choose whether you need 1-on-1 expert legal advice from senior RERA advocates or want to calculate Section 18 delay interest.
         </p>
 
-        <form onSubmit={handleContinue} className="landing-form">
-          <label className="field">
-            <span className="field-label">State / RERA authority</span>
-            <div className="select-wrap landing-select">
-              <MapPin size={16} />
-              <select
-                value={stateId}
-                onChange={(e) => {
-                  setStateId(e.target.value);
-                  setError("");
-                }}
-                required
-              >
-                <option value="" disabled>
-                  Choose a RERA-applicable state…
-                </option>
-                {APPLICABLE_RERA_STATES.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </label>
-
-          {selected && selectedSpread && (
-            <div className="landing-preview">
-              <strong>{selected.short}</strong>
-              <span>
-                {methodLabel(selectedSpread.method)} · SBI highest MCLR + {selectedSpread.spreadPct}%
-                {latestMclr != null
-                  ? ` (today ≈ ${(Number(latestMclr) + selectedSpread.spreadPct).toFixed(2)}%)`
-                  : ""}
-              </span>
+        {/* 2 Landing Cards Selection ONLY */}
+        <div className="landing-options-grid" style={{ marginTop: 24 }}>
+          {/* Card 1: Expert Legal Advice */}
+          <div
+            className="option-card"
+            onClick={() => navigate("/expert-legal-advice")}
+            role="button"
+            tabIndex={0}
+          >
+            <div>
+              <div className="option-badge">
+                <Scale size={14} /> Legal Support
+              </div>
+              <h3>Expert Legal Advice</h3>
               <p>
-                Applicable from {selectedSpread.applicableFrom}
-                {selectedSpread.applicableTo ? ` to ${selectedSpread.applicableTo}` : " (open-ended)"}
-                {" · "}
-                verified {selectedSpread.verifiedOn}
+                Connect 1-on-1 with senior RERA Advocates for Form M legal review, builder delay recovery & consultation.
               </p>
-              {selected.blurb && <p>{selected.blurb}</p>}
             </div>
-          )}
+            <div className="option-action">
+              <span>View Verified Lawyer & Unlock</span>
+              <ArrowRight size={14} />
+            </div>
+          </div>
 
-          {error && <p className="form-error">{error}</p>}
+          {/* Card 2: RERA Interest Calculator */}
+          <div
+            className="option-card"
+            onClick={() => navigate("/select-state")}
+            role="button"
+            tabIndex={0}
+          >
+            <div>
+              <div className="option-badge badge-teal">
+                <Calculator size={14} /> Calculator
+              </div>
+              <h3>RERA Interest Calculator</h3>
+              <p>
+                Calculate Section 18 builder delay compensation & statutory interest across all applicable Indian states.
+              </p>
+            </div>
+            <div className="option-action">
+              <span>Select State & Calculate</span>
+              <ArrowRight size={14} />
+            </div>
+          </div>
+        </div>
 
-          <button type="submit" className="btn btn-accent btn-lg" disabled={!stateId}>
-            Continue to calculator
-          </button>
-        </form>
-
-        <p className="landing-note">
+        <p className="landing-note" style={{ marginTop: 32 }}>
           Only States/UTs listed by the Ministry of Housing and Urban Affairs (MoHUA) with an
-          operational RERA portal are shown. Source:{" "}
+          operational RERA portal are supported. Source:{" "}
           <a href={MOHUA_RERA_DIRECTORY_URL} target="_blank" rel="noreferrer">
             MoHUA RERA Authorities directory
           </a>
-          . Excluded where MoHUA marks “Website Not Setup” (Arunachal Pradesh, Manipur, Mizoram,
-          Nagaland, Sikkim, Ladakh).
+          .
         </p>
       </div>
     </div>

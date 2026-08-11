@@ -139,7 +139,7 @@ export default function ExpertAdviceModal({
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                rows={3}
+                rows={2}
                 placeholder="Mention builder name, total delay period, or specific legal questions..."
               />
             </label>

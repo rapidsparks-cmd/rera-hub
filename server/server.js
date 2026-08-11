@@ -120,26 +120,35 @@ app.post('/api/create-order', async (req, res) => {
     const entSnap = await entitlementRef.get();
     const existing = entSnap.exists ? entSnap.data() : null;
 
-    let price = PRICE_BREAKDOWN;
-    if (plan === 'form_m') price = PRICE_FORM_M;
-    else if (plan === 'legal_guidance') price = PRICE_LEGAL_GUIDANCE;
+    let price = PRICE_BREAKDOWN; // 29
+    if (plan === 'form_m') {
+      price = PRICE_FORM_M; // 49
+    } else if (plan === 'legal_guidance') {
+      price = PRICE_LEGAL_GUIDANCE; // 299
+    }
 
-    // Check if user already owns access
+    // Check if user already owns access or qualifies for upgrade discount
     if (existing) {
-      if (plan === 'legal_guidance' && existing.hasLegalGuidance) {
-        return res.status(200).json({ alreadyUnlocked: true, plan: 'legal_guidance', reraId });
-      }
-      if (existing.hasFormM && plan !== 'legal_guidance') {
-        // User already has full access to this RERA ID
-        return res.status(200).json({ alreadyUnlocked: true, plan: 'form_m', reraId });
-      }
-      if (plan === 'breakdown' && existing.hasBreakdown) {
-        // User already owns breakdown for this RERA ID
-        return res.status(200).json({ alreadyUnlocked: true, plan: 'breakdown', reraId });
-      }
-      // If user owns breakdown and is buying form_m -> upgrade price is ₹20 (49 - 29)
-      if (plan === 'form_m' && existing.hasBreakdown) {
-        price = PRICE_FORM_M - PRICE_BREAKDOWN; // ₹20
+      if (plan === 'legal_guidance') {
+        if (existing.hasLegalGuidance) {
+          return res.status(200).json({ alreadyUnlocked: true, plan: 'legal_guidance', reraId });
+        }
+        if (existing.hasFormM) {
+          price = PRICE_LEGAL_GUIDANCE - PRICE_FORM_M; // ₹250
+        } else if (existing.hasBreakdown) {
+          price = PRICE_LEGAL_GUIDANCE - PRICE_BREAKDOWN; // ₹270
+        }
+      } else if (plan === 'form_m') {
+        if (existing.hasFormM) {
+          return res.status(200).json({ alreadyUnlocked: true, plan: 'form_m', reraId });
+        }
+        if (existing.hasBreakdown) {
+          price = PRICE_FORM_M - PRICE_BREAKDOWN; // ₹20
+        }
+      } else if (plan === 'breakdown') {
+        if (existing.hasBreakdown) {
+          return res.status(200).json({ alreadyUnlocked: true, plan: 'breakdown', reraId });
+        }
       }
     }
 

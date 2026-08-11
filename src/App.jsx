@@ -7,6 +7,9 @@ import AuthModal from "./components/AuthModal";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { isApplicableStateId, getStateById } from "./data/reraStates";
 
+import ExpertLegalAdvicePage from "./components/ExpertLegalAdvicePage";
+import SelectStatePage from "./components/SelectStatePage";
+
 function CalculatorRoute({ language }) {
   const { stateId } = useParams();
   if (!isApplicableStateId(stateId)) {
@@ -134,26 +137,17 @@ function AppShell() {
           <span>Section 18 compensation calculator</span>
         </Link>
         <nav className="header-nav">
+          <Link
+            to="/expert-legal-advice"
+            className="nav-expert-advice-btn"
+            style={{ color: '#0d9488', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+          >
+            ⚖️ Expert Legal Advice
+          </Link>
           {onCalculator && (
             <>
               <Link to="/">Change state</Link>
               <a href="#faq">Legal FAQ</a>
-              <a
-                href="#expert-legal-advice"
-                className="nav-expert-advice-btn"
-                style={{ color: '#0d9488', fontWeight: '600' }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const target = document.getElementById('expert-legal-advice');
-                  if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    window.dispatchEvent(new CustomEvent('open-legal-guidance'));
-                  }
-                }}
-              >
-                Expert Legal Advice
-              </a>
             </>
           )}
           <select
@@ -180,6 +174,8 @@ function AppShell() {
 
       <Routes>
         <Route path="/" element={<StateLanding />} />
+        <Route path="/select-state" element={<SelectStatePage />} />
+        <Route path="/expert-legal-advice" element={<ExpertLegalAdvicePage />} />
         <Route path="/calculator/:stateId" element={<CalculatorRoute language={language} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

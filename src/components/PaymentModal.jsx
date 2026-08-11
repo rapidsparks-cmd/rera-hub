@@ -6,7 +6,10 @@ const RENDER_API_URL = import.meta.env.VITE_RENDER_API_URL || '';
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
 
 /**
- * PaymentModal — Tiered Razorpay checkout flow with Local Demo fallback.
+ * PaymentModal — Tiered Razorpay checkout flow supporting 3 services:
+ * 1. Breakdown Report (₹29)
+ * 2. Form M Litigation (₹49, upgrade ₹20 if breakdown owned)
+ * 3. Expert Legal Guidance (₹299, upgrade ₹250 if Form M owned, ₹270 if breakdown owned)
  */
 export default function PaymentModal({
   isOpen,
@@ -15,7 +18,7 @@ export default function PaymentModal({
   defaultPlan = 'form_m',
   initialReraId = '',
 }) {
-  const { user, hasBreakdownAccess, refreshEntitlements, unlockDemoEntitlement } = useAuth();
+  const { user, hasBreakdownAccess, hasFormMAccess, hasLegalGuidanceAccess, refreshEntitlements } = useAuth();
 
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
   const [reraId, setReraId] = useState(initialReraId);
@@ -23,13 +26,11 @@ export default function PaymentModal({
   const [errorMsg, setErrorMsg] = useState('');
   const rzpRef = useRef(null);
 
-
-
   useEffect(() => {
     if (isOpen) {
       setPhase('idle');
       setErrorMsg('');
-      setSelectedPlan(defaultPlan);
+      setSelectedPlan(defaultPlan || 'form_m');
       setReraId(initialReraId || '');
     }
   }, [isOpen, defaultPlan, initialReraId]);
@@ -47,17 +48,35 @@ export default function PaymentModal({
 
   const normalizedReraId = (reraId.trim() || 'DEFAULT').toUpperCase();
   const alreadyHasBreakdown = hasBreakdownAccess(normalizedReraId);
+  const alreadyHasFormM = hasFormMAccess(normalizedReraId);
 
+  // Exact price calculation for all 3 services
   let price = 29;
-  if (selectedPlan === 'form_m') {
-    price = 49;
-  } else if (selectedPlan === 'legal_guidance') {
-    price = 299;
-  }
   let isUpgrade = false;
-  if (selectedPlan === 'form_m' && alreadyHasBreakdown) {
-    price = 20;
-    isUpgrade = true;
+  let upgradeNote = '';
+
+  if (selectedPlan === 'breakdown') {
+    price = 29;
+  } else if (selectedPlan === 'form_m') {
+    if (alreadyHasBreakdown) {
+      price = 20; // ₹49 - ₹29
+      isUpgrade = true;
+      upgradeNote = '(₹29 breakdown credit applied)';
+    } else {
+      price = 49;
+    }
+  } else if (selectedPlan === 'legal_guidance') {
+    if (alreadyHasFormM) {
+      price = 250; // ₹299 - ₹49
+      isUpgrade = true;
+      upgradeNote = '(₹49 Form M credit applied)';
+    } else if (alreadyHasBreakdown) {
+      price = 270; // ₹299 - ₹29
+      isUpgrade = true;
+      upgradeNote = '(₹29 breakdown credit applied)';
+    } else {
+      price = 299;
+    }
   }
 
   const loadRazorpayScript = () =>
@@ -122,10 +141,7 @@ export default function PaymentModal({
         data = JSON.parse(text);
       } catch (err) {
         if (text && text.trim().startsWith('<!DOCTYPE html>')) {
-          throw new Error('Server returned an HTML page instead of JSON. Please verify your VITE_RENDER_API_URL environment variable points to the backend server.');
-        }
-        if (!text) {
-          throw new Error('Server returned an empty response. This usually happens if VITE_RENDER_API_URL is pointing to your frontend static site domain instead of your backend API domain.');
+          throw new Error('Server returned an HTML page instead of JSON. Please verify your VITE_RENDER_API_URL environment variable.');
         }
         throw new Error(`Invalid server response format: ${text ? text.slice(0, 150) : 'empty'}`);
       }
@@ -141,7 +157,7 @@ export default function PaymentModal({
     } catch (err) {
       console.warn('[PaymentModal] Live order creation failed:', err.message);
       setPhase('error');
-      setErrorMsg(`Failed to initiate live payment: ${err.message}. Please check if your backend server is running and configured.`);
+      setErrorMsg(`Failed to initiate live payment: ${err.message}. Please check if backend server is running.`);
       return;
     }
 
@@ -152,10 +168,10 @@ export default function PaymentModal({
       name: 'RERA Hub',
       description:
         selectedPlan === 'legal_guidance'
-          ? `Expert E2E Legal Guidance (${normalizedReraId})`
+          ? `Expert Legal Advice & 1-on-1 Consultation (${normalizedReraId})`
           : selectedPlan === 'form_m'
-          ? `Form M Litigation (${normalizedReraId})`
-          : `Breakdown Report (${normalizedReraId})`,
+          ? `Form M Litigation Complaint (${normalizedReraId})`
+          : `Section 18 Breakdown Report (${normalizedReraId})`,
       order_id: order.id,
       prefill: {
         email: user.email || '',
@@ -171,7 +187,7 @@ export default function PaymentModal({
         setPhase('loading');
         try {
           const idToken = typeof user.getIdToken === 'function' ? await user.getIdToken() : 'demo-token';
-          const verifyRes = await fetch(`${RENDER_API_URL}/api/verify-payment`, {
+          await fetch(`${RENDER_API_URL}/api/verify-payment`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -183,9 +199,6 @@ export default function PaymentModal({
               razorpay_signature: response.razorpay_signature,
             }),
           });
-          if (!verifyRes.ok) {
-            console.warn('[PaymentModal] verify-payment API returned status', verifyRes.status);
-          }
         } catch (err) {
           console.warn('[PaymentModal] verify-payment network call warning:', err.message);
         }
@@ -229,7 +242,7 @@ export default function PaymentModal({
               Unlimited downloads and edits are unlocked for RERA ID: <strong>{normalizedReraId}</strong>.
             </p>
             <button className="btn btn-accent btn-lg" onClick={onClose}>
-              Continue to Downloads
+              Continue to Downloads & Consultation
             </button>
           </div>
         )}
@@ -264,7 +277,7 @@ export default function PaymentModal({
                 <p className="eyebrow">RERA Hub Access</p>
                 <h2 id="payment-modal-title">Choose Plan</h2>
                 <p className="muted" style={{ fontSize: '0.85rem' }}>
-                  Unlimited edits & downloads for your RERA Project
+                  Select the plan that matches your legal & interest calculation needs
                 </p>
               </div>
             </div>
@@ -306,7 +319,7 @@ export default function PaymentModal({
                 </p>
               </div>
 
-              {/* Plan 2: Form M Litigation ₹49 (includes Breakdown Report) */}
+              {/* Plan 2: Form M Litigation ₹49 */}
               <div
                 className={`plan-card ${selectedPlan === 'form_m' ? 'selected' : ''}`}
                 onClick={() => setSelectedPlan('form_m')}
@@ -317,8 +330,10 @@ export default function PaymentModal({
                     <div>
                       <strong>Form M Litigation</strong>
                       <span className="plan-price">
-                        {isUpgrade ? '₹20' : '₹49'}
-                        {isUpgrade && <span className="upgrade-note"> (₹29 credit applied)</span>}
+                        {selectedPlan === 'form_m' && isUpgrade ? '₹20' : '₹49'}
+                        {selectedPlan === 'form_m' && isUpgrade && (
+                          <span className="upgrade-note"> (₹29 credit applied)</span>
+                        )}
                       </span>
                     </div>
                   </div>
@@ -329,7 +344,7 @@ export default function PaymentModal({
                 </p>
               </div>
 
-              {/* Plan 3: E2E Expert Legal Guidance ₹299 (includes Breakdown & Form M) */}
+              {/* Plan 3: E2E Expert Legal Guidance ₹299 */}
               <div
                 className={`plan-card ${selectedPlan === 'legal_guidance' ? 'selected' : ''}`}
                 onClick={() => setSelectedPlan('legal_guidance')}
@@ -341,43 +356,25 @@ export default function PaymentModal({
                     <Scale size={18} className="plan-icon" style={{ color: '#0d9488' }} />
                     <div>
                       <strong>Expert Legal Guidance</strong>
-                      <span className="plan-price" style={{ color: '#0d9488' }}>₹299</span>
+                      <span className="plan-price" style={{ color: '#0d9488' }}>
+                        {selectedPlan === 'legal_guidance' && isUpgrade ? `₹${price}` : '₹299'}
+                        {selectedPlan === 'legal_guidance' && isUpgrade && (
+                          <span className="upgrade-note"> {upgradeNote}</span>
+                        )}
+                      </span>
                     </div>
                   </div>
                   {selectedPlan === 'legal_guidance' && <Check size={16} className="plan-check" />}
                 </div>
                 <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
-                  E2E representation & advice by Expert RERA Advocates.
+                  E2E consultation, document review & phone call by Senior RERA Advocates.
                 </p>
               </div>
             </div>
 
-            <div className="payment-summary-box">
-              <div className="payment-price-row">
-                <span className="muted">Total Payable:</span>
-                <span className="price-amount">₹{price}</span>
-              </div>
-              {isUpgrade && (
-                <p className="upgrade-banner">
-                  🎉 Upgrade Discount: You already own the ₹29 report for this RERA ID. Pay only ₹20 more to unlock Form M!
-                </p>
-              )}
-            </div>
-
-            <button
-              id="payment-pay-btn"
-              type="button"
-              className="btn btn-accent btn-lg"
-              onClick={handlePay}
-              disabled={phase === 'loading'}
-              style={{ width: '100%', marginTop: 16 }}
-            >
-              Pay ₹{price} & Unlock Access
+            <button type="button" className="btn btn-accent btn-lg w-full" onClick={handlePay}>
+              <Lock size={16} /> Pay ₹{price} to Unlock
             </button>
-
-            <p className="payment-secure-note muted">
-              UPI, Cards & Net Banking accepted · Powered by Razorpay
-            </p>
           </>
         )}
       </div>

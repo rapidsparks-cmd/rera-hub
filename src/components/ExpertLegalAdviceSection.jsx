@@ -1,50 +1,22 @@
 import React, { useState } from 'react';
-import { Scale, ShieldCheck, Sparkles, Phone, Lock } from 'lucide-react';
+import { Scale, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 import ExpertAdvocateCard from './ExpertAdvocateCard';
 import ExpertAdviceModal from './ExpertAdviceModal';
 import { useAuth } from '../context/AuthContext';
 
-export const TOP_RERA_ADVOCATES = [
-  {
-    id: 'adv_1',
-    name: 'Adv. P. R. Sxxxxxxxli',
-    experienceYears: 29,
-    location: 'Bangalore',
-    practiceArea: 'RERA Litigation + 2 more',
-    maskedPhone: '+91 6644****52',
-    fullPhone: '+91 98451 66452',
-    avatar: '/avatars/female_advocate.png',
-    isVerified: true,
-    rating: 4.9,
-    stateId: 'karnataka',
-  },
-  {
-    id: 'adv_2',
-    name: 'Adv. R. K. Deshmukh',
-    experienceYears: 22,
-    location: 'Mumbai / High Court',
-    practiceArea: 'MahaRERA Section 18 + 3 more',
-    maskedPhone: '+91 9820****41',
-    fullPhone: '+91 98204 12841',
-    avatar: '/avatars/male_advocate.png',
-    isVerified: true,
-    rating: 4.85,
-    stateId: 'maharashtra',
-  },
-  {
-    id: 'adv_3',
-    name: 'Adv. Ananya Roy',
-    experienceYears: 18,
-    location: 'Delhi NCR',
-    practiceArea: 'RERA Refund & Appeals + 2 more',
-    maskedPhone: '+91 9811****78',
-    fullPhone: '+91 98115 99878',
-    avatar: '/avatars/female_advocate.png',
-    isVerified: true,
-    rating: 4.92,
-    stateId: 'delhi',
-  },
-];
+export const MALE_RERA_ADVOCATE = {
+  id: 'adv_pr_1',
+  name: 'P R xxxxxxxxli',
+  experienceYears: 29,
+  location: 'Bangalore',
+  practiceArea: 'Criminal + 2 more',
+  maskedPhone: '+91 6644****52',
+  fullPhone: '+91 98451 66452',
+  avatar: '/avatars/male_advocate.png',
+  isVerified: true,
+  rating: 4.95,
+  stateId: 'karnataka',
+};
 
 export default function ExpertLegalAdviceSection({
   stateId = '',
@@ -62,7 +34,7 @@ export default function ExpertLegalAdviceSection({
       if (onOpenAuth) onOpenAuth();
       return;
     }
-    setSelectedAdvocate(advocate);
+    setSelectedAdvocate(advocate || MALE_RERA_ADVOCATE);
     setModalOpen(true);
   };
 
@@ -80,30 +52,35 @@ export default function ExpertLegalAdviceSection({
     <section id="expert-legal-advice" className="expert-advice-section">
       <div className="section-head-wrap">
         <div className="section-badge">
-          <Scale size={14} /> Expert Legal Support
+          <Scale size={14} /> Verified RERA Advocates
         </div>
-        <h3 className="section-title">Verified RERA Advocates & Legal Advice</h3>
+        <h3 className="section-title">Expert Legal Advice & Advocate Consultation</h3>
         <p className="section-subtitle">
-          Connect 1-on-1 with senior property lawyers for Form M legal review, builder delay penalty recovery, and High Court execution orders.
+          Connect 1-on-1 with senior property lawyers for Form M legal complaint review, builder delay penalty recovery, and High Court execution orders.
         </p>
       </div>
 
+      {/* Unlock Notice Banner */}
+      {!isUnlocked && (
+        <div className="unlock-access-banner">
+          <Lock size={16} className="banner-lock-icon" />
+          <span>To unlock full direct access and phone consultation with the lawyer, complete payment.</span>
+        </div>
+      )}
+
       <div className="advocates-grid">
-        {TOP_RERA_ADVOCATES.map((adv) => (
-          <ExpertAdvocateCard
-            key={adv.id}
-            advocate={adv}
-            isUnlocked={isUnlocked}
-            onConsult={handleCardConsult}
-          />
-        ))}
+        <ExpertAdvocateCard
+          advocate={MALE_RERA_ADVOCATE}
+          isUnlocked={isUnlocked}
+          onConsult={handleCardConsult}
+        />
       </div>
 
       {/* Modal */}
       <ExpertAdviceModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        advocate={selectedAdvocate}
+        advocate={selectedAdvocate || MALE_RERA_ADVOCATE}
         reraId={stateId}
         isUnlocked={isUnlocked}
         onProceedToPayment={handleProceedToPayment}
