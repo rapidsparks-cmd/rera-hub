@@ -153,8 +153,7 @@ export default function ExpertAdviceModal({
               </div>
               <ul className="price-features">
                 <li><ShieldCheck size={14} /> Direct Unmasked Phone Contact & WhatsApp Access</li>
-                <li><Calendar size={14} /> Guaranteed 20-min phone call with advocate</li>
-                <li><CheckCircle2 size={14} /> Full Form M Complaint document review</li>
+                <li><CheckCircle2 size={14} /> Full Form M Complaint document review & legal guidance</li>
               </ul>
             </div>
 

@@ -296,8 +296,7 @@ export default function PaymentModal({
                   </div>
                   <ul className="price-features">
                     <li><ShieldCheck size={14} /> Direct Unmasked Phone Contact & WhatsApp Access</li>
-                    <li><Calendar size={14} /> Guaranteed 20-min phone call with senior advocate</li>
-                    <li><CheckCircle2 size={14} /> Full Form M Complaint petition document review</li>
+                    <li><CheckCircle2 size={14} /> Full Form M Complaint petition document review & legal guidance</li>
                   </ul>
                   {isUpgrade && <p style={{ fontSize: '0.8rem', color: '#d97706', margin: '8px 0 0 0', fontWeight: 600 }}>{upgradeNote}</p>}
                 </div>
