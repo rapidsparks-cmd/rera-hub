@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, Lock, CheckCircle, AlertTriangle, FileText, Scale, Check, Sparkles } from 'lucide-react';
+import { X, Lock, CheckCircle, AlertTriangle, FileText, Scale, Check, ShieldCheck, Calendar, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const RENDER_API_URL = import.meta.env.VITE_RENDER_API_URL || '';
@@ -18,7 +18,7 @@ export default function PaymentModal({
   defaultPlan = 'form_m',
   initialReraId = '',
 }) {
-  const { user, hasBreakdownAccess, hasFormMAccess, hasLegalGuidanceAccess, refreshEntitlements } = useAuth();
+  const { user, hasBreakdownAccess, hasFormMAccess, refreshEntitlements } = useAuth();
 
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
   const [reraId, setReraId] = useState(initialReraId);
@@ -46,7 +46,9 @@ export default function PaymentModal({
 
   if (!isOpen) return null;
 
-  const normalizedReraId = (reraId.trim() || 'DEFAULT').toUpperCase();
+  const isLegalAdvicePayment = selectedPlan === 'legal_guidance';
+  const normalizedReraId = isLegalAdvicePayment ? 'DEFAULT' : (reraId.trim() || 'DEFAULT').toUpperCase();
+
   const alreadyHasBreakdown = hasBreakdownAccess(normalizedReraId);
   const alreadyHasFormM = hasFormMAccess(normalizedReraId);
 
@@ -128,7 +130,7 @@ export default function PaymentModal({
           }
         } catch (_) {
           if (text && text.trim().startsWith('<!DOCTYPE html>')) {
-            errorMsg = `Server returned an HTML page (404/502). Please verify your VITE_RENDER_API_URL environment variable points to the backend server.`;
+            errorMsg = `Server returned an HTML page (404/502). Please verify your VITE_RENDER_API_URL environment variable.`;
           } else if (text && text.length < 200) {
             errorMsg = text;
           }
@@ -168,7 +170,7 @@ export default function PaymentModal({
       name: 'RERA Hub',
       description:
         selectedPlan === 'legal_guidance'
-          ? `Expert Legal Advice & 1-on-1 Consultation (${normalizedReraId})`
+          ? `Expert Legal Advice & 1-on-1 Advocate Consultation`
           : selectedPlan === 'form_m'
           ? `Form M Litigation Complaint (${normalizedReraId})`
           : `Section 18 Breakdown Report (${normalizedReraId})`,
@@ -239,7 +241,9 @@ export default function PaymentModal({
             <CheckCircle size={52} className="payment-result-icon success" />
             <h2>Access Unlocked! 🎉</h2>
             <p className="muted">
-              Unlimited downloads and edits are unlocked for RERA ID: <strong>{normalizedReraId}</strong>.
+              {isLegalAdvicePayment
+                ? 'Your 1-on-1 Legal Advice & Advocate Consultation is unlocked!'
+                : `Unlimited downloads and edits are unlocked for RERA ID: ${normalizedReraId}`}
             </p>
             <button className="btn btn-accent btn-lg" onClick={onClose}>
               Continue to Downloads & Consultation
@@ -272,109 +276,117 @@ export default function PaymentModal({
         {/* IDLE — Plan Selection & Checkout */}
         {phase === 'idle' && (
           <>
-            <div className="modal-header">
+            {isLegalAdvicePayment ? (
+              /* EXPERT LEGAL ADVICE DEDICATED CHECKOUT SUMMARY */
               <div>
-                <p className="eyebrow">RERA Hub Access</p>
-                <h2 id="payment-modal-title">Choose Plan</h2>
-                <p className="muted" style={{ fontSize: '0.85rem' }}>
-                  Select the plan that matches your legal & interest calculation needs
-                </p>
-              </div>
-            </div>
-
-            {/* RERA ID Input */}
-            <div className="field" style={{ marginBottom: 16 }}>
-              <span className="field-label">RERA Registration / Project ID</span>
-              <input
-                type="text"
-                value={reraId}
-                onChange={(e) => setReraId(e.target.value)}
-                placeholder="e.g. PRM/KA/RERA/1251/..."
-                style={{ fontSize: '0.875rem' }}
-              />
-              <span className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
-                Purchases apply to this RERA ID with unlimited edits.
-              </span>
-            </div>
-
-            {/* Plan selection cards */}
-            <div className="plan-cards">
-              {/* Plan 1: Breakdown Report ₹29 */}
-              <div
-                className={`plan-card ${selectedPlan === 'breakdown' ? 'selected' : ''}`}
-                onClick={() => setSelectedPlan('breakdown')}
-              >
-                <div className="plan-card-header">
-                  <div className="plan-title-wrap">
-                    <FileText size={18} className="plan-icon" />
-                    <div>
-                      <strong>Breakdown Report</strong>
-                      <span className="plan-price">₹29</span>
-                    </div>
+                <div className="modal-header">
+                  <div className="eyebrow-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>
+                    <Scale size={13} /> Verified RERA Advocate Consultation
                   </div>
-                  {selectedPlan === 'breakdown' && <Check size={16} className="plan-check" />}
+                  <h2 id="payment-modal-title">Unlock Legal Consultation</h2>
+                  <p className="muted" style={{ fontSize: '0.85rem' }}>
+                    Complete payment to unmask advocate phone contact & schedule direct 1-on-1 consultation.
+                  </p>
                 </div>
-                <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
-                  Full interest calculation report with PDF/print options.
-                </p>
-              </div>
 
-              {/* Plan 2: Form M Litigation ₹49 */}
-              <div
-                className={`plan-card ${selectedPlan === 'form_m' ? 'selected' : ''}`}
-                onClick={() => setSelectedPlan('form_m')}
-              >
-                <div className="plan-card-header">
-                  <div className="plan-title-wrap">
-                    <Scale size={18} className="plan-icon" />
-                    <div>
-                      <strong>Form M Litigation</strong>
-                      <span className="plan-price">
-                        {selectedPlan === 'form_m' && isUpgrade ? '₹20' : '₹49'}
-                        {selectedPlan === 'form_m' && isUpgrade && (
-                          <span className="upgrade-note"> (₹29 credit applied)</span>
-                        )}
-                      </span>
-                    </div>
+                <div className="consult-price-card" style={{ marginTop: 18, marginBottom: 20 }}>
+                  <div className="price-details">
+                    <span className="price-title">1-on-1 Phone Consultation & Form M Legal Review</span>
+                    <span className="price-amount">₹{price} <span className="strike-price">₹1,499</span></span>
                   </div>
-                  {selectedPlan === 'form_m' && <Check size={16} className="plan-check" />}
+                  <ul className="price-features">
+                    <li><ShieldCheck size={14} /> Direct Unmasked Phone Contact & WhatsApp Access</li>
+                    <li><Calendar size={14} /> Guaranteed 20-min phone call with senior advocate</li>
+                    <li><CheckCircle2 size={14} /> Full Form M Complaint petition document review</li>
+                  </ul>
+                  {isUpgrade && <p style={{ fontSize: '0.8rem', color: '#d97706', margin: '8px 0 0 0', fontWeight: 600 }}>{upgradeNote}</p>}
                 </div>
-                <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
-                  Draft your official RERA complaint petition (Word + PDF).
-                </p>
-              </div>
 
-              {/* Plan 3: E2E Expert Legal Guidance ₹299 */}
-              <div
-                className={`plan-card ${selectedPlan === 'legal_guidance' ? 'selected' : ''}`}
-                onClick={() => setSelectedPlan('legal_guidance')}
-                style={{ position: 'relative' }}
-              >
-                <div className="plan-badge-tag" style={{ background: '#0d9488' }}>BEST VALUE</div>
-                <div className="plan-card-header">
-                  <div className="plan-title-wrap">
-                    <Scale size={18} className="plan-icon" style={{ color: '#0d9488' }} />
-                    <div>
-                      <strong>Expert Legal Guidance</strong>
-                      <span className="plan-price" style={{ color: '#0d9488' }}>
-                        {selectedPlan === 'legal_guidance' && isUpgrade ? `₹${price}` : '₹299'}
-                        {selectedPlan === 'legal_guidance' && isUpgrade && (
-                          <span className="upgrade-note"> {upgradeNote}</span>
-                        )}
-                      </span>
-                    </div>
+                <button type="button" className="btn btn-accent btn-lg w-full" onClick={handlePay}>
+                  <Lock size={16} /> Pay ₹{price} to Unlock Lawyer Contact
+                </button>
+              </div>
+            ) : (
+              /* CALCULATOR PLANS CHECKOUT (BREAKDOWN / FORM M) */
+              <div>
+                <div className="modal-header">
+                  <div>
+                    <p className="eyebrow">RERA Hub Access</p>
+                    <h2 id="payment-modal-title">Choose Calculator Plan</h2>
+                    <p className="muted" style={{ fontSize: '0.85rem' }}>
+                      Select the plan that matches your calculation & petition drafting needs
+                    </p>
                   </div>
-                  {selectedPlan === 'legal_guidance' && <Check size={16} className="plan-check" />}
                 </div>
-                <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
-                  E2E consultation, document review & phone call by Senior RERA Advocates.
-                </p>
-              </div>
-            </div>
 
-            <button type="button" className="btn btn-accent btn-lg w-full" onClick={handlePay}>
-              <Lock size={16} /> Pay ₹{price} to Unlock
-            </button>
+                {/* RERA ID Input */}
+                <div className="field" style={{ marginBottom: 16 }}>
+                  <span className="field-label">RERA Registration / Project ID</span>
+                  <input
+                    type="text"
+                    value={reraId}
+                    onChange={(e) => setReraId(e.target.value)}
+                    placeholder="e.g. PRM/KA/RERA/1251/..."
+                    style={{ fontSize: '0.875rem' }}
+                  />
+                  <span className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
+                    Purchases apply to this RERA ID with unlimited edits.
+                  </span>
+                </div>
+
+                {/* Plan selection cards for Calculator */}
+                <div className="plan-cards">
+                  {/* Plan 1: Breakdown Report ₹29 */}
+                  <div
+                    className={`plan-card ${selectedPlan === 'breakdown' ? 'selected' : ''}`}
+                    onClick={() => setSelectedPlan('breakdown')}
+                  >
+                    <div className="plan-card-header">
+                      <div className="plan-title-wrap">
+                        <FileText size={18} className="plan-icon" />
+                        <div>
+                          <strong>Breakdown Report</strong>
+                          <span className="plan-price">₹29</span>
+                        </div>
+                      </div>
+                      {selectedPlan === 'breakdown' && <Check size={16} className="plan-check" />}
+                    </div>
+                    <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
+                      Full interest calculation report with PDF/print options.
+                    </p>
+                  </div>
+
+                  {/* Plan 2: Form M Litigation ₹49 */}
+                  <div
+                    className={`plan-card ${selectedPlan === 'form_m' ? 'selected' : ''}`}
+                    onClick={() => setSelectedPlan('form_m')}
+                  >
+                    <div className="plan-card-header">
+                      <div className="plan-title-wrap">
+                        <Scale size={18} className="plan-icon" />
+                        <div>
+                          <strong>Form M Litigation</strong>
+                          <span className="plan-price">
+                            {selectedPlan === 'form_m' && isUpgrade ? '₹20' : '₹49'}
+                            {selectedPlan === 'form_m' && isUpgrade && (
+                              <span className="upgrade-note"> (₹29 credit applied)</span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                      {selectedPlan === 'form_m' && <Check size={16} className="plan-check" />}
+                    </div>
+                    <p className="plan-desc" style={{ fontSize: '0.75rem', color: 'var(--muted)', margin: '4px 0 0 24px' }}>
+                      Draft your official RERA complaint petition (Word + PDF).
+                    </p>
+                  </div>
+                </div>
+
+                <button type="button" className="btn btn-accent btn-lg w-full" onClick={handlePay}>
+                  <Lock size={16} /> Pay ₹{price} to Unlock
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>

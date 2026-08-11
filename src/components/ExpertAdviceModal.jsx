@@ -134,13 +134,14 @@ export default function ExpertAdviceModal({
               </select>
             </label>
 
-            <label className="field">
+            <label className="field" style={{ width: '100%' }}>
               <span className="field-label">Brief Case Summary / Notes (Optional)</span>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                rows={2}
-                placeholder="Mention builder name, total delay period, or specific legal questions..."
+                rows={4}
+                placeholder="Mention builder name, total delay period, specific legal questions or remedies sought..."
+                style={{ width: '100%', minHeight: '100px' }}
               />
             </label>
 
