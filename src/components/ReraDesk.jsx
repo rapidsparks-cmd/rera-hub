@@ -39,6 +39,7 @@ import ReportBreakdown from "./ReportBreakdown";
 import { getFormMTemplate } from "../utils/formMTemplates";
 import { downloadAsPDF, downloadAsWord } from "../utils/downloadHelpers";
 import { translate } from "../utils/translations";
+import ExpertLegalAdviceSection from "./ExpertLegalAdviceSection";
 
 const ENABLE_RERA_FORM_M_DRAFT = import.meta.env.VITE_ENABLE_RERA_FORM_M_DRAFT !== "false";
 const ENABLE_INSTALLMENTS_SCHEDULE =
@@ -119,6 +120,11 @@ export default function ReraDesk({ language = "en", stateId }) {
 
   useEffect(() => {
     const handleOpenGuidance = () => {
+      const target = document.getElementById('expert-legal-advice');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
       if (!user) {
         setAuthModalOpen(true);
       } else {
@@ -1023,6 +1029,16 @@ export default function ReraDesk({ language = "en", stateId }) {
                     </div>
                   </div>
                 )}
+
+                {/* Expert Legal Advice & Advocate Profile Section */}
+                <ExpertLegalAdviceSection
+                  stateId={stateId}
+                  onOpenPayment={({ plan }) => {
+                    setTargetPaymentPlan(plan || 'legal_guidance');
+                    setPaymentModalOpen(true);
+                  }}
+                  onOpenAuth={() => setAuthModalOpen(true)}
+                />
 
                 <p className="disclaimer-inline">
                   {translate("disclaimer", language)}

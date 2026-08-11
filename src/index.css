@@ -2353,6 +2353,356 @@ tfoot td {
   line-height: 1.45;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   EXPERT ADVOCATE CARD COMPONENT (USER SCREENSHOT SPEC)
+──────────────────────────────────────────────────────────────────────────────*/
+.expert-advice-section {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.section-head-wrap {
+  margin-bottom: 24px;
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin: 0 0 6px 0;
+}
+
+.section-subtitle {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.advocates-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expert-advocate-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 22px 28px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.22s ease-in-out;
+  cursor: pointer;
+}
+
+.expert-advocate-card:hover {
+  border-color: rgba(6, 40, 70, 0.25);
+  box-shadow: 0 8px 28px -4px rgba(6, 40, 70, 0.12);
+  transform: translateY(-2px);
+}
+
+.advocate-avatar-wrap {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+
+.advocate-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+}
+
+.verified-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #16a34a;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+}
+
+.advocate-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.advocate-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+}
+
+.advocate-name {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.unlocked-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.advocate-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.925rem;
+  font-weight: 500;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.meta-icon {
+  color: #16a34a; /* Green icons matching user screenshot */
+  flex-shrink: 0;
+}
+
+.advocate-action-wrap {
+  flex-shrink: 0;
+  margin-left: 24px;
+}
+
+.btn-phone-connect {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #062846; /* Dark navy blue matching screenshot */
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 13px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s ease-in-out;
+  box-shadow: 0 4px 12px rgba(6, 40, 70, 0.2);
+}
+
+.btn-phone-connect:hover {
+  background: #0b3c66;
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(6, 40, 70, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   EXPERT ADVICE MODAL STYLES
+──────────────────────────────────────────────────────────────────────────────*/
+.expert-advice-modal {
+  max-width: 620px;
+}
+
+.eyebrow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+
+.selected-advocate-container {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.selected-advocate-container .expert-advocate-card {
+  box-shadow: none;
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.expert-consult-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+
+.consult-price-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.price-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.price-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #166534;
+}
+
+.price-amount {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.strike-price {
+  text-decoration: line-through;
+  font-size: 0.85rem;
+  color: #86efac;
+  margin-left: 6px;
+  font-weight: 400;
+}
+
+.price-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.825rem;
+  color: #166534;
+}
+
+.price-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unlocked-contact-box {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.unlocked-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.unlocked-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin: 0 0 2px 0;
+  color: #166534;
+}
+
+.unlocked-header p {
+  font-size: 0.875rem;
+  margin: 0;
+  color: #15803d;
+}
+
+.contact-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.callback-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #166534;
+  background: #dcfce7;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 640px) {
+  .expert-advocate-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .advocate-avatar-wrap {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+
+  .advocate-action-wrap {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .btn-phone-connect {
+    width: 100%;
+  }
+
+  .contact-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 
 
 

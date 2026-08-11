@@ -143,11 +143,11 @@ function AppShell() {
                 className="nav-expert-advice-btn"
                 style={{ color: '#0d9488', fontWeight: '600' }}
                 onClick={(e) => {
+                  e.preventDefault();
                   const target = document.getElementById('expert-legal-advice');
                   if (target) {
-                    // Let default hash scroll handle it
+                    target.scrollIntoView({ behavior: 'smooth' });
                   } else {
-                    e.preventDefault();
                     window.dispatchEvent(new CustomEvent('open-legal-guidance'));
                   }
                 }}
