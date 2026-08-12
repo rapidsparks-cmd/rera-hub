@@ -709,7 +709,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                         <div style={{ background: 'rgba(255,255,255,0.08)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                           <span style={{ fontSize: '0.75rem', opacity: 0.7, display: 'block', textTransform: 'uppercase' }}>Direct Phone</span>
                           <strong style={{ fontSize: '1.05rem', color: '#fff' }}>
-                            <a href="tel:+919881054785" style={{ color: '#fff', textDecoration: 'none' }}>+91 9881054785</a>
+                            <a href="tel:+919422512724" style={{ color: '#fff', textDecoration: 'none' }}>+91 9422512724</a>
                           </strong>
                         </div>
                         <div style={{ background: 'rgba(255,255,255,0.08)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -720,10 +720,10 @@ export default function ReraDesk({ language = "en", stateId }) {
                         </div>
                       </div>
                       <div style={{ marginTop: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <a href="tel:+919881054785" className="btn btn-secondary btn-sm" style={{ background: '#fff', color: '#0f766e', fontWeight: 'bold', border: 'none' }}>
+                        <a href="tel:+919422512724" className="btn btn-secondary btn-sm" style={{ background: '#fff', color: '#0f766e', fontWeight: 'bold', border: 'none' }}>
                           📞 Call Now
                         </a>
-                        <a href={`https://wa.me/919881054785?text=Hello%20Advocate%20Jaydeep,%20I%20calculated%20my%20RERA%20delay%20interest%20compensation%20(amounting%20to%20${encodeURIComponent(formatINR(result.interest))})%20on%20RERA%20Hub%20and%20unlocked%20E2E%20Legal%20Guidance.%20Please%20guide%20me%20on%20further%20proceedings.`} target="_blank" rel="noopener noreferrer" className="btn btn-sm" style={{ background: '#25D366', color: '#fff', fontWeight: 'bold', border: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <a href={`https://wa.me/919422512724?text=Hello%20Advocate%20Jaydeep,%20I%20calculated%20my%20RERA%20delay%20interest%20compensation%20(amounting%20to%20${encodeURIComponent(formatINR(result.interest))})%20on%20RERA%20Hub%20and%20unlocked%20E2E%20Legal%20Guidance.%20Please%20guide%20me%20on%20further%20proceedings.`} target="_blank" rel="noopener noreferrer" className="btn btn-sm" style={{ background: '#25D366', color: '#fff', fontWeight: 'bold', border: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                           💬 WhatsApp Consultation
                         </a>
                         <span style={{ fontSize: '0.75rem', opacity: 0.8, color: '#fff', marginLeft: 'auto' }}>
