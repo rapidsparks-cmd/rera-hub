@@ -73,26 +73,43 @@ export default function ExpertAdviceModal({
               </div>
             </div>
 
-            <div className="contact-actions-grid">
-              <a
-                href={`tel:${advocate.fullPhone.replace(/\s+/g, '')}`}
-                className="btn btn-accent btn-md"
-              >
-                <Phone size={16} /> Call {advocate.fullPhone}
-              </a>
-              <a
-                href={`https://wa.me/${advocate.fullPhone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(advocate.name)},%20I%20need%20RERA%20legal%20guidance.`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-secondary btn-md"
-              >
-                <MessageSquare size={16} /> WhatsApp Advocate
-              </a>
+            <div className="contact-actions-grid" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <a
+                  href={`tel:${advocate.fullPhone.replace(/\s+/g, '')}`}
+                  className="btn btn-accent btn-md"
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <Phone size={16} /> Call {advocate.fullPhone}
+                </a>
+                <a
+                  href={`https://wa.me/${advocate.fullPhone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(advocate.name)},%20I%20need%20RERA%20legal%20guidance.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary btn-md"
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <MessageSquare size={16} /> WhatsApp Advocate
+                </a>
+              </div>
+              {advocate.email && (
+                <a
+                  href={`mailto:${advocate.email}`}
+                  className="btn btn-secondary btn-md"
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%' }}
+                >
+                  ✉️ Email: {advocate.email}
+                </a>
+              )}
             </div>
 
-            <div className="callback-notice">
+            <div className="callback-notice" style={{ marginTop: '14px' }}>
               <Clock size={15} />
               <span>Advocate callback scheduled within 24 hours. Keep your booking details ready.</span>
+            </div>
+
+            <div style={{ textAlign: 'center', fontSize: '0.75rem', opacity: 0.8, marginTop: '16px' }}>
+              For support or queries, contact: <strong>shiftlogic@gmail.com</strong>
             </div>
           </div>
         ) : (
@@ -160,6 +177,10 @@ export default function ExpertAdviceModal({
             <button type="submit" className="btn btn-accent btn-lg w-full">
               <Lock size={16} /> Proceed to Pay ₹299 for Expert Advice
             </button>
+
+            <div style={{ textAlign: 'center', fontSize: '0.75rem', opacity: 0.8, marginTop: '12px' }}>
+              For support or queries, contact: <strong>shiftlogic@gmail.com</strong>
+            </div>
           </form>
         )}
       </div>

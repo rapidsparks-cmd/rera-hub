@@ -14,6 +14,9 @@ export default function ExpertAdvocateCard({ advocate, isUnlocked = false, onCon
     fullPhone = '+91 98451 66452',
     avatar = '/avatars/male_advocate.png',
     isVerified = true,
+    email = '',
+    maskedEmail = '',
+    court = '',
   } = advocate || {};
 
   const handleActionClick = (e) => {
@@ -52,6 +55,11 @@ export default function ExpertAdvocateCard({ advocate, isUnlocked = false, onCon
           <h4 className="advocate-name">{name}</h4>
           {isUnlocked && <span className="unlocked-chip"><CheckCircle size={12} /> Contact Unlocked</span>}
         </div>
+        {court && (
+          <div className="advocate-court-subtitle" style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '-2px', marginBottom: '8px' }}>
+            {court}
+          </div>
+        )}
 
         <div className="advocate-meta-line">
           <Briefcase size={16} className="meta-icon icon-briefcase" />
@@ -67,6 +75,13 @@ export default function ExpertAdvocateCard({ advocate, isUnlocked = false, onCon
           <Scale size={16} className="meta-icon icon-scale" />
           <span>Practice area & skills: {practiceArea}</span>
         </div>
+
+        {(email || maskedEmail) && (
+          <div className="advocate-meta-line" style={{ marginTop: '2px' }}>
+            <span style={{ marginRight: '6px', fontSize: '0.85rem' }}>✉️</span>
+            <span style={{ fontSize: '0.85rem' }}>Email: {isUnlocked ? email : maskedEmail}</span>
+          </div>
+        )}
       </div>
 
       {/* Right: Phone / Action Button */}

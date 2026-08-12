@@ -6,16 +6,19 @@ import { useAuth } from '../context/AuthContext';
 
 export const MALE_RERA_ADVOCATE = {
   id: 'adv_pr_1',
-  name: 'P R xxxxxxxxli',
-  experienceYears: 29,
-  location: 'Bangalore',
-  practiceArea: 'Criminal + 2 more',
-  maskedPhone: '+91 6644****52',
-  fullPhone: '+91 98451 66452',
+  name: 'Adv and Notary Jaydeep Thakur',
+  experienceYears: 18,
+  location: 'Pune & Mumbai',
+  practiceArea: 'RERA Disputes, Property Litigation, High Court Execution',
+  maskedPhone: '+91 98810****85',
+  fullPhone: '+91 98810 54785',
+  email: 'jaythakur2008@gmail.com',
+  maskedEmail: 'j*********8@gmail.com',
   avatar: '/avatars/male_advocate.png',
   isVerified: true,
   rating: 4.95,
-  stateId: 'karnataka',
+  stateId: 'maharashtra',
+  court: 'Pune Bar council and bombay High Court'
 };
 
 export default function ExpertLegalAdviceSection({
@@ -85,6 +88,10 @@ export default function ExpertLegalAdviceSection({
         isUnlocked={isUnlocked}
         onProceedToPayment={handleProceedToPayment}
       />
+
+      <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--muted)', marginTop: '24px' }}>
+        For support or queries, contact: <strong>shiftlogic@gmail.com</strong>
+      </p>
     </section>
   );
 }
