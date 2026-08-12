@@ -1131,9 +1131,6 @@ export default function ReraDesk({ language = "en", stateId }) {
         <div className="section-inner">
           <div className="footer-brand">
             <strong>RERA Hub</strong>
-            <p>
-              {translate("footer_desc", language)}
-            </p>
           </div>
           <p className="footer-disclaimer">
             {translate("footer_disclaimer", language)}
