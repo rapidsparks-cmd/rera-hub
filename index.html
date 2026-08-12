@@ -4,11 +4,160 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="RERA Hub — Section 18 compensation & penalty calculator with state-specific SBI MCLR interest for Indian homebuyers." />
-    <title>RERA Hub | Compensation & Penalty Calculator</title>
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>RERA Interest Calculator | Section 18 Builder Delay Penalty Online</title>
+    <meta name="description" content="Calculate builder delay compensation & statutory interest online under RERA Section 18. Free state-specific interest calculator for MahaRERA, Karnataka RERA, UP RERA, HRERA, and more." />
+    <meta name="keywords" content="rera interest calculator, rera delay interest calculator, builder delay penalty calculator, rera section 18, sbi mclr rera, rera compensation calculator, rera online calculator, maharera delay interest, karnataka rera calculator" />
+    <meta name="author" content="RERA Hub" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RERA Interest Calculator | Section 18 Builder Delay Penalty Online" />
+    <meta property="og:description" content="Calculate builder delay compensation & statutory interest online under RERA Section 18. Free state-specific interest calculator for MahaRERA, Karnataka RERA, UP RERA, HRERA, and more." />
+    <meta property="og:url" content="https://rerainterestcalculator.in" />
+    <meta property="og:site_name" content="RERA Hub" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="RERA Interest Calculator | Section 18 Builder Delay Penalty Online" />
+    <meta name="twitter:description" content="Calculate builder delay compensation & statutory interest online under RERA Section 18. Free state-specific interest calculator for MahaRERA, Karnataka RERA, UP RERA, HRERA, and more." />
+
+    <!-- Canonical Tag -->
+    <link rel="canonical" href="https://rerainterestcalculator.in" />
+
+    <!-- JSON-LD Structured Data: Financial Product -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FinancialProduct",
+      "name": "RERA Interest & Builder Delay Compensation Calculator",
+      "description": "An online tool to calculate statutory interest and compensation for builder delays under Section 18 of the Real Estate Regulation and Development Act (RERA). Uses state-specific SBI MCLR rate configurations.",
+      "category": "Financial Calculator / Legal Product",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      }
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: FAQ Page -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How is RERA delay interest calculated under Section 18?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RERA delay interest is calculated based on the SBI Highest Marginal Cost of Funds Based Lending Rate (MCLR) plus 2% (or as specified by your state RERA rule). It is computed from the promised possession date until the actual date of possession or refund."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the penalty for builder delay in possession?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Under Section 18 of the RERA Act, if a builder fails to give possession on time, the homebuyer can either claim a complete refund of the amount paid with interest, or continue with the project and receive monthly interest for every month of delay."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I calculate RERA interest for specific states like Maharashtra or Karnataka?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Different states have slight variations in interest calculation formulas (such as compound monthly interest in Maharashtra versus simple interest in Karnataka). RERA Hub supports precise calculations according to rules set by MahaRERA, Karnataka RERA, UP RERA, HRERA, etc."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Prerendered SEO Fallback (will be replaced by React on load) -->
+      <article style="max-width: 800px; margin: 40px auto; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #334155; line-height: 1.6;">
+        <h1 style="color: #0f766e; font-size: 2.2rem; margin-bottom: 10px; text-align: center;">RERA Interest & Builder Delay Compensation Calculator</h1>
+        <p style="font-size: 1.1rem; color: #475569; text-align: center; margin-bottom: 30px;">
+          Calculate statutory interest and delay penalty under RERA Section 18 using live state-specific SBI MCLR rate rules.
+        </p>
+
+        <section style="margin-bottom: 40px;">
+          <h2 style="color: #1e293b; font-size: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">What is RERA Section 18?</h2>
+          <p>
+            Section 18 of the Real Estate (Regulation and Development) Act, 2016 (RERA) outlines the rights of homebuyers in case a builder fails to complete or give possession of an apartment, plot, or building in accordance with the terms of the agreement for sale. 
+          </p>
+          <p>
+            Under this section, if a builder delays possession, the buyer has two options:
+          </p>
+          <ul style="padding-left: 20px;">
+            <li><strong>Withdraw from the Project:</strong> The builder is liable to return the entire amount received with interest at the prescribed rate, along with compensation.</li>
+            <li><strong>Continue in the Project:</strong> The homebuyer must be paid interest by the promoter for every month of delay until possession is handed over.</li>
+          </ul>
+        </section>
+
+        <section style="margin-bottom: 40px;">
+          <h2 style="color: #1e293b; font-size: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Prescribed RERA Delay Interest Rates</h2>
+          <p>
+            Most state RERA rules prescribe the rate of interest as the <strong>SBI Highest Marginal Cost of Funds Based Lending Rate (MCLR) + 2%</strong>. 
+          </p>
+          <p>
+            Our calculator dynamically pulls current SBI MCLR rates and automatically applies the state-specific spread and compounding rules:
+          </p>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px;">
+            <thead>
+              <tr style="background-color: #f1f5f9; text-align: left;">
+                <th style="padding: 10px; border: 1px solid #cbd5e1;">RERA Authority / State</th>
+                <th style="padding: 10px; border: 1px solid #cbd5e1;">Calculation Method</th>
+                <th style="padding: 10px; border: 1px solid #cbd5e1;">Prescribed Rate Formula</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;"><strong>MahaRERA (Maharashtra)</strong></td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">Compound Interest (Monthly)</td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">SBI MCLR + 2%</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;"><strong>Karnataka RERA (K-RERA)</strong></td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">Simple Interest</td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">SBI MCLR + 2%</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;"><strong>UP RERA (Uttar Pradesh)</strong></td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">Simple Interest</td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">SBI MCLR + 1% / 2% (by date)</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;"><strong>HRERA (Haryana)</strong></td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">Simple Interest</td>
+                <td style="padding: 10px; border: 1px solid #cbd5e1;">SBI MCLR + 2.25%</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section style="margin-bottom: 40px;">
+          <h2 style="color: #1e293b; font-size: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Frequently Asked Questions (FAQ)</h2>
+          <div style="margin-top: 15px;">
+            <h3 style="color: #0f766e; font-size: 1.1rem; margin-bottom: 5px;">1. Can I get a full refund if my builder delays possession?</h3>
+            <p style="margin-top: 0;">Yes, under Section 18 of the RERA Act, homebuyers are fully entitled to claim a refund of all principal amounts paid to the builder along with delay interest if the promoter fails to deliver possession within the time specified in the sale agreement.</p>
+          </div>
+          <div style="margin-top: 15px;">
+            <h3 style="color: #0f766e; font-size: 1.1rem; margin-bottom: 5px;">2. What is the Highest SBI MCLR rate?</h3>
+            <p style="margin-top: 0;">The Marginal Cost of Funds Based Lending Rate (MCLR) is the minimum interest rate below which a bank cannot lend. RERA rules reference the highest tenure MCLR (typically the 1-year rate) declared by the State Bank of India (SBI) at the time of calculation or filing.</p>
+          </div>
+          <div style="margin-top: 15px;">
+            <h3 style="color: #0f766e; font-size: 1.1rem; margin-bottom: 5px;">3. Is builder delay interest taxable?</h3>
+            <p style="margin-top: 0;">Yes, interest received on delay compensation under RERA rulings is generally categorized under "Income from Other Sources" and is taxable under the Income Tax Act at your slab rate.</p>
+          </div>
+        </section>
+      </article>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
