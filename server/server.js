@@ -521,6 +521,7 @@ async function sendConsultationEmail(data, consultationId) {
     tls: {
       rejectUnauthorized: false,
     },
+    family: 4, // Force IPv4 to prevent ENETUNREACH errors on hosts without IPv6 routing
   });
 
   const mailOptions = {
