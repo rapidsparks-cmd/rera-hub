@@ -582,6 +582,37 @@ async function sendConsultationEmail(data, consultationId) {
     `,
   };
 
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (resendApiKey) {
+    console.log('[resend] Attempting to send email via HTTP API (Port 443)...');
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${resendApiKey}`,
+        },
+        body: JSON.stringify({
+          from: 'RERA Hub <onboarding@resend.dev>',
+          to: 'shiftlogiciq@gmail.com',
+          subject: `New RERA Consultation Request: ${data.fullName}`,
+          html: mailOptions.html,
+        }),
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        console.log('[resend] Consultation email sent successfully via HTTP API:', resData.id);
+        return;
+      } else {
+        const errText = await response.text();
+        console.error('[resend] Email API failed:', errText);
+      }
+    } catch (apiErr) {
+      console.error('[resend] API request error:', apiErr);
+    }
+  }
+
+  console.log('[nodemailer] Attempting SMTP mail dispatch...');
   const info = await transporter.sendMail(mailOptions);
   console.log('[nodemailer] Consultation email sent successfully:', info.messageId);
 }
