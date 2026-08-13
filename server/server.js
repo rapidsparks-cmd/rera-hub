@@ -503,7 +503,7 @@ async function sendConsultationEmail(data, consultationId) {
   const smtpUser = process.env.SUPPORT_EMAIL_USER;
   const smtpPass = process.env.SUPPORT_EMAIL_PASS;
   const smtpHost = process.env.SUPPORT_EMAIL_HOST || 'smtp.gmail.com';
-  const smtpPort = parseInt(process.env.SUPPORT_EMAIL_PORT || '587', 10);
+  const smtpPort = parseInt(process.env.SUPPORT_EMAIL_PORT || '465', 10);
 
   if (!smtpUser || !smtpPass) {
     console.warn('[nodemailer] Email credentials (SUPPORT_EMAIL_USER and SUPPORT_EMAIL_PASS) are not set in environment. Skipping email dispatch.');
@@ -517,6 +517,9 @@ async function sendConsultationEmail(data, consultationId) {
     auth: {
       user: smtpUser,
       pass: smtpPass,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
