@@ -525,7 +525,7 @@ async function sendConsultationEmail(data, consultationId) {
 
   const mailOptions = {
     from: `"RERA Hub System" <${smtpUser}>`,
-    to: 'shiftlogic@gmail.com',
+    to: 'shiftlogiciq@gmail.com',
     subject: `New RERA Consultation Request: ${data.fullName}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">

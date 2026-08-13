@@ -139,7 +139,7 @@ export default function ExpertAdviceModal({
             </div>
 
             <div style={{ textAlign: 'center', fontSize: '0.75rem', opacity: 0.8, marginTop: '16px' }}>
-              For support or queries, contact: <strong>shiftlogic@gmail.com</strong>
+              For support or queries, contact: <strong>shiftlogiciq@gmail.com</strong>
             </div>
           </div>
         ) : (
@@ -209,7 +209,7 @@ export default function ExpertAdviceModal({
             </button>
 
             <div style={{ textAlign: 'center', fontSize: '0.75rem', opacity: 0.8, marginTop: '12px' }}>
-              For support or queries, contact: <strong>shiftlogic@gmail.com</strong>
+              For support or queries, contact: <strong>shiftlogiciq@gmail.com</strong>
             </div>
           </form>
         )}

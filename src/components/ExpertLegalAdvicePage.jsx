@@ -142,7 +142,7 @@ export default function ExpertLegalAdvicePage() {
       />
 
       <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--muted)', marginTop: '24px' }}>
-        For support or queries, contact: <strong>shiftlogic@gmail.com</strong>
+        For support or queries, contact: <strong>shiftlogiciq@gmail.com</strong>
       </p>
     </div>
   );

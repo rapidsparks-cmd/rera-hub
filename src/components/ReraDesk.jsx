@@ -728,7 +728,7 @@ export default function ReraDesk({ language = "en", stateId }) {
                           💬 WhatsApp Consultation
                         </a>
                         <span style={{ fontSize: '0.75rem', opacity: 0.8, color: '#fff', marginLeft: 'auto' }}>
-                          For support, contact: <strong>shiftlogic@gmail.com</strong>
+                          For support, contact: <strong>shiftlogiciq@gmail.com</strong>
                         </span>
                       </div>
                     </>
