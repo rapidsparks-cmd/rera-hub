@@ -17,6 +17,7 @@ export default function PaymentModal({
   onSuccess,
   defaultPlan = 'form_m',
   initialReraId = '',
+  consultationId = null,
 }) {
   const { user, hasBreakdownAccess, hasFormMAccess, refreshEntitlements } = useAuth();
 
@@ -116,6 +117,7 @@ export default function PaymentModal({
         body: JSON.stringify({
           plan: selectedPlan,
           reraId: normalizedReraId,
+          consultationId: selectedPlan === 'legal_guidance' ? consultationId : null,
         }),
       });
 

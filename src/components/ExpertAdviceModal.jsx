@@ -20,9 +20,38 @@ export default function ExpertAdviceModal({
 
   if (!isOpen || !advocate) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
+
+    let consultationId = null;
+    try {
+      const idToken = typeof user?.getIdToken === 'function' ? await user.getIdToken() : 'demo-token';
+      const apiUrl = import.meta.env.VITE_RENDER_API_URL || '';
+      const res = await fetch(`${apiUrl}/api/save-consultation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          fullName,
+          phone,
+          topic,
+          notes,
+          reraId,
+          advocateId: advocate?.id || '',
+          advocateName: advocate?.name || '',
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        consultationId = data.consultationId;
+      }
+    } catch (err) {
+      console.warn('[ExpertAdviceModal] Failed to pre-save consultation details:', err.message);
+    }
+
     if (onProceedToPayment) {
       onProceedToPayment({
         advocate,
@@ -30,6 +59,7 @@ export default function ExpertAdviceModal({
         phone,
         topic,
         notes,
+        consultationId,
       });
     }
   };

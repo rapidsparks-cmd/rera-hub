@@ -47,6 +47,7 @@ export default function ExpertLegalAdviceSection({
       onOpenPayment({
         plan: 'legal_guidance',
         advocate: consultDetails?.advocate,
+        consultationId: consultDetails?.consultationId || null,
       });
     }
   };

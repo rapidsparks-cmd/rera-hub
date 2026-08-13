@@ -6,6 +6,7 @@ const admin = require('firebase-admin');
 const crypto = require('crypto');
 const cors = require('cors');
 const path = require('path');
+const nodemailer = require('nodemailer');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 
@@ -113,6 +114,7 @@ app.post('/api/create-order', async (req, res) => {
   const { uid, email } = decoded;
   const plan = ['form_m', 'breakdown', 'legal_guidance'].includes(req.body.plan) ? req.body.plan : 'breakdown';
   const reraId = normalizeReraId(req.body.reraId);
+  const consultationId = req.body.consultationId || null;
 
   try {
     // Check existing entitlement doc
@@ -168,6 +170,7 @@ app.post('/api/create-order', async (req, res) => {
         plan: plan,
         rera_id: reraId,
         product: `rera_hub_${plan}_v1`,
+        consultation_id: consultationId || '',
       },
     });
 
@@ -182,6 +185,7 @@ app.post('/api/create-order', async (req, res) => {
       reraId: reraId,
       status: 'PENDING',
       product: `rera_hub_${plan}_v1`,
+      consultationId: consultationId,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
@@ -251,6 +255,14 @@ app.post('/api/verify-payment', async (req, res) => {
         },
         { merge: true }
       );
+
+      // Update consultation status if linked
+      if (orderData?.consultationId) {
+        await db.collection('consultations').doc(orderData.consultationId).set(
+          { paid: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() },
+          { merge: true }
+        ).catch(err => console.error('[verify-payment] Failed to update consultation status:', err.message));
+      }
 
       // 3. Grant entitlement doc in Firestore: entitlements/${uid}_${reraId}
       const entitlementRef = db.collection('entitlements').doc(`${firebaseUid}_${reraId}`);
@@ -365,6 +377,9 @@ app.post('/webhooks/razorpay', async (req, res) => {
 
     try {
       // 1. Mark order document as PAID
+      const consultationId = entity.notes?.consultation_id || null;
+
+      // 1. Mark order document as PAID
       await db.collection('orders').doc(orderId).set(
         {
           userId: firebaseUid,
@@ -377,12 +392,21 @@ app.post('/webhooks/razorpay', async (req, res) => {
           status: 'PAID',
           method: entity.method || null,
           userEmail: entity.email || entity.notes?.firebase_email || '',
+          consultationId,
           paidAt: admin.firestore.FieldValue.serverTimestamp(),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           rawEvent: event,
         },
         { merge: true }
       );
+
+      // Update consultation status if linked
+      if (consultationId) {
+        await db.collection('consultations').doc(consultationId).set(
+          { paid: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() },
+          { merge: true }
+        ).catch(err => console.error('[webhook] Failed to update consultation status:', err.message));
+      }
 
       // 2. Grant or update entitlement record: entitlements/${uid}_${reraId}
       const entitlementRef = db.collection('entitlements').doc(`${firebaseUid}_${reraId}`);
@@ -426,6 +450,135 @@ app.post('/webhooks/razorpay', async (req, res) => {
 
   res.status(200).json({ status: 'ok' });
 });
+
+// ─── POST /api/save-consultation ──────────────────────────────────────────────
+app.post('/api/save-consultation', async (req, res) => {
+  const decoded = await verifyToken(req, res);
+  if (!decoded) return;
+
+  const { uid, email } = decoded;
+  const { fullName, phone, topic, notes, reraId, advocateId, advocateName } = req.body;
+
+  if (!fullName || !phone || !topic) {
+    return res.status(400).json({ error: 'Missing required consultation details (fullName, phone, topic).' });
+  }
+
+  try {
+    const consultationData = {
+      firebaseUid: uid,
+      firebaseEmail: email || '',
+      fullName,
+      phone,
+      topic,
+      notes: notes || '',
+      reraId: reraId || 'DEFAULT',
+      advocateId: advocateId || '',
+      advocateName: advocateName || '',
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      paid: false,
+    };
+
+    // Save to Firestore
+    let docId = 'temp_id_' + Date.now();
+    if (db) {
+      const docRef = await db.collection('consultations').add(consultationData);
+      docId = docRef.id;
+    }
+
+    // Send email notification (async/non-blocking)
+    sendConsultationEmail(consultationData, docId).catch((mailErr) => {
+      console.error('[save-consultation] Async email sending failed:', mailErr);
+    });
+
+    return res.status(200).json({ success: true, consultationId: docId });
+  } catch (err) {
+    console.error('[save-consultation] Error saving consultation:', err);
+    return res.status(500).json({ error: err.message || 'Internal Server Error' });
+  }
+});
+
+// ─── Nodemailer Helper for Consultations ──────────────────────────────────────
+async function sendConsultationEmail(data, consultationId) {
+  const smtpUser = process.env.SUPPORT_EMAIL_USER;
+  const smtpPass = process.env.SUPPORT_EMAIL_PASS;
+  const smtpHost = process.env.SUPPORT_EMAIL_HOST || 'smtp.gmail.com';
+  const smtpPort = parseInt(process.env.SUPPORT_EMAIL_PORT || '587', 10);
+
+  if (!smtpUser || !smtpPass) {
+    console.warn('[nodemailer] Email credentials (SUPPORT_EMAIL_USER and SUPPORT_EMAIL_PASS) are not set in environment. Skipping email dispatch.');
+    return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpPort === 465,
+    auth: {
+      user: smtpUser,
+      pass: smtpPass,
+    },
+  });
+
+  const mailOptions = {
+    from: `"RERA Hub System" <${smtpUser}>`,
+    to: 'shiftlogic@gmail.com',
+    subject: `New RERA Consultation Request: ${data.fullName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <h2 style="color: #0f766e; margin-top: 0;">New Consultation Request Filled</h2>
+        <p>A homebuyer has requested an expert legal consultation on RERA Hub.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px;">
+          <tr style="background-color: #f9fafb;">
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280; width: 180px;">Consultation ID</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem;">${consultationId}</td>
+          </tr>
+          <tr>
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">User Full Name</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem; font-weight: 700;">${data.fullName}</td>
+          </tr>
+          <tr style="background-color: #f9fafb;">
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">Phone Number</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem; font-weight: 700;"><a href="tel:${data.phone}">${data.phone}</a></td>
+          </tr>
+          <tr>
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">Consultation Subject</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem;">${data.topic}</td>
+          </tr>
+          <tr style="background-color: #f9fafb;">
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">RERA ID / State ID</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem;">${data.reraId}</td>
+          </tr>
+          <tr>
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">Assigned Advocate</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem; font-weight: 600;">${data.advocateName || 'N/A'}</td>
+          </tr>
+          <tr style="background-color: #f9fafb;">
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">User Email</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem;">${data.firebaseEmail || 'N/A'}</td>
+          </tr>
+          <tr>
+            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #6b7280;">User UID</th>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-size: 0.9rem;">${data.firebaseUid}</td>
+          </tr>
+        </table>
+        
+        <h3 style="color: #1f2937; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; margin-bottom: 8px;">Case Summary / Notes:</h3>
+        <div style="background-color: #f9fafb; padding: 12px; border-left: 4px solid #0f766e; font-size: 0.9rem; color: #374151; white-space: pre-wrap; line-height: 1.5;">
+          ${data.notes ? data.notes : 'No case summary provided.'}
+        </div>
+        
+        <p style="font-size: 0.8rem; color: #9ca3af; margin-top: 25px; text-align: center; border-top: 1px solid #f3f4f6; padding-top: 15px;">
+          This email was sent automatically by the RERA Hub backend server.
+        </p>
+      </div>
+    `,
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+  console.log('[nodemailer] Consultation email sent successfully:', info.messageId);
+}
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'rera-hub-api' }));

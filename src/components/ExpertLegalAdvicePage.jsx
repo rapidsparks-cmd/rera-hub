@@ -31,6 +31,7 @@ export default function ExpertLegalAdvicePage() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [consultModalOpen, setConsultModalOpen] = useState(false);
   const [selectedAdvocate, setSelectedAdvocate] = useState(MALE_RERA_ADVOCATE);
+  const [consultationId, setConsultationId] = useState(null);
 
   const isUnlocked = hasLegalGuidanceAccess('DEFAULT');
 
@@ -42,8 +43,9 @@ export default function ExpertLegalAdvicePage() {
     setConsultModalOpen(true);
   };
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = (consultDetails) => {
     setConsultModalOpen(false);
+    setConsultationId(consultDetails?.consultationId || null);
     setPaymentModalOpen(true);
   };
 
@@ -136,6 +138,7 @@ export default function ExpertLegalAdvicePage() {
         }}
         defaultPlan="legal_guidance"
         initialReraId="DEFAULT"
+        consultationId={consultationId}
       />
 
       <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--muted)', marginTop: '24px' }}>

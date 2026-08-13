@@ -89,6 +89,7 @@ export default function ReraDesk({ language = "en", stateId }) {
   const [copying, setCopying] = useState(false);
   const [openFaq, setOpenFaq] = useState("how-interest");
   const [error, setError] = useState("");
+  const [consultationId, setConsultationId] = useState(null);
 
   const state = getStateById(stateId);
   const spreadRule = useMemo(
@@ -1037,8 +1038,9 @@ export default function ReraDesk({ language = "en", stateId }) {
                 {/* Expert Legal Advice & Advocate Profile Section */}
                 <ExpertLegalAdviceSection
                   stateId={stateId}
-                  onOpenPayment={({ plan }) => {
+                  onOpenPayment={({ plan, consultationId }) => {
                     setTargetPaymentPlan(plan || 'legal_guidance');
+                    setConsultationId(consultationId || null);
                     setPaymentModalOpen(true);
                   }}
                   onOpenAuth={() => setAuthModalOpen(true)}
@@ -1153,6 +1155,7 @@ export default function ReraDesk({ language = "en", stateId }) {
         onSuccess={() => setPaymentModalOpen(false)}
         defaultPlan={targetPaymentPlan}
         initialReraId={currentReraId}
+        consultationId={consultationId}
       />
 
       {/* Guidance Prompt Modal */}
